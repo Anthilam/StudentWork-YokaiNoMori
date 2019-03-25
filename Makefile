@@ -1,9 +1,20 @@
-LD_FLAGS =
+JAVA = ./IA/
 
-all: IA Client Serveur
+# Vars Java
+JC = javac
 
-IA:
-	javac ./IA/* -d ./
+JFLAGS = -g -sourcepath $(JAVA)
+
+JSRC = \
+	$(JAVA)Ia.java
+
+classes = $(JSRC:.java=.class)
+
+all: $(classes) Client Serveur
+
+# Java classes
+%.class : %.java
+	$(JC) $(JFLAGS) $<
 
 Client: ./Client/client.c ./TCP/fonctionsTCP.o libClient.o ./TCP/protocolYokai.h
 	gcc -Wall ./Client/client.c -o client ./TCP/fonctionsTCP.o ./Client/libClient.o $(LD_FLAGS)
@@ -24,7 +35,7 @@ clean:
 	rm -f ./TCP/fonctionsTCP.o;
 	rm -f ./Client/*.o
 	rm -f ./Serveur/*.o
-	rm -f *.class
+	rm -f ./IA/*.class
 
 mrproper: clean
 	rm -f client;
