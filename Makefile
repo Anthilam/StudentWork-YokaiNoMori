@@ -3,7 +3,7 @@ LD_FLAGS =
 all: IA Client Serveur
 
 IA:
-	javac -d ./ ./IA/*.java
+	javac ./IA/* -d ./
 
 Client: ./Client/client.c ./TCP/fonctionsTCP.o libClient.o ./TCP/protocolYokai.h
 	gcc -Wall ./Client/client.c -o client ./TCP/fonctionsTCP.o ./Client/libClient.o $(LD_FLAGS)
@@ -24,6 +24,7 @@ clean:
 	rm -f ./TCP/fonctionsTCP.o;
 	rm -f ./Client/*.o
 	rm -f ./Serveur/*.o
+	rm -f *.class
 
 mrproper: clean
 	rm -f client;
