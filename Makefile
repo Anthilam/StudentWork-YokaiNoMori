@@ -32,7 +32,7 @@ libServeur.o: ./Serveur/libServeur.c ./Serveur/libServeur.h ./TCP/protocolYokai.
 	gcc -W -Wall -g -std=c99 -o ./Serveur/$@ -c $<
 
 clean:
-	rm -f ./TCP/*.o;
+	rm -f ./TCP/fonctionsTCP.o;
 	rm -f ./Client/*.o
 	rm -f ./Serveur/*.o
 	rm -f ./IA/*.class
