@@ -4,7 +4,7 @@
 
 int main(int argc, char **argv) {
 
-    int sock,port, err;
+    int sock,port;
     char* ipMachServ;
 
     /* verification des arguments */

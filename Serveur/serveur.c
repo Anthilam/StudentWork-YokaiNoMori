@@ -5,7 +5,8 @@
 #define MAX_CONNECTED 1023
 
 int main(int argc, char** argv) {
-  int sockConx, port, sizeAddr, err;
+  int sockConx, port, sizeAddr;
+  int connexionP1, connexionP2;
 
   struct sockaddr_in addClient;	/* adresse de la socket client connectee */
   fd_set readSet;              /* variable pour le select */
@@ -24,8 +25,15 @@ int main(int argc, char** argv) {
 
   sizeAddr = sizeof(struct sockaddr_in);
 
+  connexionP1 = accept(sockConx,(struct sockaddr *)&addClient,(socklen_t *)&sizeAddr);
+  connexionP2 = accept(sockConx,(struct sockaddr *)&addClient,(socklen_t *)&sizeAddr);
+
+  FD_ZERO(&readSet);
+  FD_SET(connexionP1, &readSet);
+  FD_SET(connexionP2, &readSet);
+
   while(1){
-    
+
   }
   close(sockConx);
 
