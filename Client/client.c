@@ -1,6 +1,6 @@
 #include "libClient.h"
 
-#define TAIL_BUF 20
+/* Taille des chaines de caracteres pour les noms */
 
 int main(int argc, char **argv) {
 
@@ -8,25 +8,36 @@ int main(int argc, char **argv) {
     char* ipMachServ;
 
     /* verification des arguments */
-    if (argc != 3) {
-    printf("usage : %s nom/IPServ port\n", argv[0]);
-    return -1;
+    if (argc != 4) {
+      printf("usage : %s nom/IPServ port nom_joueur\n", argv[0]);
     }
-
+    // Lecture des arguments
     ipMachServ = argv[1];
     port = atoi(argv[2]);
 
-    /*
-    * creation d'une socket, domaine AF_INET, protocole TCP
-    */
+    // Connexion au serveur
     sock = socketClient(ipMachServ,port);
+    printf("connected\n");
 
-
-
-
+    TPartieReq initGame;
+    TPartieRep repServeur ;
     /*
-    * fermeture de la connexion et de la socket
+    typedef struct {
+      TIdReq idReq;
+      char nomJoueur[T_NOM];
+      TSensTetePiece piece;
+    } TPartieReq;
     */
+    initGame.idReq = PARTIE;
+    char *name = argv[3];
+    stpcpy(initGame.nomJoueur,name);
+    initGame.piece = NORD;
+
+    printf("name : %s\n",initGame.nomJoueur );
+
+    printf("envoie au serveur ");
+    sendPartieGetRep(sock,initGame,&repServeur);
+    // Fermeture de la socket
     shutdown(sock, SHUT_RDWR);
     close(sock);
 

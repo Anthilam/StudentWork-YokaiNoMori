@@ -14,7 +14,16 @@
 
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
+/*
+  */
+void sendPartieGetRep(int sock, TPartieReq req, TPartieRep* res);
 
+/*
+ */
+void checkRecvrError(int err,int sock);
 
+/*
+ */
+void checkSendError(int err,int sock );
 
 #endif

@@ -7,7 +7,7 @@
  *
  * Ecrit par : VF, FB
  * Date :  25 / 02 / 19
- * 
+ *
  ************************************************************/
 
 #ifndef _protocolYokai_h
@@ -30,9 +30,9 @@ typedef enum { ERR_OK,      /* Validation de la requete */
 	       ERR_TYP      /* Erreur sur le type de requete */
 } TCodeRep;
 
-/* 
+/*
  * Structures demande de partie
- */ 
+ */
 typedef enum { NORD, SUD } TSensTetePiece;
 
 typedef struct {
@@ -49,7 +49,7 @@ typedef struct {
 } TPartieRep;
 
 
-/* 
+/*
  * Definition d'une position de case
  */
 typedef enum { UN, DEUX, TROIS, QUATRE, CINQ, SIX } TLg;
@@ -60,7 +60,7 @@ typedef struct {
   TLg l;           /* Ligne de la position d'une piece */
 } TCase;
 
-/* 
+/*
  * Definition de structure pour le deplacement de piece
  */
 typedef struct {
@@ -69,13 +69,13 @@ typedef struct {
   bool estCapt;     /* Vrai si le deplacement capture une piece de l'adversaire */
 } TDeplPiece;
 
-/* 
+/*
  * Definition de structure pour le placement de piece capturee
  */
 typedef TCase TDeposerPiece;
 
-/* 
- * Structures coup du joueur 
+/*
+ * Structures coup du joueur
  */
 
 /* Precision des types de coups */
@@ -114,4 +114,3 @@ typedef struct {
 } TCoupRep;
 
 #endif
-
