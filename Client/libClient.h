@@ -26,4 +26,8 @@ void checkRecvrError(int err,int sock);
  */
 void checkSendError(int err,int sock );
 
+/*
+ */
+void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
+
 #endif

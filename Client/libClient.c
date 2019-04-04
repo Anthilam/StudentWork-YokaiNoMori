@@ -26,3 +26,13 @@ void sendPartieGetRep(int sock, TPartieReq req, TPartieRep* res){
     checkRecvrError(err,sock);
     printf("Code : %d , valeur retourner : %s\n",res->err,res->nomAdvers);
 }
+
+void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup){
+  int err;
+  err = send(sock, &reqCoup, sizeof(TPartieReq), 0);
+  checkSendError(err,sock);
+
+  err = recv(sock, repCoup, sizeof(TPartieRep), 0);
+  checkRecvrError(err,sock);
+  printf("Code : %d , valeur retourner : %d\n",repCoup->err,repCoup->validCoup);
+}

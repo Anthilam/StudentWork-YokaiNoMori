@@ -20,14 +20,8 @@ int main(int argc, char **argv) {
     printf("connected\n");
 
     TPartieReq initGame;
-    TPartieRep repServeur ;
-    /*
-    typedef struct {
-      TIdReq idReq;
-      char nomJoueur[T_NOM];
-      TSensTetePiece piece;
-    } TPartieReq;
-    */
+    TPartieRep repServeur;
+
     initGame.idReq = PARTIE;
     char *name = argv[3];
     stpcpy(initGame.nomJoueur,name);
@@ -37,6 +31,35 @@ int main(int argc, char **argv) {
 
     printf("envoie au serveur ");
     sendPartieGetRep(sock,initGame,&repServeur);
+
+    // Consultation au serveur d'IA
+
+    TPiece tP;
+    tP.sensTetePiece = NORD;
+    tP.typePiece = KODAMA;
+
+    TCase tCaseDep;
+    tCaseDep.c = A;
+    tCaseDep.l = UN;
+
+    TCase tCaseArr;
+    tCaseArr.c = A;
+    tCaseArr.l = DEUX;
+
+    TDeplPiece tDepl;
+    tDepl.caseDep = tCaseDep;
+    tDepl.caseArr = tCaseArr;
+
+    TCoupReq reqCoup;
+    TCoupRep repCoup;
+
+    reqCoup.idRequest = COUP;
+    reqCoup.numPartie = 1;
+    reqCoup.typeCoup = DEPLACER;
+    reqCoup.piece = tP;
+    reqCoup.params.deplPiece = tDepl;
+    sendCoupGetRep(sock,reqCoup,&repCoup);
+
     // Fermeture de la socket
     shutdown(sock, SHUT_RDWR);
     close(sock);
