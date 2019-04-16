@@ -6,19 +6,30 @@
 :-begin_tests(tp4tests).
 
 	% Test deplacement glissement gauche
-	test('deplacement glissement gauche', [true(L==[n,n,#])]):-
-		deplacement([n,#,n], L).
+	test('initial_board (true)'):-
+		initial_board(Board),
+		member(piece(north, oni, 1, 1), Board),
+		member(piece(north, kirin, 2, 1), Board),
+		member(piece(north, kirin, 4, 1), Board),
+		member(piece(north, koropokkuru, 3, 1), Board),
+		member(piece(north, oni, 5, 1), Board),
+		member(piece(north, kodama, 2, 3), Board),
+		member(piece(north, kodama, 3, 3), Board),
+		member(piece(north, kodama, 4, 3), Board),
+		member(piece(south, oni, 1, 6), Board),
+		member(piece(south, kirin, 2, 6), Board),
+		member(piece(south, koropokkuru, 3, 6), Board),
+		member(piece(south, kirin, 4, 6), Board),
+		member(piece(south, oni, 5, 6), Board),
+		member(piece(south, kodama, 2, 4), Board),		member(piece(south, kodama, 3, 4), Board),
+		member(piece(south, kodama, 4, 4), Board).
 
-	% Test deplacement glissement droite
-	test('deplacement glissement droite', [true(L==[#,b,b])]):-
-		deplacement([b,#,b], L).
+	test('initial_board (false)', [fail]):-
+		initial_board(Board),
+		member(piece(south, oni, 1, 1), Board).
 
-	% Test deplacement saut gauche
-	test('deplacement saut gauche', [true(L==[n,b,#])]):-
-		deplacement([#,b,n], L).
-
-	% Test deplacement saut droite
-	test('deplacement saut droite', [true(L==[#,n,b])]):-
-		deplacement([b,n,#], L).
+	test('draw initial_board', [true]):-
+		initial_board(Board),
+		draw_board(Board).
 
 :-end_tests(tp4tests).
