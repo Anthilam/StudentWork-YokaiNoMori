@@ -1,7 +1,7 @@
 :-use_module(library(plunit)).
 :-use_module(library(lists)).
 
-:-include(predicats).
+:-include(ia).
 
 :-begin_tests(tp4tests).
 

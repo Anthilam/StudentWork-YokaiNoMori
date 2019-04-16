@@ -3,15 +3,6 @@
  *      SIMULATION DU FONCTIONNEMENT DE SICSTUS PROLOG EN UTILISANT JAVA & JASPER
  *      -------------------------------------------------------------------------
  *
- *     A compiler et à exécuter en spécifiant le classpath de Jasper.
- *
- *      - sur Linux : /applis/sicstus-3.11.2/lib/sicstus-3.11.2/bin/jasper.jar
- *
- *          + executer la commande : export LD_LIBRARY_PATH=/applis/sicstus-3.11.2/lib/
- *                à chaque session.
- *
- *      - sous Windows : y:\...
- *
  * javac -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:. jSicstus.java
  *
  * java -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:. jSicstus.java
@@ -39,7 +30,7 @@ public class jSicstus {
 	        sp = new SICStus();
 
 	        // Chargement d'un fichier prolog .pl
-	        sp.load("./tests.pl");
+	        sp.load("./ia.pl");
 	    }
 	    // exception déclanchée par SICStus lors de la création de l'objet sp
 	    catch (SPException e) {
@@ -133,7 +124,7 @@ public class jSicstus {
 	        e.printStackTrace();
 	        System.exit(-1);
 	    }
-		
+
 	    return ("halt.");
     }
 }
