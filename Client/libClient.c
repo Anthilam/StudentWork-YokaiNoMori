@@ -6,7 +6,6 @@ void checkRecvrError(int err,int sock){
         shutdown(sock, SHUT_RDWR); close(sock);
         exit(-1);
     }
-
 }
 
 void checkSendError(int err,int sock ){
@@ -35,4 +34,8 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup){
   err = recv(sock, repCoup, sizeof(TPartieRep), 0);
   checkRecvrError(err,sock);
   printf("Code : %d , valeur retourner : %d\n",repCoup->err,repCoup->validCoup);
+
+  err = recv(sock, repCoup, sizeof(TPartieRep), 0);
+  checkRecvrError(err,sock);
+  printf("Coup de l'ennemie Code : %d , valeur retourner : %d\n",repCoup->err,repCoup->validCoup);
 }

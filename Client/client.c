@@ -6,6 +6,7 @@ int main(int argc, char **argv) {
 
     int sock,port;
     char* ipMachServ;
+    int nbPartie=1; // Variable mémorisant le numéro de partie
 
     /* verification des arguments */
     if (argc != 4) {
@@ -32,33 +33,48 @@ int main(int argc, char **argv) {
     printf("envoie au serveur ");
     sendPartieGetRep(sock,initGame,&repServeur);
 
-    // Consultation au serveur d'IA
 
-    TPiece tP;
-    tP.sensTetePiece = NORD;
-    tP.typePiece = KODAMA;
+    // tant que le client est connecté au serveur
+    // et qu'on a pas jouer deux parties
+    while(true && nbPartie < 3){
+      // Pensez a regarder quel joueur commence !!
 
-    TCase tCaseDep;
-    tCaseDep.c = A;
-    tCaseDep.l = UN;
+      // Envoie des données et
+      // Consultation d'IA
 
-    TCase tCaseArr;
-    tCaseArr.c = A;
-    tCaseArr.l = DEUX;
 
-    TDeplPiece tDepl;
-    tDepl.caseDep = tCaseDep;
-    tDepl.caseArr = tCaseArr;
+      TCoupRep repCoup; // Variable pour la réponse du serveur
+      TCoupReq reqCoup; // Variable pour envoyer le coup jouer
 
-    TCoupReq reqCoup;
-    TCoupRep repCoup;
+      // Construction du coup
+      TPiece tP;
+      tP.sensTetePiece = NORD;
+      tP.typePiece = KODAMA;
 
-    reqCoup.idRequest = COUP;
-    reqCoup.numPartie = 1;
-    reqCoup.typeCoup = DEPLACER;
-    reqCoup.piece = tP;
-    reqCoup.params.deplPiece = tDepl;
-    sendCoupGetRep(sock,reqCoup,&repCoup);
+      TCase tCaseDep;
+      tCaseDep.c = A;
+      tCaseDep.l = UN;
+
+      TCase tCaseArr;
+      tCaseArr.c = A;
+      tCaseArr.l = DEUX;
+
+      TDeplPiece tDepl;
+      tDepl.caseDep = tCaseDep;
+      tDepl.caseArr = tCaseArr;
+
+      // Construction de la requete d'un coup
+      reqCoup.idRequest = COUP;
+      reqCoup.numPartie = nbPartie;
+      reqCoup.typeCoup = DEPLACER;
+      reqCoup.piece = tP;
+      reqCoup.params.deplPiece = tDepl;
+      // Envoie du coup jouer
+      sendCoupGetRep(sock,reqCoup,&repCoup);
+      if(repCoup.propCoup != CONT){
+        nbPartie++;
+      }
+    }
 
     // Fermeture de la socket
     shutdown(sock, SHUT_RDWR);
