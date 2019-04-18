@@ -22,14 +22,45 @@
 		member(piece(south, kirin, 4, 6), Board),
 		member(piece(south, oni, 5, 6), Board),
 		member(piece(south, kodama, 2, 4), Board),		member(piece(south, kodama, 3, 4), Board),
-		member(piece(south, kodama, 4, 4), Board).
+		member(piece(south, kodama, 4, 4), Board),
+		draw_board(Board).
 
 	test('initial_board (false)', [fail]):-
 		initial_board(Board),
 		member(piece(south, oni, 1, 1), Board).
 
-	test('draw initial_board', [true]):-
+	test('isEmpty (false)', [fail]):-
 		initial_board(Board),
-		draw_board(Board).
+		isEmpty(1, 1, Board).
+
+	test('isEmpty (true)'):-
+		initial_board(Board),
+		isEmpty(1, 2, Board).
+
+	test('capture'):-
+		initial_board(Board),
+		capture(piece(north, oni, 3, 6), Board, NewBoard),
+		member(piece(north, oni, 3, 6), NewBoard),
+		draw_board(NewBoard).
+
+	test('move'):-
+		initial_board(Board),
+		move(piece(north, oni, 1, 2), Board, NewBoard),
+		member(piece(north, oni, 1, 2), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (north kodama)'):-
+		Board = [piece(north, kodama, 1, 1)],
+		draw_board(Board),
+		try_move(Board, north, NewBoard),
+		member(piece(north, kodama, 1, 2), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (south kodama)'):-
+		Board = [piece(south, kodama, 1, 6)],
+		draw_board(Board),
+		try_move(Board, south, NewBoard),
+		member(piece(south, kodama, 1, 5), NewBoard),
+		draw_board(NewBoard).
 
 :-end_tests(tp4tests).
