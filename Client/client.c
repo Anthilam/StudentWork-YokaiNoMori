@@ -37,12 +37,9 @@ int main(int argc, char **argv) {
     // tant que le client est connecté au serveur
     // et qu'on a pas jouer deux parties
     while(true && nbPartie < 3){
-      // Pensez a regarder quel joueur commence !!
-
       // Envoie des données et
       // Consultation d'IA
-
-
+      // IA envoie :
       TCoupRep repCoup; // Variable pour la réponse du serveur
       TCoupReq reqCoup; // Variable pour envoyer le coup jouer
 
@@ -69,11 +66,36 @@ int main(int argc, char **argv) {
       reqCoup.typeCoup = DEPLACER;
       reqCoup.piece = tP;
       reqCoup.params.deplPiece = tDepl;
-      // Envoie du coup jouer
-      sendCoupGetRep(sock,reqCoup,&repCoup);
-      if(repCoup.propCoup != CONT){
-        nbPartie++;
+
+      // Notre joueur demande toujours le le coté nord
+      if(repServeur.validSensTete == OK && nbPartie == 1){
+        // On commence la partie
+        printf("coté nord");
+
+        // Envoie du coup jouer
+        sendCoupGetRep(sock,reqCoup,&repCoup);
+
+
+        // Coup de l'adversaire
+        readEnnemyAction(sock,&repCoup);
+
+        if(repCoup.propCoup != CONT){
+          nbPartie++;
+        }
+
+      }else{
+        // L'adversaire commence
+        printf("coté sud");
+
+        // Coup de l'adversaire
+        readEnnemyAction(sock,&repCoup);
+
+        // Envoie du coup jouer
+        sendCoupGetRep(sock,reqCoup,&repCoup);
+
       }
+
+
     }
 
     // Fermeture de la socket
