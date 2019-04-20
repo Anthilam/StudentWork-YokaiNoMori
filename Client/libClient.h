@@ -14,6 +14,7 @@
 
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
+#include "../Shared/libBoard.h"
 
 /*  Envoie une requete de type PARTIE au serveur
     params:
@@ -56,5 +57,7 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
       TCoupRep repCoup réponse du serveur
  */
 void readEnnemyAction(int sock,TCoupRep *coupAdv);
+
+
 
 #endif

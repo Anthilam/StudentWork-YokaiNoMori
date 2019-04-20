@@ -19,7 +19,7 @@ java: $(classes)
 %.class : %.java
 	$(JC) $(JFLAGS) $<
 
-Client: ./Client/client.c ./TCP/fonctionsTCP.o libClient.o ./TCP/protocolYokai.h
+Client: ./Client/client.c ./TCP/fonctionsTCP.o libClient.o ./Shared/libBoard.o ./TCP/protocolYokai.h
 	gcc -Wall ./Client/client.c -o client ./TCP/fonctionsTCP.o ./Client/libClient.o $(LD_FLAGS)
 
 fonctionsTCP.o: ./TCP/fonctionsTCP.c ./TCP/fonctionsTCP.h
@@ -34,10 +34,14 @@ Serveur: ./Serveur/serveur.c ./TCP/fonctionsTCP.o ./Serveur/libServeur.o ./TCP/p
 libServeur.o: ./Serveur/libServeur.c ./Serveur/libServeur.h ./TCP/protocolYokai.h
 	gcc -W -Wall -g -std=c99 -o ./Serveur/$@ -c $<
 
+libBoard.o: ./Shared/libBoard.c ./Shared/libBoard.h
+	gcc -W -Wall -g -std=c99 -o ./Shared/$@ -c $<
+
 clean:
 	rm -f ./TCP/fonctionsTCP.o;
 	rm -f ./Client/*.o
 	rm -f ./Serveur/*.o
+	rm -f ./Shared/*.o
 	rm -f ./IA/*.class
 
 mrproper: clean
