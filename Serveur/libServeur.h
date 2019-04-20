@@ -12,5 +12,6 @@
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
 
+#define BOARD_SIZE 5
 
 #endif

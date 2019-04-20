@@ -14,7 +14,6 @@
 
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
-#include "../Shared/libBoard.h"
 
 /*  Envoie une requete de type PARTIE au serveur
     params:
