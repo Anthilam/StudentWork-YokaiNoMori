@@ -20,7 +20,8 @@
 		member(piece(south, koropokkuru, 3, 6), Board),
 		member(piece(south, kirin, 4, 6), Board),
 		member(piece(south, oni, 5, 6), Board),
-		member(piece(south, kodama, 2, 4), Board),		member(piece(south, kodama, 3, 4), Board),
+		member(piece(south, kodama, 2, 4), Board),
+		member(piece(south, kodama, 3, 4), Board),
 		member(piece(south, kodama, 4, 4), Board),
 		Game = [Board, _, _],
 		draw_board(Game).
@@ -58,6 +59,16 @@
 		try_move(Board, south, NewBoard),
 		member(piece(south, kodama, 1, 5), NewBoard).
 
+	test('try_move promote (north kodama)'):-
+		Board = [[piece(north, kodama, 1, 4)],_,_],
+		try_move(Board, north, NewBoard),
+		member(piece(north, samourai, 1, 5), NewBoard).
+
+	test('try_move promote (south kodama)'):-
+		Board = [[piece(south, kodama, 1, 3)],_,_],
+		try_move(Board, south, NewBoard),
+		member(piece(south, samourai, 1, 2), NewBoard).
+
 	test('try_move (north samourai)'):-
 		Board = [[piece(north, samourai, 2, 1)],_,_],
 		try_move(Board, north, NewBoard),
@@ -77,6 +88,16 @@
 		Board = [[piece(south, oni, 1, 6)],_,_],
 		try_move(Board, south, NewBoard),
 		member(piece(south, oni, 1, 5), NewBoard).
+
+	test('try_move promote (north oni)'):-
+		Board = [[piece(north, oni, 1, 4)],_,_],
+		try_move(Board, north, NewBoard),
+		member(piece(north, superoni, 1, 5), NewBoard).
+
+	test('try_move promote (south oni)'):-
+		Board = [[piece(south, oni, 1, 3)],_,_],
+		try_move(Board, south, NewBoard),
+		member(piece(south, superoni, 1, 2), NewBoard).
 
 	test('try_move (north superoni)'):-
 		Board = [[piece(north, superoni, 5, 1)],_,_],

@@ -74,7 +74,9 @@ capture(piece(Side, Type, X, Y), Board, NewBoard, Capt, NewCapt):-
 	opponent(Side, OtherSide),
 	% Extract the board without the captured piece
 	select(piece(OtherSide, OtherType, X, Y), Board, TempBoard),
+	% Add the captured piece to the list of captured pieces
 	NewCapt = [piece(Side, OtherType, 0, 0) | Capt],
+	% Create the new board
 	NewBoard = [piece(Side, Type, X, Y) | TempBoard].
 
 %----------------------------------------------------------------
@@ -87,37 +89,63 @@ move(Piece, Board, NewBoard):-
 % put : put a piece on the board and remove it from the Capt list
 %----------------------------------------------------------------
 put(piece(Side, Type, X, Y), Board, Capt, NewBoard, NewCapt):-
+	% Check coordinates
+	between(1, 5, X),
+	between(1, 6, Y),
+	% Extract the piece from the list of captured pieces
 	select(piece(Side, Type, _, _), Capt, NewCapt),
+	% Create the new board
 	NewBoard = [piece(Side, Type, X, Y), Board].
 
 %----------------------------------------------------------------
 % try_move : try to move a piece
+% First, extract a piece from the board, then try to move it
+% on an empty square, otherwise capture the opponent piece
 %----------------------------------------------------------------
 
 % try_move north kodama
 try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, kodama, X, Y), Board, TempBoard),
+	N_X is X, N_Y is Y + 1,
 	(
-		N_X is X, N_Y is Y + 1
-	),
-	(
-		isEmpty(N_X, N_Y, Board),
-		move(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard)
+		% Promote
+		N_Y >= 5,
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		)
 		;
-		capture(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		)
 	).
+
 
 % try_move south kodama
 try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, kodama, X, Y), Board, TempBoard),
+	N_X is X, N_Y is Y - 1,
 	(
-		N_X is X, N_Y is Y - 1
-	),
-	(
-		isEmpty(N_X, N_Y, Board),
-		move(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard)
+		% Promote
+		N_Y =< 2,
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		)
 		;
-		capture(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		)
 	).
 
 % try_move north samourai
@@ -167,10 +195,21 @@ try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 		N_X is X - 1; N_Y is Y - 1
 	),
 	(
-		isEmpty(N_X, N_Y, Board),
-		move(piece(north, oni, N_X, N_Y), TempBoard, NewBoard)
+		% Promote
+		N_Y >= 5,
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		)
 		;
-		capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(north, oni, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		)
 	).
 
 % try_move south oni
@@ -184,10 +223,21 @@ try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 		N_X is X - 1; N_Y is Y - 1
 	),
 	(
-		isEmpty(N_X, N_Y, Board),
-		move(piece(south, oni, N_X, N_Y), TempBoard, NewBoard)
+		% Promote
+		N_Y =< 2,
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		)
 		;
-		capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		(
+			isEmpty(N_X, N_Y, Board),
+			move(piece(south, oni, N_X, N_Y), TempBoard, NewBoard)
+			;
+			capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		)
 	).
 
 % try_move north superoni
