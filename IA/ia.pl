@@ -44,7 +44,7 @@ initial(piece(south, kodama, 2, 4)).
 initial(piece(south, kodama, 3, 4)).
 initial(piece(south, kodama, 4, 4)).
 
-% initial_board : initialize the board
+% initial_board : initialize the board with a default configuration
 initial_board(Board) :-
     findall(Piece, initial(Piece), Board).
 
@@ -69,11 +69,12 @@ isEmpty(X, Y, Board):-
 % capture : capture an opponent piece
 % TODO : store somewhere the captured pieces
 %----------------------------------------------------------------
-capture(piece(Side, Type, X, Y), Board, NewBoard):-
+capture(piece(Side, Type, X, Y), Board, NewBoard, Capt, NewCapt):-
 	% Get the opponent
 	opponent(Side, OtherSide),
 	% Extract the board without the captured piece
-	select(piece(OtherSide, _, X, Y), Board, TempBoard),
+	select(piece(OtherSide, OtherType, X, Y), Board, TempBoard),
+	NewCapt = [piece(Side, OtherType, 0, 0) | Capt],
 	NewBoard = [piece(Side, Type, X, Y) | TempBoard].
 
 %----------------------------------------------------------------
@@ -83,11 +84,18 @@ move(Piece, Board, NewBoard):-
 	NewBoard = [Piece, Board].
 
 %----------------------------------------------------------------
+% put : put a piece on the board and remove it from the Capt list
+%----------------------------------------------------------------
+put(piece(Side, Type, X, Y), Board, Capt, NewBoard, NewCapt):-
+	select(piece(Side, Type, _, _), Capt, NewCapt),
+	NewBoard = [piece(Side, Type, X, Y), Board].
+
+%----------------------------------------------------------------
 % try_move : try to move a piece
 %----------------------------------------------------------------
 
 % try_move north kodama
-try_move(Board, north, NewBoard):-
+try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, kodama, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1
@@ -96,11 +104,11 @@ try_move(Board, north, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 	).
 
 % try_move south kodama
-try_move(Board, south, NewBoard):-
+try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, kodama, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y - 1
@@ -109,11 +117,11 @@ try_move(Board, south, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
 
 % try_move north samourai
-try_move(Board, north, NewBoard):-
+try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, samourai, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -127,11 +135,11 @@ try_move(Board, north, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 	).
 
 % try_move south samourai
-try_move(Board, south, NewBoard):-
+try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, samourai, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -145,11 +153,11 @@ try_move(Board, south, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
 
 % try_move north oni
-try_move(Board, north, NewBoard):-
+try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, oni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -162,11 +170,11 @@ try_move(Board, north, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, oni, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 	).
 
 % try_move south oni
-try_move(Board, south, NewBoard):-
+try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, oni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y - 1;
@@ -179,11 +187,11 @@ try_move(Board, south, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, oni, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
 
 % try_move north superoni
-try_move(Board, north, NewBoard):-
+try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, superoni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -197,11 +205,11 @@ try_move(Board, north, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 	).
 
 % try_move south superoni
-try_move(Board, south, NewBoard):-
+try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, superoni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -215,11 +223,11 @@ try_move(Board, south, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
 
 % try_move north kirin
-try_move(Board, north, NewBoard):-
+try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, kirin, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -233,11 +241,11 @@ try_move(Board, north, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 	).
 
 % try_move south kirin
-try_move(Board, south, NewBoard):-
+try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, kirin, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -251,11 +259,11 @@ try_move(Board, south, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
 
 % try_move north koropokkuru
-try_move(Board, north, NewBoard):-
+try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 	select(piece(north, koropokkuru, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -271,11 +279,11 @@ try_move(Board, north, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 	).
 
 % try_move south koropokkuru
-try_move(Board, south, NewBoard):-
+try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 	select(piece(south, koropokkuru, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -291,12 +299,8 @@ try_move(Board, south, NewBoard):-
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
 		;
-		capture(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
+		capture(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
-
-% Tester la validité d'un nouveau mouvement
-%	- si la case est vide >> déplacement
-%	- si la case est non vide >> capture ou échec du déplacement
 
 % Avancement du jeu
 
@@ -309,7 +313,7 @@ try_move(Board, south, NewBoard):-
 %----------------------------------------------------------------
 
 % draw_board : draw the board
-draw_board(Board) :-
+draw_board([Board, _, _]) :-
 	nl, draw_row(1, 1, Board), nl.
 
 % draw_row : draw a row of the board
