@@ -11,6 +11,9 @@
 :-set_prolog_flag(toplevel_print_options,
     [quoted(true), portrayed(true), max_depth(0)]).
 
+:-use_module(library(lists)).
+:-use_module(library(between)).
+
 % Jeu d'échec en Prolog : http://boxbase.org/entries/2018/nov/19/modeling-chess-in-prolog/
 
 % Pieces :
@@ -55,6 +58,8 @@ opponent(south, north).
 % isEmpty : check if a square is empty
 %----------------------------------------------------------------
 isEmpty(X, Y, Board):-
+	between(1, 5, X),
+	between(1, 6, Y),
 	\+(member(piece(_, _, X, Y), Board)).
 
 
@@ -69,7 +74,6 @@ capture(piece(Side, Type, X, Y), Board, NewBoard):-
 	opponent(Side, OtherSide),
 	% Extract the board without the captured piece
 	select(piece(OtherSide, _, X, Y), Board, TempBoard),
-	% Create the new board
 	NewBoard = [piece(Side, Type, X, Y) | TempBoard].
 
 %----------------------------------------------------------------
@@ -144,7 +148,151 @@ try_move(Board, south, NewBoard):-
 		capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard)
 	).
 
-% TODO: oni, superoni, kirin, koropokkuru
+% try_move north oni
+try_move(Board, north, NewBoard):-
+	select(piece(north, oni, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X + 1, N_Y is Y + 1;
+		N_X is X + 1, N_Y is Y - 1;
+		N_X is X - 1; N_Y is Y + 1;
+		N_X is X - 1; N_Y is Y - 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(north, oni, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move south oni
+try_move(Board, south, NewBoard):-
+	select(piece(south, oni, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y + 1;
+		N_X is X + 1, N_Y is Y - 1;
+		N_X is X - 1; N_Y is Y + 1;
+		N_X is X - 1; N_Y is Y - 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(south, oni, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move north superoni
+try_move(Board, north, NewBoard):-
+	select(piece(north, superoni, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y;
+		N_X is X - 1, N_Y is Y;
+		N_X is X + 1, N_Y is Y + 1;
+		N_X is X - 1; N_Y is Y + 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move south superoni
+try_move(Board, south, NewBoard):-
+	select(piece(south, superoni, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y;
+		N_X is X - 1, N_Y is Y;
+		N_X is X + 1, N_Y is Y - 1;
+		N_X is X - 1; N_Y is Y - 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move north kirin
+try_move(Board, north, NewBoard):-
+	select(piece(north, kirin, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y;
+		N_X is X - 1, N_Y is Y;
+		N_X is X + 1, N_Y is Y + 1;
+		N_X is X - 1; N_Y is Y + 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move south kirin
+try_move(Board, south, NewBoard):-
+	select(piece(south, kirin, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y;
+		N_X is X - 1, N_Y is Y;
+		N_X is X + 1, N_Y is Y - 1;
+		N_X is X - 1; N_Y is Y - 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move north koropokkuru
+try_move(Board, north, NewBoard):-
+	select(piece(north, koropokkuru, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y;
+		N_X is X - 1, N_Y is Y;
+		N_X is X + 1, N_Y is Y + 1;
+		N_X is X + 1, N_Y is Y - 1;
+		N_X is X - 1; N_Y is Y + 1;
+		N_X is X - 1; N_Y is Y - 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
+	).
+
+% try_move south koropokkuru
+try_move(Board, south, NewBoard):-
+	select(piece(south, koropokkuru, X, Y), Board, TempBoard),
+	(
+		N_X is X, N_Y is Y + 1;
+		N_X is X, N_Y is Y - 1;
+		N_X is X + 1, N_Y is Y;
+		N_X is X - 1, N_Y is Y;
+		N_X is X + 1, N_Y is Y + 1;
+		N_X is X + 1, N_Y is Y - 1;
+		N_X is X - 1; N_Y is Y + 1;
+		N_X is X - 1; N_Y is Y - 1
+	),
+	(
+		isEmpty(N_X, N_Y, Board),
+		move(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
+		;
+		capture(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard)
+	).
 
 % Tester la validité d'un nouveau mouvement
 %	- si la case est vide >> déplacement

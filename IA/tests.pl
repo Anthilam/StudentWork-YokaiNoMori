@@ -1,5 +1,4 @@
 :-use_module(library(plunit)).
-:-use_module(library(lists)).
 
 :-include(ia).
 
@@ -61,6 +60,76 @@
 		draw_board(Board),
 		try_move(Board, south, NewBoard),
 		member(piece(south, kodama, 1, 5), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (north samourai)'):-
+		Board = [piece(north, samourai, 2, 1)],
+		draw_board(Board),
+		try_move(Board, north, NewBoard),
+		member(piece(north, samourai, 2, 2), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (south samourai)'):-
+		Board = [piece(south, samourai, 3, 6)],
+		draw_board(Board),
+		try_move(Board, south, NewBoard),
+		member(piece(south, samourai, 3, 5), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (north oni)'):-
+		Board = [piece(north, oni, 5, 1)],
+		draw_board(Board),
+		try_move(Board, north, NewBoard),
+		member(piece(north, oni, 5, 2), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (south oni)'):-
+		Board = [piece(south, oni, 1, 6)],
+		draw_board(Board),
+		try_move(Board, south, NewBoard),
+		member(piece(south, oni, 1, 5), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (north superoni)'):-
+		Board = [piece(north, superoni, 5, 1)],
+		draw_board(Board),
+		try_move(Board, north, NewBoard),
+		member(piece(north, superoni, 5, 2), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (south superoni)'):-
+		Board = [piece(south, superoni, 1, 6)],
+		draw_board(Board),
+		try_move(Board, south, NewBoard),
+		member(piece(south, superoni, 1, 5), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (north kirin)'):-
+		Board = [piece(north, kirin, 3, 2)],
+		draw_board(Board),
+		try_move(Board, north, NewBoard),
+		member(piece(north, kirin, 3, 3), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (south kirin)'):-
+		Board = [piece(south, kirin, 3, 6)],
+		draw_board(Board),
+		try_move(Board, south, NewBoard),
+		member(piece(south, kirin, 3, 5), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (north koropokkuru)'):-
+		Board = [piece(north, koropokkuru, 3, 2)],
+		draw_board(Board),
+		try_move(Board, north, NewBoard),
+		member(piece(north, koropokkuru, 3, 3), NewBoard),
+		draw_board(NewBoard).
+
+	test('try_move (south koropokkuru)'):-
+		Board = [piece(south, koropokkuru, 3, 6)],
+		draw_board(Board),
+		try_move(Board, south, NewBoard),
+		member(piece(south, koropokkuru, 3, 5), NewBoard),
 		draw_board(NewBoard).
 
 :-end_tests(tp4tests).
