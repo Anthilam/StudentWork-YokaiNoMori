@@ -95,18 +95,6 @@ move(Piece, Board, NewBoard):-
 	NewBoard = [Piece, Board].
 
 %----------------------------------------------------------------
-% put : put a piece on the board and remove it from the Capt list
-%----------------------------------------------------------------
-put(piece(Side, Type, X, Y), Board, Capt, NewBoard, NewCapt):-
-	% Check coordinates
-	between(1, 5, X),
-	between(1, 6, Y),
-	% Extract the piece from the list of captured pieces
-	select(piece(Side, Type, _, _), Capt, NewCapt),
-	% Create the new board
-	NewBoard = [piece(Side, Type, X, Y), Board].
-
-%----------------------------------------------------------------
 % try_move : try to move a piece
 % First, extract a piece from the board, then try to move it
 % on an empty square, otherwise capture the opponent piece
@@ -120,9 +108,11 @@ try_move([Board, CaptN, CaptS], north, [NewBoard, NewCaptN, CaptS]):-
 		% Promote
 		N_Y >= 5,
 		(
+			% Try moving
 			isEmpty(N_X, N_Y, Board),
 			move(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard)
 			;
+			% Try capturing
 			capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
 		)
 		;
@@ -360,6 +350,50 @@ try_move([Board, CaptN, CaptS], south, [NewBoard, CaptN, NewCaptS]):-
 		;
 		capture(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
 	).
+
+%----------------------------------------------------------------
+% force_move : force a movement by giving the coordinates
+% of the moving piece and its coordinates of arrival
+%----------------------------------------------------------------
+force_move(Side, Type, X, Y, N_X, N_Y, [Board, CaptN, CaptS], [NewBoard, NewCaptN, NewCaptS]):-
+	select(piece(Side, Type, X, Y), Board, TempBoard),
+	(
+		% Try moving
+		isEmpty(N_X, N_Y, Board),
+		move(piece(Side, Type, N_X, N_Y), TempBoard, NewBoard)
+		;
+		% Try capturing if side is north
+		Side = north,
+		capture(piece(Side, Type, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+		NewCaptS = CaptS
+		;
+		% Try capturing if side is south
+		Side = south,
+		capture(piece(Side, Type, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+		NewCaptN = CaptN
+	).
+
+%----------------------------------------------------------------
+% put : put a piece on the board and remove it from the Capt list
+%----------------------------------------------------------------
+put(piece(Side, Type, X, Y), Board, Capt, NewBoard, NewCapt):-
+	% Check coordinates
+	between(1, 5, X),
+	(
+		Side = north,
+		between(1, 5, Y)
+		;
+		Side = south,
+		between(2, 6, Y)
+	),
+	% Check if there's a kodama in the column
+	\+member(piece(Side, _, X, _), Board),
+	% Check if the square is empty
+	isEmpty(X, Y, Board),
+	% Extract the piece from the list of captured pieces
+	select(piece(Side, Type, _, _), Capt, NewCapt),
+	% Create the new board
+	NewBoard = [piece(Side, Type, X, Y), Board].
 
 % Avancement du jeu
 
