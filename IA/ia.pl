@@ -67,15 +67,24 @@ isEmpty(X, Y, Board):-
 
 %----------------------------------------------------------------
 % capture : capture an opponent piece
-% TODO : store somewhere the captured pieces
 %----------------------------------------------------------------
 capture(piece(Side, Type, X, Y), Board, NewBoard, Capt, NewCapt):-
 	% Get the opponent
 	opponent(Side, OtherSide),
 	% Extract the board without the captured piece
 	select(piece(OtherSide, OtherType, X, Y), Board, TempBoard),
+	% If a promoted unit is captured, remove the promotion
+	(
+		OtherType = samourai,
+		CorrectedType = kodama
+		;
+		OtherType = superoni,
+		CorrectedType = oni
+		;
+		CorrectedType = OtherType
+	),
 	% Add the captured piece to the list of captured pieces
-	NewCapt = [piece(Side, OtherType, 0, 0) | Capt],
+	NewCapt = [piece(Side, CorrectedType, 0, 0) | Capt],
 	% Create the new board
 	NewBoard = [piece(Side, Type, X, Y) | TempBoard].
 

@@ -42,7 +42,22 @@
 		initial_board(Board),
 		capture(piece(north, oni, 3, 6), Board, NewBoard, _, NewCapt),
 		member(piece(south, koropokkuru, 0, 0), NewCapt),
-		member(piece(north, oni, 3, 6), NewBoard).
+		member(piece(north, oni, 3, 6), NewBoard),
+		\+member(piece(south, koropokkuru, 3, 6), NewBoard).
+
+	test('capture superoni'):-
+		Board = [piece(north, superoni, 1, 1)],
+		capture(piece(south, kodama, 1, 1), Board, NewBoard, _, NewCapt),
+		member(piece(north, oni, 0, 0), NewCapt),
+		member(piece(south, kodama, 1, 1), NewBoard),
+		\+member(piece(north, superoni, 1, 1), NewBoard).
+
+	test('capture samourai'):-
+		Board = [piece(north, samourai, 1, 1)],
+		capture(piece(south, oni, 1, 1), Board, NewBoard, _, NewCapt),
+		member(piece(north, kodama, 0, 0), NewCapt),
+		member(piece(south, oni, 1, 1), NewBoard),
+		\+member(piece(north, samourai, 1, 1), NewBoard).
 
 	test('move'):-
 		initial_board(Board),
