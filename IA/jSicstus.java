@@ -1,114 +1,190 @@
-/****************************************************************************************
+/* jSicstus - A Java class that communicates with Sicstus Prolog
+ * using Jasper
  *
- *      SIMULATION DU FONCTIONNEMENT DE SICSTUS PROLOG EN UTILISANT JAVA & JASPER
- *      -------------------------------------------------------------------------
- *
+ * Compiling rules :
  * javac -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:. jSicstus.java
  *
  * java -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:. jSicstus.java
  *
- ***************************************************************************************/
+ */
 
-// importation des classes utiles à Jasper
 import se.sics.jasper.*;
-
-// pour les lectures au clavier
 import java.io.*;
-
-// pour utiliser les HashMap
 import java.util.*;
-
 
 public class jSicstus {
     public static void main(String[] args) {
-    	String saisie = new String("");
+		System.out.println("* Starting jSicstus");
 
+		// Sicstus Prolog object
     	SICStus sp = null;
 
+		// Main loop switch
+		boolean run = true;
+
+		// Specify turn order
+		boolean opponentTurn = false;
+
+		// Prolog query data
+		String side = "north";				// Our side (north/south)
+		String opposide = "south";			// Opponent side (north/south)
+		String oppopiece = "kodama";		// Opponent piece
+		int oppox = 3, oppoy = 4;			// Opponent piece coords
+		int opponewx = 3, opponewy = 3;		// Opponent piece new coords
+
+		// The current board
+		ArrayList<String> currentBoard = new ArrayList();
+		// The current list of pieces captured by north player
+		ArrayList<String> currentCaptN = new ArrayList();
+		// The current list of pieces captured by south player
+		ArrayList<String> currentCaptS = new ArrayList();
+
+		// The new board
+		ArrayList<String> newBoard = new ArrayList();
+		// The new list of pieces captured by north player
+		ArrayList<String> newCaptN = new ArrayList();
+		// The new list of pieces captured by south player
+		ArrayList<String> newCaptS = new ArrayList();
+
 	    try {
-	        // Creation d'un object SICStus
-	        sp = new SICStus();
-
-	        // Chargement d'un fichier prolog .pl
-	        sp.load("./ia.pl");
+	    	sp = new SICStus();	// Initialize Sicstus
+	    	sp.load("./ia.pl");	// Load Prolog file
 	    }
-	    // exception déclanchée par SICStus lors de la création de l'objet sp
 	    catch (SPException e) {
-	        System.err.println("Exception SICStus Prolog : " + e);
-	        e.printStackTrace();
-	        System.exit(-2);
+			e.printStackTrace();
+			System.exit(-2);
 	    }
 
-    	// lecture au clavier d'une requète Prolog
-    	System.out.print("| ?- ");
-    	saisie = saisieClavier();
+		// Initialize the board
+		try {
+			HashMap<String, Term> results = new HashMap();
+
+			// Create a Sicstus query
+			Query qu = sp.openQuery("initial_board(Board).", results);
+
+			// Get a solution
+			boolean sol = qu.nextSolution();
+
+			// If there is a solution
+			if (sol) {
+				// Convert list into Java arraylist
+				if (results.get("Board").isList()) {
+					Term[] term = results.get("Board").toPrologTermArray();
+
+					for (int i = 0; i < term.length; i++) {
+						currentBoard.add(term[i].toString());
+					}
+				}
+			}
+
+			qu.close();
+		}
+		catch (SPException e) {
+			System.out.println("SPException");
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			System.out.println("Exception");
+			e.printStackTrace();
+		}
 
     	// boucle pour saisir les informations
-	    while (! saisie.equals("halt.")) {
-	        // HashMap utilisé pour stocker les solutions
-	        HashMap results = new HashMap();
+	    while (run) {
+			System.out.println("* New turn");
+
+			System.out.println("* currentBoard : " + currentBoard);
+			System.out.println("* currentCaptN : " + currentCaptN);
+			System.out.println("* currentCaptS : " + currentCaptS);
+
+	        // Store the result in an hashmap : PrologVarN -> Value
+			HashMap<String, Term> results = new HashMap();
 
 	        try {
-		        // Creation d'une requete (Query) Sicstus
-		        //   - en fonction de la saisie de l'utilisateur
-		        //   - instanciera results avec les résultats de la requète
-		        Query qu = sp.openQuery(saisie,results);
+				String request = "try_move("
+					+ currentBoard + ", "
+					+ currentCaptN + ", "
+					+ currentCaptS + ", "
+					+ side + ", NewBoard, NewCaptN, NewCaptS).";
 
-		        // parcours des solutions
-		        boolean moreSols = qu.nextSolution();
+				if (opponentTurn) {
+					request = "force_move("
+						+ opposide + ", "
+						+ oppopiece + ", "
+						+ oppox + ", "
+						+ oppoy + ", "
+						+ opponewx + ", "
+						+ opponewy + ", "
+						+ currentBoard + ", "
+						+ currentCaptN + ", "
+						+ currentCaptS + ", NewBoard, NewCaptN, NewCaptS).";
+				}
 
-		        // on ne boucle que si la liste des instanciations de variables est non vide
-		        boolean continuer = !(results.isEmpty());
+		        // Create a Sicstus query
+		        Query qu = sp.openQuery(request, results);
 
-		        while (moreSols && continuer) {
-		            // chaque solution est sockée dans un HashMap
-		            // sous la forme : VariableProlog -> Valeur
-		            System.out.print(results + " ? ");
+		        // Get a solution
+		        boolean sol = qu.nextSolution();
 
-		            // demande à l'utilisateur de continuer ...
-		            saisie = saisieClavier();
-		            if (saisie.equals(";")) {
-		            	// solution suivante --> results contient la nouvelle solution
-		            	moreSols = qu.nextSolution();
-		            }
-		            else {
-		            	continuer = false;
-		            }
+				// If there is a solution
+		        if (sol) {
+		            // Convert lists into Java arrays
+					if (results.get("NewBoard").isList()) {
+						Term[] term = results.get("NewBoard").toPrologTermArray();
+
+						for (int i = 0; i < term.length; i++) {
+							newBoard.add(term[i].toString());
+						}
+					}
+
+					if (results.get("NewCaptN").isList()) {
+						Term[] term = results.get("NewCaptN").toPrologTermArray();
+
+						for (int i = 0; i < term.length; i++) {
+							newCaptN.add(term[i].toString());
+						}
+					}
+
+					if (results.get("NewCaptS").isList()) {
+						Term[] term = results.get("NewCaptS").toPrologTermArray();
+
+						for (int i = 0; i < term.length; i++) {
+							newCaptS.add(term[i].toString());
+						}
+					}
+
+					// Print
+					System.out.println("*");
+					System.out.println("* newBoard : " + newBoard);
+					System.out.println("* newCaptN : " + newCaptN);
+					System.out.println("* newCaptS : " + newCaptS);
+
+					// TODO : attendre validation serveur
+					currentBoard = newBoard;
+					currentCaptN = newCaptN;
+					currentCaptS = newCaptS;
 		        }
 
-		        if (moreSols) {
-		            // soit :
-		            //  - il y a encore des solutions et (continuer == false)
-		            //  - le prédicat a réussi mais (results.isEmpty() == true)
-		            System.out.println("yes");
-		        }
-		        else {
-		            // soit :
-		            //    - on est à la fin des solutions
-		            //    - il n'y a pas de solutions (le while n'a pas été exécuté)
-		            System.out.println("no");
-		        }
+				newBoard = new ArrayList();
+				newCaptN = new ArrayList();
+				newCaptS = new ArrayList();
 
-		        // fermeture de la requète
-		        System.err.println("Fermeture requete");
+				// Close the query
 		        qu.close();
-
 	        }
 	        catch (SPException e) {
-	        	System.err.println("Exception prolog\n" + e);
+				System.out.println("SPException");
+	        	e.printStackTrace();
 	        }
-	        // autres exceptions levées par l'utilisation du Query.nextSolution()
 	        catch (Exception e) {
-	        	System.err.println("Other exception : " + e);
+				System.out.println("Exception");
+	        	e.printStackTrace();
 	        }
 
-	        System.out.print("| ?- ");
-	        // lecture au clavier
-	        saisie = saisieClavier();
+	        System.out.print("*\n*");
+	        saisieClavier();
 	    }
 
-    	System.out.println("End of jSicstus");
-    	System.out.println("Bye bye");
+    	System.out.println("* jSicstus is shutting down");
     }
 
 

@@ -23,8 +23,7 @@
 		member(piece(south, kodama, 2, 4), Board),
 		member(piece(south, kodama, 3, 4), Board),
 		member(piece(south, kodama, 4, 4), Board),
-		Game = [Board, _, _],
-		draw_board(Game).
+		draw_board(Board, _, _).
 
 	test('initial_board (false)', [fail]):-
 		initial_board(Board),
@@ -69,83 +68,83 @@
 		member(piece(north, oni, 1, 2), NewBoard).
 
 	test('try_move (north kodama)'):-
-		Board = [[piece(north, kodama, 1, 1)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, kodama, 1, 1)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, kodama, 1, 2), NewBoard).
 
 	test('try_move (south kodama)'):-
-		Board = [[piece(south, kodama, 1, 6)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, kodama, 1, 6)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, kodama, 1, 5), NewBoard).
 
 	test('try_move promote (north kodama)'):-
-		Board = [[piece(north, kodama, 1, 4)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, kodama, 1, 4)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, samourai, 1, 5), NewBoard).
 
 	test('try_move promote (south kodama)'):-
-		Board = [[piece(south, kodama, 1, 3)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, kodama, 1, 3)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, samourai, 1, 2), NewBoard).
 
 	test('try_move (north samourai)'):-
-		Board = [[piece(north, samourai, 2, 1)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, samourai, 2, 1)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, samourai, 2, 2), NewBoard).
 
 	test('try_move (south samourai)'):-
-		Board = [[piece(south, samourai, 3, 6)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, samourai, 3, 6)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, samourai, 3, 5), NewBoard).
 
 	test('try_move (north oni)'):-
-		Board = [[piece(north, oni, 5, 1)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, oni, 5, 1)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, oni, 5, 2), NewBoard).
 
 	test('try_move (south oni)'):-
-		Board = [[piece(south, oni, 1, 6)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, oni, 1, 6)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, oni, 1, 5), NewBoard).
 
 	test('try_move promote (north oni)'):-
-		Board = [[piece(north, oni, 1, 4)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, oni, 1, 4)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, superoni, 1, 5), NewBoard).
 
 	test('try_move promote (south oni)'):-
-		Board = [[piece(south, oni, 1, 3)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, oni, 1, 3)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, superoni, 1, 2), NewBoard).
 
 	test('try_move (north superoni)'):-
-		Board = [[piece(north, superoni, 5, 1)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, superoni, 5, 1)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, superoni, 5, 2), NewBoard).
 
 	test('try_move (south superoni)'):-
-		Board = [[piece(south, superoni, 1, 6)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, superoni, 1, 6)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, superoni, 1, 5), NewBoard).
 
 	test('try_move (north kirin)'):-
-		Board = [[piece(north, kirin, 3, 2)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, kirin, 3, 2)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, kirin, 3, 3), NewBoard).
 
 	test('try_move (south kirin)'):-
-		Board = [[piece(south, kirin, 3, 6)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, kirin, 3, 6)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, kirin, 3, 5), NewBoard).
 
 	test('try_move (north koropokkuru)'):-
-		Board = [[piece(north, koropokkuru, 3, 2)],_,_],
-		try_move(Board, north, NewBoard),
+		Board = [piece(north, koropokkuru, 3, 2)],
+		try_move(Board, _, _, north, NewBoard, _, _),
 		member(piece(north, koropokkuru, 3, 3), NewBoard).
 
 	test('try_move (south koropokkuru)'):-
-		Board = [[piece(south, koropokkuru, 3, 6)],_,_],
-		try_move(Board, south, NewBoard),
+		Board = [piece(south, koropokkuru, 3, 6)],
+		try_move(Board, _, _, south, NewBoard, _, _),
 		member(piece(south, koropokkuru, 3, 5), NewBoard).
 
 	test('put first opponent line (north, fail)', [fail]):-
@@ -174,33 +173,29 @@
 		put(piece(south, kodama, 3, 3), Board, Capt, _, _).
 
 	test('force_move south'):-
-		Board = [[piece(south, kodama, 1, 1)], _, _],
-		force_move(south, kodama, 1, 1, 5, 6, Board, NewBoard),
-		NewBoard = [A, _, _],
-		member(piece(south, kodama, 5, 6), A),
-		\+member(piece(south, kodama, 1, 1), A).
+		Board = [piece(south, kodama, 1, 1)],
+		force_move(south, kodama, 1, 1, 5, 6, Board, _, _, NewBoard, _, _),
+		member(piece(south, kodama, 5, 6), NewBoard),
+		\+member(piece(south, kodama, 1, 1), NewBoard).
 
 	test('force_move north'):-
-		Board = [[piece(north, kodama, 1, 1)], _, _],
-		force_move(north, kodama, 1, 1, 5, 6, Board, NewBoard),
-		NewBoard = [A, _, _],
-		member(piece(north, kodama, 5, 6), A),
-		\+member(piece(north, kodama, 1, 1), A).
+		Board = [piece(north, kodama, 1, 1)],
+		force_move(north, kodama, 1, 1, 5, 6, Board, _, _, NewBoard, _, _),
+		member(piece(north, kodama, 5, 6), NewBoard),
+		\+member(piece(north, kodama, 1, 1), NewBoard).
 
 	test('force_move south with capture'):-
-		Board = [[piece(south, kodama, 1, 1), piece(north, kirin, 5, 6)], _, _],
-		force_move(south, kodama, 1, 1, 5, 6, Board, NewBoard),
-		NewBoard = [A, _, C],
-		member(piece(south, kodama, 5, 6), A),
-		\+member(piece(south, kodama, 1, 1), A),
+		Board = [piece(south, kodama, 1, 1), piece(north, kirin, 5, 6)],
+		force_move(south, kodama, 1, 1, 5, 6, Board, _, _, NewBoard, _, C),
+		member(piece(south, kodama, 5, 6), NewBoard),
+		\+member(piece(south, kodama, 1, 1), NewBoard),
 		member(piece(south, kirin, 0, 0), C).
 
 	test('force_move north with capture'):-
-		Board = [[piece(north, kodama, 1, 1), piece(south, kirin, 5, 6)], _, _],
-		force_move(north, kodama, 1, 1, 5, 6, Board, NewBoard),
-		NewBoard = [A, B, _],
-		member(piece(north, kodama, 5, 6), A),
-		\+member(piece(north, kodama, 1, 1), A),
+		Board = [piece(north, kodama, 1, 1), piece(south, kirin, 5, 6)],
+		force_move(north, kodama, 1, 1, 5, 6, Board, _, _, NewBoard, B, _),
+		member(piece(north, kodama, 5, 6), NewBoard),
+		\+member(piece(north, kodama, 1, 1), NewBoard),
 		member(piece(north, kirin, 0, 0), B).
 
 :-end_tests(tp4tests).
