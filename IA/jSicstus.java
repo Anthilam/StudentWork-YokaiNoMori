@@ -20,7 +20,8 @@ public class jSicstus {
       System.out.println("argument - port");
       System.exit(1);
     }
-    ServerSocket srv =null ;
+
+    ServerSocket srv =null;
     int port = Integer.parseInt(args[0]);
 
     // Server creation and waiting the client's connection
@@ -32,9 +33,17 @@ public class jSicstus {
       System.out.println(e);
     }
 
+    InputStream is = s.getInputStream();
+    OutputStream os = s.getOutputStream();
+
+    DataInputStream ids = new DataInputStream(is);
+    DataOutputStream ods =  new DataOutputStream(os);
+    // reading the orientation
+    int sens = ids.readInt();
+    /*
     DeposerPiece dPiece = new DeposerPiece();
     Coup pIa = new Coup(EnumCoup.DEPOSER,EnumPiece.KODAMA,dPiece);
-
+    */
     System.out.println("* Starting jSicstus");
 
     // Sicstus Prolog object
