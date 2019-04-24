@@ -33,8 +33,8 @@ public class jSicstus {
     }
 
     DeposerPiece dPiece = new DeposerPiece();
-    ProtocoleIa pIa = new ProtocoleIa();
-    pIa.setParams(dPiece);
+    Coup pIa = new Coup(EnumCoup.DEPOSER,EnumPiece.KODAMA,dPiece);
+
     System.out.println("* Starting jSicstus");
 
     // Sicstus Prolog object
