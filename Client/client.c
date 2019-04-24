@@ -3,23 +3,25 @@
 /* Taille des chaines de caracteres pour les noms */
 
 int main(int argc, char **argv) {
-    /* verification des arguments */
+    /* Checking args */
     if (argc != 4) {
-      printf("usage : %s nom/IPServ port nom_joueur\n", argv[0]);
+      printf("usage : %s nom/IPServ port nom_joueur port_IA\n", argv[0]);
       return -1;
     }
     int sock,port;
     char* ipMachServ;
-    // Lecture des arguments
-    ipMachServ = argv[1];
-    port = atoi(argv[2]);
+
+    ipMachServ = argv[1]; // Game serveur ip
+    port = atoi(argv[2]); // Game server port
+
+    char *name = argv[3]; // The name of the player
+    int portIa = atoi(argv[4]);   // the Ia port
+
+    int nbPartie=1; // Game's Id
+    bool connected; // Connection's state
 
 
-    int nbPartie=1; // Variable mémorisant le numéro de partie
-    bool connected;
-    
-
-    // Connexion au serveur
+    // Connection to the server
     sock = socketClient(ipMachServ,port);
     printf("connected\n");
     connected = true;
@@ -27,7 +29,7 @@ int main(int argc, char **argv) {
     TPartieRep repServeur;
 
     initGame.idReq = PARTIE;
-    char *name = argv[3];
+
     stpcpy(initGame.nomJoueur,name);
     initGame.piece = NORD;
 
