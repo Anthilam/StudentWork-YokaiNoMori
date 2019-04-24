@@ -11,9 +11,26 @@
 import se.sics.jasper.*;
 import java.io.*;
 import java.util.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class jSicstus {
   public static void main(String[] args) {
+    if (args.length != 1){
+      System.out.println("argument - port");
+      System.exit(1);
+    }
+    ServerSocket srv =null ;
+    int port = Integer.parseInt(args[0]);
+
+    System.out.println("Waiting the client to connect");
+    try{
+      srv = new ServerSocket(port) ;
+      Socket s = srv.accept();
+    }catch(IOException e){
+      System.out.println(e);
+    }
+
     System.out.println("* Starting jSicstus");
 
     // Sicstus Prolog object

@@ -18,7 +18,7 @@ java: $(classes)
 %.class : %.java
 	$(JC) $(JFLAGS) $<
 
-Client: ./Client/client.c ./TCP/fonctionsTCP.o libClient.o ./TCP/protocolYokai.h
+Client: ./Client/client.c ./TCP/fonctionsTCP.o libClient.o ./TCP/protocolYokai.h ./Client/protocoleIa.h
 	gcc -Wall ./Client/client.c -o client ./TCP/fonctionsTCP.o ./Client/libClient.o $(LD_FLAGS)
 
 fonctionsTCP.o: ./TCP/fonctionsTCP.c ./TCP/fonctionsTCP.h

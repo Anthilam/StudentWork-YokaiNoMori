@@ -40,4 +40,6 @@ void readEnnemyAction(int sock,TCoupRep *coupAdv){
   int err = recv(sock, coupAdv, sizeof(TPartieRep), 0);
   checkRecvrError(err,sock);
   printf("Coup de l'ennemie Code : %d , valeur retourner : %d\n",coupAdv->err,coupAdv->validCoup);
+  // Read the opponent action
+  
 }

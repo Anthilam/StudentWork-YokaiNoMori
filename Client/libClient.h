@@ -14,7 +14,7 @@
 
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
-
+#include "protocoleIa.h"
 /*  Envoie une requete de type PARTIE au serveur
     params:
       int sock : socket connecté au serveur

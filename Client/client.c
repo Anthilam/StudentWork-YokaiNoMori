@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
       printf("usage : %s nom/IPServ port nom_joueur port_IA\n", argv[0]);
       return -1;
     }
-    int sock,port;
+    int sock,port,sockIa;
     char* ipMachServ;
 
     ipMachServ = argv[1]; // Game serveur ip
@@ -20,8 +20,10 @@ int main(int argc, char **argv) {
     int nbPartie=1; // Game's Id
     bool connected; // Connection's state
 
+    // connection to the IA
+    sockIa = socketClient("localhost",portIa);
 
-    // Connection to the server
+    // Connection to the game server
     sock = socketClient(ipMachServ,port);
     printf("connected\n");
     connected = true;
