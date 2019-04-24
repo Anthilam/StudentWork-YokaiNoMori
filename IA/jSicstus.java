@@ -23,6 +23,7 @@ public class jSicstus {
     ServerSocket srv =null ;
     int port = Integer.parseInt(args[0]);
 
+    // Server creation and waiting the client's connection
     System.out.println("Waiting the client to connect");
     try{
       srv = new ServerSocket(port) ;
@@ -31,6 +32,9 @@ public class jSicstus {
       System.out.println(e);
     }
 
+    DeposerPiece dPiece = new DeposerPiece();
+    ProtocoleIa pIa = new ProtocoleIa();
+    pIa.setParams(dPiece);
     System.out.println("* Starting jSicstus");
 
     // Sicstus Prolog object
@@ -41,9 +45,6 @@ public class jSicstus {
 
     // Specify turn order
     boolean opponentTurn = false;
-
-    // Server creation and waiting the client's connection
-
 
     // Prolog query data
     String side = "north";				// Our side (north/south)

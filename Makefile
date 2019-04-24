@@ -6,7 +6,7 @@ JC = javac
 JFLAGS = -g -sourcepath $(JAVA) -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:.
 
 JSRC = \
-	$(JAVA)jSicstus.java
+	$(JAVA)jSicstus.java $(JAVA)ProtocoleIa.java
 
 classes = $(JSRC:.java=.class)
 
