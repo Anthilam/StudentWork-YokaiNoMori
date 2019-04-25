@@ -1,1 +1,1 @@
-public enum EnumCol{A,B,C,D,E};
+public enum EnumCol { A, B, C, D, E }

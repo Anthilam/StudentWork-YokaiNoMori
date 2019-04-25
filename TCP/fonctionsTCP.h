@@ -25,5 +25,4 @@ int socketClient(char* ipMachServ, unsigned short nPort);
  */
 int socketServeur(unsigned short nPort);
 
-
 #endif

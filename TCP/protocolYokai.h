@@ -24,10 +24,11 @@
 typedef enum { PARTIE, COUP } TIdReq;
 
 /* Types d'erreur */
-typedef enum { ERR_OK,      /* Validation de la requete */
-	       ERR_PARTIE,  /* Erreur sur la demande de partie */
-	       ERR_COUP,    /* Erreur sur le coup joue */
-	       ERR_TYP      /* Erreur sur le type de requete */
+typedef enum {
+	ERR_OK,				/* Validation de la requete */
+	ERR_PARTIE,		/* Erreur sur la demande de partie */
+	ERR_COUP,			/* Erreur sur le coup joue */
+	ERR_TYP				/* Erreur sur le type de requete */
 } TCodeRep;
 
 /*
@@ -36,37 +37,38 @@ typedef enum { ERR_OK,      /* Validation de la requete */
 typedef enum { NORD, SUD } TSensTetePiece;
 
 typedef struct {
-  TIdReq idReq;               /* Identificateur de la requete */
-  char nomJoueur[T_NOM];      /* Nom du joueur */
-  TSensTetePiece piece;       /* Sens de la tete souhaite pour la piece */
+  TIdReq idReq;							/* Identificateur de la requete */
+  char nomJoueur[T_NOM];		/* Nom du joueur */
+  TSensTetePiece piece;			/* Sens de la tete souhaite pour la piece */
 } TPartieReq;
 
 typedef enum { OK, KO } TValidSensTete;
-typedef struct {
-  TCodeRep err;                   /* Code d'erreur */
-  char nomAdvers[T_NOM];          /* Nom du joueur adverse */
-  TValidSensTete validSensTete;   /* Validation sens de la tete pour la piece */
-} TPartieRep;
 
+typedef struct {
+  TCodeRep err;										/* Code d'erreur */
+  char nomAdvers[T_NOM];					/* Nom du joueur adverse */
+  TValidSensTete validSensTete;		/* Validation sens de la tete pour la piece */
+} TPartieRep;
 
 /*
  * Definition d'une position de case
  */
 typedef enum { UN, DEUX, TROIS, QUATRE, CINQ, SIX } TLg;
+
 typedef enum { A, B, C, D, E } TCol;
 
 typedef struct {
-  TCol c;          /* Colonne de la position d'une piece */
-  TLg l;           /* Ligne de la position d'une piece */
+  TCol c;		/* Colonne de la position d'une piece */
+  TLg l;		/* Ligne de la position d'une piece */
 } TCase;
 
 /*
  * Definition de structure pour le deplacement de piece
  */
 typedef struct {
-  TCase  caseDep;   /* Position de depart de la piece */
-  TCase  caseArr;   /* Position d'arrivee de la piece */
-  bool estCapt;     /* Vrai si le deplacement capture une piece de l'adversaire */
+  TCase  caseDep;		/* Position de depart de la piece */
+  TCase  caseArr;		/* Position d'arrivee de la piece */
+  bool estCapt;			/* Vrai si le deplacement capture une piece de l'adversaire */
 } TDeplPiece;
 
 /*
@@ -85,18 +87,19 @@ typedef enum { DEPLACER, DEPOSER,  AUCUN } TCoup;
 typedef enum { KODAMA, KODAMA_SAMOURAI, KIRIN, KOROPOKKURU, ONI, SUPER_ONI } TTypePiece;
 
 typedef struct {
-  TSensTetePiece sensTetePiece;     /* Sens de la tete pour la piece */
-  TTypePiece typePiece;             /* Type de la piece jouee */
+  TSensTetePiece sensTetePiece;		/* Sens de la tete pour la piece */
+  TTypePiece typePiece;						/* Type de la piece jouee */
 } TPiece;
 
 typedef struct {
-  TIdReq     idRequest;     /* Identificateur de la requete */
-  int        numPartie;     /* Numero de la partie (commencant a 1) */
-  TCoup      typeCoup;      /* Type du coup : deplacement, placement ou aucune action */
-  TPiece     piece;         /* Info de la piece jouee */
+  TIdReq idRequest;		/* Identificateur de la requete */
+  int numPartie;			/* Numero de la partie (commencant a 1) */
+  TCoup typeCoup;			/* Type du coup : deplacement, placement ou aucune action */
+  TPiece piece;				/* Info de la piece jouee */
+
   union {
-    TDeplPiece deplPiece;        /* Deplacement de piece */
-    TDeposerPiece deposerPiece;  /* Placement d'une piece capturee */
+    TDeplPiece deplPiece;					/* Deplacement de piece */
+    TDeposerPiece deposerPiece;		/* Placement d'une piece capturee */
   } params;
 } TCoupReq;
 
@@ -108,9 +111,9 @@ typedef enum { CONT, GAGNE, NUL, PERDU } TPropCoup;
 
 /* Reponse a un coup */
 typedef struct {
-  TCodeRep  err;            /* Code d'erreur */
-  TValCoup  validCoup;      /* Validite du coup */
-  TPropCoup propCoup;       /* Propriete du coup */
+  TCodeRep err;					/* Code d'erreur */
+  TValCoup validCoup;		/* Validite du coup */
+  TPropCoup propCoup;		/* Propriete du coup */
 } TCoupRep;
 
 #endif

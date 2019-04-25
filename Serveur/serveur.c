@@ -11,7 +11,6 @@ int main(int argc, char** argv) {
   struct sockaddr_in addClient;	/* adresse de la socket client connectee */
   fd_set readSet;              /* variable pour le select */
 
-
   /*
   * verification des arguments
   */
@@ -19,6 +18,7 @@ int main(int argc, char** argv) {
     printf ("usage : %s port\n", argv[0]);
     return -1;
   }
+
   /* Préparation de la socket de connexion */
   port  = atoi(argv[1]);
   sockConx = socketServeur(port);
@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
       board[i][j]=-1;
     }
   }
+  
   // placement des pièces de base
   board[4][4] = board[4][0] = board[0][0] = board[0][4] = ONI;
   board[4][3] = board[4][1] = board[0][1] = board[0][3] = KIRIN;
@@ -59,11 +60,11 @@ int main(int argc, char** argv) {
     }
     printf("\n");
   }
-  
 
-  while(1){
+  while(1) {
 
   }
+
   close(sockConx);
 
   return 0;

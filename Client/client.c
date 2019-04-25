@@ -8,55 +8,64 @@ int main(int argc, char **argv) {
       printf("usage : %s nom/IPServ port nom_joueur port_IA ip_IA\n", argv[0]);
       return -1;
     }
-    int sock,port,sockIa;
-    char* ipMachServ;
 
-    ipMachServ = argv[1]; // Game serveur ip
-    port = atoi(argv[2]); // Game server port
-
-    char *name = argv[3]; // The name of the player
-    int portIa = atoi(argv[4]);   // the Ia port
-    char* ipIa = argv[5];
-
-    int nbPartie=1; // Game's Id
-    bool connected; // Connection's state
-
+    int sock, sockIa;
+    int port = atoi(argv[2]);     // Game server port
+    int portIa = atoi(argv[4]);   // AI port
+    int nbPartie = 1;             // Game's Id
     int err;
 
-    // connection to the IA
-    sockIa = socketClient(ipIa,portIa);
+    char* ipMachServ = argv[1];   // Game server ip
+    char *name = argv[3];         // Name of the player
+    char* ipIa = argv[5];
+
+    bool connected;               // Connection's state
+
+    printf("* Starting client..\n");
+
+    printf("* Trying to connect to the AI\n");
+
+    // Connection to the AI
+    sockIa = socketClient(ipIa, portIa);
+
+    // Orientation of the player
     TInitIa orientation;
     orientation.sens = htonl(1);
 
-    printf("connected to the IA\n");
+    printf("* Connected to the AI\n");
 
-    printf("send the orientation\n");
+    printf("* Sending the orientation\n");
     err = send(sockIa, &orientation, sizeof(int), 0);
 
-    printf("wait he recv\n");
+    printf("* Waiting for recv\n");
     err = recv(sockIa, &err, sizeof(TPartieRep), 0);
 
+    printf("* Trying to connect to the game-server\n");
 
     // Connection to the game server
     sock = socketClient(ipMachServ,port);
-    printf("connected\n");
     connected = true;
+
+    printf("* Connected to the game-server\n");
+
     TPartieReq initGame;
     TPartieRep repServeur;
 
     initGame.idReq = PARTIE;
 
-    stpcpy(initGame.nomJoueur,name);
+    stpcpy(initGame.nomJoueur, name);
     initGame.piece = NORD;
 
-    printf("name : %s\n",initGame.nomJoueur );
+    printf("* Player's name : %s\n", initGame.nomJoueur);
 
-    printf("envoie au serveur ");
+    printf("* Sending player's name to the game-server\n");
     sendPartieGetRep(sock,initGame,&repServeur);
+
+    printf("* Player's name sent\n");
 
     // tant que le client est connecté au serveur
     // et qu'on a pas jouer deux parties
-    while(connected && nbPartie < 3){
+    while (connected && nbPartie < 3) {
       // Envoie des données et
       // Consultation d'IA
       // IA envoie :
@@ -88,30 +97,32 @@ int main(int argc, char **argv) {
       reqCoup.params.deplPiece = tDepl;
 
       // Notre joueur demande toujours le coté sud
-      if(repServeur.validSensTete == OK && nbPartie == 1){
+      if (repServeur.validSensTete == OK && nbPartie == 1) {
         // On commence la partie
         printf("coté sud");
 
         // Envoie du coup jouer
-        sendCoupGetRep(sock,reqCoup,&repCoup);
+        sendCoupGetRep(sock, reqCoup, &repCoup);
 
         // Coup de l'adversaire
-        readEnnemyAction(sock,&repCoup);
+        readEnnemyAction(sock, &repCoup);
 
-        if(repCoup.propCoup != CONT){
+        if (repCoup.propCoup != CONT) {
           nbPartie++;
         }
-      }else{
+      }
+      else {
         // L'adversaire commence
         printf("coté nord");
 
         // Coup de l'adversaire
-        readEnnemyAction(sock,&repCoup);
+        readEnnemyAction(sock, &repCoup);
 
         // Envoie du coup jouer
-        sendCoupGetRep(sock,reqCoup,&repCoup);
+        sendCoupGetRep(sock,reqCoup, &repCoup);
       }
     }
+    
     // Fermeture de la socket
     shutdown(sock, SHUT_RDWR);
     close(sock);
