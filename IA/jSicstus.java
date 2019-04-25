@@ -38,6 +38,7 @@ public class jSicstus {
       DataOutputStream ods =  new DataOutputStream(os);
       // reading the orientation
       sens = ids.readInt();
+      System.out.println(Integer.MAX_VALUE);
       System.out.println("Sens 0 = nord 1 = sud valeur : "+sens);
     }catch(IOException e){
       System.out.println(e);

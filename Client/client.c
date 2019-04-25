@@ -4,8 +4,8 @@
 
 int main(int argc, char **argv) {
     /* Checking args */
-    if (argc != 4) {
-      printf("usage : %s nom/IPServ port nom_joueur port_IA\n", argv[0]);
+    if (argc != 6) {
+      printf("usage : %s nom/IPServ port nom_joueur port_IA ip_IA\n", argv[0]);
       return -1;
     }
     int sock,port,sockIa;
@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
 
     char *name = argv[3]; // The name of the player
     int portIa = atoi(argv[4]);   // the Ia port
+    char* ipIa = argv[5];
 
     int nbPartie=1; // Game's Id
     bool connected; // Connection's state
@@ -23,13 +24,14 @@ int main(int argc, char **argv) {
     int err;
 
     // connection to the IA
-    sockIa = socketClient("localhost",portIa);
+    sockIa = socketClient(ipIa,portIa);
     TInitIa orientation;
-    orientation.sens = 1;
+    orientation.sens = htonl(1);
+
     printf("connected to the IA\n");
 
     printf("send the orientation\n");
-    err = send(sockIa, &orientation, sizeof(orientation), 0);
+    err = send(sockIa, &orientation, sizeof(int), 0);
 
     printf("wait he recv\n");
     err = recv(sockIa, &err, sizeof(TPartieRep), 0);
