@@ -20,8 +20,20 @@ int main(int argc, char **argv) {
     int nbPartie=1; // Game's Id
     bool connected; // Connection's state
 
+    int err;
+
     // connection to the IA
     sockIa = socketClient("localhost",portIa);
+    TInitIa orientation;
+    orientation.sens = 1;
+    printf("connected to the IA\n");
+
+    printf("send the orientation\n");
+    err = send(sockIa, &orientation, sizeof(orientation), 0);
+
+    printf("wait he recv\n");
+    err = recv(sockIa, &err, sizeof(TPartieRep), 0);
+
 
     // Connection to the game server
     sock = socketClient(ipMachServ,port);

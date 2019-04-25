@@ -23,23 +23,26 @@ public class jSicstus {
 
     ServerSocket srv =null;
     int port = Integer.parseInt(args[0]);
-
+    Socket s = null;
+    int sens = -1;
     // Server creation and waiting the client's connection
     System.out.println("Waiting the client to connect");
     try{
       srv = new ServerSocket(port) ;
-      Socket s = srv.accept();
+      s = srv.accept();
+
+      InputStream is = s.getInputStream();
+      OutputStream os = s.getOutputStream();
+
+      DataInputStream ids = new DataInputStream(is);
+      DataOutputStream ods =  new DataOutputStream(os);
+      // reading the orientation
+      sens = ids.readInt();
+      System.out.println("Sens 0 = nord 1 = sud valeur : "+sens);
     }catch(IOException e){
       System.out.println(e);
+      System.exit(-1);
     }
-
-    InputStream is = s.getInputStream();
-    OutputStream os = s.getOutputStream();
-
-    DataInputStream ids = new DataInputStream(is);
-    DataOutputStream ods =  new DataOutputStream(os);
-    // reading the orientation
-    int sens = ids.readInt();
     /*
     DeposerPiece dPiece = new DeposerPiece();
     Coup pIa = new Coup(EnumCoup.DEPOSER,EnumPiece.KODAMA,dPiece);
