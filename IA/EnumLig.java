@@ -1,1 +1,1 @@
-public enum EnumLig{UN,DEUX,TROIS,QUATRE,CINQ,SIX};
+public enum EnumLig { UN, DEUX, TROIS, QUATRE, CINQ, SIX }

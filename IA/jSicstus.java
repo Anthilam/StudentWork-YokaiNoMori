@@ -1,10 +1,12 @@
-/* jSicstus - A Java class that communicates with Sicstus Prolog
-* using Jasper
+/* jSicstus
+* A Java class that communicates with Sicstus Prolog using Jasper
 *
 * Compiling rules :
-* javac -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:. jSicstus.java
+* javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
 *
-* java -classpath /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar:. jSicstus.java
+* java -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus
+*
+* Default path jasper.jar : /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
 *
 */
 
@@ -16,25 +18,34 @@ import java.net.Socket;
 
 public class jSicstus {
   public static void main(String[] args) {
-    if (args.length != 1){
-      System.out.println("argument - port");
-      System.exit(1);
+
+    System.out.println("* Starting AI..");
+
+    /*--------------------------------------------------------------------------
+     * JAVA <-> C
+     *------------------------------------------------------------------------*/
+
+    if (args.length != 1) {
+      System.out.println("* Error : missing argument -> port");
+      System.exit(-1);
     }
 
-    ServerSocket srv =null;
-    int port = Integer.parseInt(args[0]);
+    ServerSocket srv = null;
     Socket s = null;
     InputStream is = null;
     OutputStream os = null;
     DataInputStream ids = null;
     DataOutputStream ods = null;
-
+    int port = Integer.parseInt(args[0]);
     boolean sens = false; // piece's sens  false = nord ; true = sud
     // Server creation and waiting the client's connection
     System.out.println("Waiting the client to connect");
     try{
       srv = new ServerSocket(port) ;
+
+      System.out.println("* Waiting client connection");
       s = srv.accept();
+      System.out.println("* Client connected");
 
       is = s.getInputStream();
       os = s.getOutputStream();
@@ -43,7 +54,7 @@ public class jSicstus {
       ods =  new DataOutputStream(os);
       // reading the orientation
       sens = ids.readBoolean(); // sens  0 = nord ; 1 = sud
-      System.out.println("Sens false = nord true = sud valeur : "+sens);
+      System.out.println("* Sens [nord (false) / sud(true)] : " + sens);
     }catch(IOException e){
       System.out.println(e);
       System.exit(-1);
@@ -60,13 +71,19 @@ public class jSicstus {
 
       }
     }catch(IOException e){
-      System.out.println(e);
+      System.out.println("* Error : IOException");
+      e.printStackTrace();
+      System.exit(-1);
     }
     /*
     DeposerPiece dPiece = new DeposerPiece();
     Coup pIa = new Coup(EnumCoup.DEPOSER,EnumPiece.KODAMA,dPiece);
     */
-    System.out.println("* Starting jSicstus");
+
+
+    /*--------------------------------------------------------------------------
+     * JAVA <-> Prolog
+     *------------------------------------------------------------------------*/
 
     // Sicstus Prolog object
     SICStus sp = null;
@@ -77,12 +94,14 @@ public class jSicstus {
     // Specify turn order
     boolean opponentTurn = false;
 
-    // Prolog query data
-    String side = "north";				// Our side (north/south)
-    String opposide = "south";			// Opponent side (north/south)
-    String oppopiece = "kodama";		// Opponent piece
-    int oppox = 3, oppoy = 4;			// Opponent piece coords
-    int opponewx = 3, opponewy = 3;		// Opponent piece new coords
+    // Initialize sides
+    String side = "north";      // Our side (north/south)
+    String opposide = "south";  // Opponent side (north/south)
+
+    if (sens == 1) {
+      side = "south";
+      opposide = "north";
+    }
 
     // The current board
     ArrayList<String> currentBoard = new ArrayList();
@@ -98,13 +117,18 @@ public class jSicstus {
     // The new list of pieces captured by south player
     ArrayList<String> newCaptS = new ArrayList();
 
+    System.out.println("* AI ready with the following settings : ");
+    System.out.println("\tside = " + side);
+    System.out.println("\topposide = " + opposide);
+
     try {
-      sp = new SICStus();	// Initialize Sicstus
-      sp.load("./ia.pl");	// Load Prolog file
+      sp = new SICStus();   // Initialize Sicstus
+      sp.load("./ia.pl");   // Load Prolog file
     }
     catch (SPException e) {
+      System.out.println("* Error : SPException");
       e.printStackTrace();
-      System.exit(-2);
+      System.exit(-1);
     }
 
     // Initialize the board
@@ -132,36 +156,37 @@ public class jSicstus {
       qu.close();
     }
     catch (SPException e) {
-      System.out.println("SPException");
+      System.out.println("* Error : SPException");
       e.printStackTrace();
+      System.exit(-1);
     }
     catch (Exception e) {
-      System.out.println("Exception");
+      System.out.println("* Error : Exception");
       e.printStackTrace();
+      System.exit(-1);
     }
 
-    // boucle pour saisir les informations
+    // Main AI loop
     while (run) {
       // Communication avec le fichier client.c
       // afin d'informer du coup de l'adversaire
 
       System.out.println("* New turn");
-
-      System.out.println("* currentBoard : " + currentBoard);
-      System.out.println("* currentCaptN : " + currentCaptN);
-      System.out.println("* currentCaptS : " + currentCaptS);
+      System.out.println("\tcurrentBoard : " + currentBoard);
+      System.out.println("\tcurrentCaptN : " + currentCaptN);
+      System.out.println("\tcurrentCaptS : " + currentCaptS);
 
       // Store the result in an hashmap : PrologVarN -> Value
       HashMap<String, Term> results = new HashMap();
 
       try {
-        String request = "try_move("
-        + currentBoard + ", "
-        + currentCaptN + ", "
-        + currentCaptS + ", "
-        + side + ", NewBoard, NewCaptN, NewCaptS).";
+        String request = "";
 
         if (opponentTurn) {
+          String oppopiece = "kodama";      // Opponent piece
+          int oppox = 3, oppoy = 4;         // Opponent piece coords
+          int opponewx = 3, opponewy = 3;   // Opponent piece new coords
+
           request = "force_move("
           + opposide + ", "
           + oppopiece + ", "
@@ -172,6 +197,13 @@ public class jSicstus {
           + currentBoard + ", "
           + currentCaptN + ", "
           + currentCaptS + ", NewBoard, NewCaptN, NewCaptS).";
+        }
+        else {
+          request = "try_move("
+          + currentBoard + ", "
+          + currentCaptN + ", "
+          + currentCaptS + ", "
+          + side + ", NewBoard, NewCaptN, NewCaptS).";
         }
 
         // Create a Sicstus query
@@ -208,10 +240,10 @@ public class jSicstus {
           }
 
           // Print
-          System.out.println("*");
-          System.out.println("* newBoard : " + newBoard);
-          System.out.println("* newCaptN : " + newCaptN);
-          System.out.println("* newCaptS : " + newCaptS);
+          System.out.println("* Turn end");
+          System.out.println("\tnewBoard : " + newBoard);
+          System.out.println("\tnewCaptN : " + newCaptN);
+          System.out.println("\tnewCaptS : " + newCaptS);
 
           // TODO : attendre validation serveur
           currentBoard = newBoard;
@@ -227,21 +259,22 @@ public class jSicstus {
         qu.close();
       }
       catch (SPException e) {
-        System.out.println("SPException");
+        System.out.println("* Error : SPException");
         e.printStackTrace();
+        System.exit(-1);
       }
       catch (Exception e) {
-        System.out.println("Exception");
+        System.out.println("* Error : Exception");
         e.printStackTrace();
+        System.exit(-1);
       }
 
       System.out.print("*\n*");
       saisieClavier();
     }
 
-    System.out.println("* jSicstus is shutting down");
+    System.out.println("* AI shutting down..");
   }
-
 
   public static String saisieClavier() {
     // declaration du buffer clavier
