@@ -68,9 +68,18 @@ public class jSicstus {
       if(typeC == EnumCoup.DEPLACER){
         // lire un objet ' deplacer '
         // lire boolean, une case , une case
+        boolean captured = ids.readBoolean();
+        Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+        Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+        System.out.println("Lecture d'un deplacement");
+        System.out.println("From : " + cFrom.toString());
+        System.out.println("To : " + cTo.toString());
       }else{
         // lire un objet ' deposer '
         // lire une case:  EnumCol EnumLig
+        Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+        System.out.println("Lecture d'une pose de pièce");
+        System.out.println(cOnto.toString());
       }
     }catch(IOException e){
       System.out.println("* Error : IOException");
