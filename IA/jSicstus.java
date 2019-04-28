@@ -24,25 +24,43 @@ public class jSicstus {
     ServerSocket srv =null;
     int port = Integer.parseInt(args[0]);
     Socket s = null;
-    int sens = -1;
+    InputStream is = null;
+    OutputStream os = null;
+    DataInputStream ids = null;
+    DataOutputStream ods = null;
+
+    boolean sens = false; // piece's sens  false = nord ; true = sud
     // Server creation and waiting the client's connection
     System.out.println("Waiting the client to connect");
     try{
       srv = new ServerSocket(port) ;
       s = srv.accept();
 
-      InputStream is = s.getInputStream();
-      OutputStream os = s.getOutputStream();
+      is = s.getInputStream();
+      os = s.getOutputStream();
 
-      DataInputStream ids = new DataInputStream(is);
-      DataOutputStream ods =  new DataOutputStream(os);
+      ids = new DataInputStream(is);
+      ods =  new DataOutputStream(os);
       // reading the orientation
-      sens = ids.readInt();
-      System.out.println(Integer.MAX_VALUE);
-      System.out.println("Sens 0 = nord 1 = sud valeur : "+sens);
+      sens = ids.readBoolean(); // sens  0 = nord ; 1 = sud
+      System.out.println("Sens false = nord true = sud valeur : "+sens);
     }catch(IOException e){
       System.out.println(e);
       System.exit(-1);
+    }
+
+    Coup oppStrike;
+    // lecture d'un coup
+    try{
+      EnumCoup typeC = EnumCoup.values()[ids.readInt()];
+      EnumPiece typeP = EnumPiece.values()[ids.readInt()];
+      if(typeC == EnumCoup.DEPLACER){
+
+      }else{
+
+      }
+    }catch(IOException e){
+      System.out.println(e);
     }
     /*
     DeposerPiece dPiece = new DeposerPiece();

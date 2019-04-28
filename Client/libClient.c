@@ -37,9 +37,10 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup){
 }
 
 void readEnnemyAction(int sock,TCoupRep *coupAdv){
+  // Lecture de la validation du coup de l'adversaire
   int err = recv(sock, coupAdv, sizeof(TPartieRep), 0);
   checkRecvrError(err,sock);
   printf("Coup de l'ennemie Code : %d , valeur retourner : %d\n",coupAdv->err,coupAdv->validCoup);
   // Read the opponent action
-  
+
 }

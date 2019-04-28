@@ -22,17 +22,46 @@ int main(int argc, char **argv) {
     bool connected; // Connection's state
 
     int err;
-
+    printf("ici ");
     // connection to the IA
     sockIa = socketClient(ipIa,portIa);
     TInitIa orientation;
-    orientation.sens = htonl(1);
+    orientation.sens = true;
 
     printf("connected to the IA\n");
 
     printf("send the orientation\n");
     err = send(sockIa, &orientation, sizeof(int), 0);
 
+    printf("send a strike");
+    TCoupRep repCoup; // Variable pour la réponse du serveur
+    TCoupReq reqCoup; // Variable pour envoyer le coup jouer
+
+    // Construction du coup
+    TPiece tP;
+    tP.sensTetePiece = SUD;
+    tP.typePiece = KODAMA;
+
+    TCase tCaseDep;
+    tCaseDep.c = A;
+    tCaseDep.l = UN;
+
+    TCase tCaseArr;
+    tCaseArr.c = A;
+    tCaseArr.l = DEUX;
+
+    TDeplPiece tDepl;
+    tDepl.caseDep = tCaseDep;
+    tDepl.caseArr = tCaseArr;
+
+    // Construction de la requete d'un coup
+    reqCoup.idRequest = COUP;
+    reqCoup.numPartie = nbPartie;
+    reqCoup.typeCoup = DEPLACER;
+    reqCoup.piece = tP;
+    reqCoup.params.deplPiece = tDepl;
+
+    err = send(sockIa,  &reqCoup ,sizeof(TCoupIa),0);
     printf("wait he recv\n");
     err = recv(sockIa, &err, sizeof(TPartieRep), 0);
 
@@ -59,33 +88,7 @@ int main(int argc, char **argv) {
     while(connected && nbPartie < 3){
       // Envoie des données et
       // Consultation d'IA
-      // IA envoie :
-      TCoupRep repCoup; // Variable pour la réponse du serveur
-      TCoupReq reqCoup; // Variable pour envoyer le coup jouer
 
-      // Construction du coup
-      TPiece tP;
-      tP.sensTetePiece = SUD;
-      tP.typePiece = KODAMA;
-
-      TCase tCaseDep;
-      tCaseDep.c = A;
-      tCaseDep.l = UN;
-
-      TCase tCaseArr;
-      tCaseArr.c = A;
-      tCaseArr.l = DEUX;
-
-      TDeplPiece tDepl;
-      tDepl.caseDep = tCaseDep;
-      tDepl.caseArr = tCaseArr;
-
-      // Construction de la requete d'un coup
-      reqCoup.idRequest = COUP;
-      reqCoup.numPartie = nbPartie;
-      reqCoup.typeCoup = DEPLACER;
-      reqCoup.piece = tP;
-      reqCoup.params.deplPiece = tDepl;
 
       // Notre joueur demande toujours le coté sud
       if(repServeur.validSensTete == OK && nbPartie == 1){

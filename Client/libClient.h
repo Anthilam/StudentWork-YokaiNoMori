@@ -49,8 +49,6 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
 
 /*  Fonction permettant de récupérer le coup de l'adversaire, celle-ci traite
     aussi les érreurs de réseau et de réponse du serveur ( coup valide ou non ...).
-    La fonction appel aussi. La fonction de mise à jours du plateau de jeu dans le cas
-    où le coup est valide.
     params:
       int sock : socket connecté au serveur
       TCoupRep repCoup réponse du serveur
