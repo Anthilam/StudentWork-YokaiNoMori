@@ -66,9 +66,11 @@ public class jSicstus {
       EnumCoup typeC = EnumCoup.values()[ids.readInt()];
       EnumPiece typeP = EnumPiece.values()[ids.readInt()];
       if(typeC == EnumCoup.DEPLACER){
-
+        // lire un objet ' deplacer '
+        // lire boolean, une case , une case
       }else{
-
+        // lire un objet ' deposer '
+        // lire une case:  EnumCol EnumLig
       }
     }catch(IOException e){
       System.out.println("* Error : IOException");
