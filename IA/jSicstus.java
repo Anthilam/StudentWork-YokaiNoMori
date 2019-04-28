@@ -98,7 +98,7 @@ public class jSicstus {
     String side = "north";      // Our side (north/south)
     String opposide = "south";  // Opponent side (north/south)
 
-    if (sens == 1) {
+    if (sens == true) {
       side = "south";
       opposide = "north";
     }
