@@ -68,10 +68,14 @@ public class jSicstus {
       if(typeC == EnumCoup.DEPLACER){
         // lire un objet ' deplacer '
         // lire boolean, une case , une case
-        boolean captured = ids.readBoolean();
+        //
+        System.out.println("ici");
         Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+        System.out.println("ici2");
         Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        System.out.println("Lecture d'un deplacement");
+        System.out.println("ici3");
+        boolean captured = ids.readBoolean();
+        System.out.println("Lecture d'un deplacement \n : captured ? "+captured);
         System.out.println("From : " + cFrom.toString());
         System.out.println("To : " + cTo.toString());
       }else{

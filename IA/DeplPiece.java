@@ -1,10 +1,10 @@
 import java.io.Serializable;
 
 public class DeplPiece implements Action,Serializable{
-  private boolean estCapt;
   private Case caseDep;
   private Case caseArr;
-
+  private boolean estCapt;
+  
   public boolean getEstCapt() {
     return this.estCapt;
   }

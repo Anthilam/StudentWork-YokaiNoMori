@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     printf("* Connected to the AI\n");
 
     printf("* Sending the orientation\n");
-    err = send(sockIa, &orientation, sizeof(int), 0);
+    err = send(sockIa, &orientation, sizeof(bool), 0);
 
     printf("send a strike");
     TCoupRep repCoup; // Variable pour la réponse du serveur
@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
     TDeplPiece tDepl;
     tDepl.caseDep = tCaseDep;
     tDepl.caseArr = tCaseArr;
+    tDepl.estCapt = false;
 
     // Construction de la requete d'un coup
     reqCoup.idRequest = COUP;
@@ -65,7 +66,25 @@ int main(int argc, char **argv) {
     reqCoup.piece = tP;
     reqCoup.params.deplPiece = tDepl;
 
-    err = send(sockIa,  &reqCoup ,sizeof(TCoupIa),0);
+    TCase tCaseDep1;
+    tCaseDep1.c = htonl(A);
+    tCaseDep1.l = htonl(UN);
+
+    TCase tCaseArr1;
+    tCaseArr1.c = htonl(A);
+    tCaseArr1.l = htonl(DEUX);
+
+    TDeplPiece tDepl1;
+    tDepl1.caseDep = tCaseDep1;
+    tDepl1.caseArr = tCaseArr1;
+    tDepl1.estCapt = false;
+
+    TCoupIa coupIa;
+    coupIa.typeCoup = htonl(DEPLACER);
+    coupIa.piece = htonl(KODAMA);
+    coupIa.params.deplPiece = tDepl1;
+
+    err = send(sockIa,  &coupIa ,sizeof(TCoupIa),0);
     printf("waiting for recv\n");
 
     err = recv(sockIa, &err, sizeof(TPartieRep), 0);
