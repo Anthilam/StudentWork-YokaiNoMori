@@ -2,10 +2,7 @@
 
 /* Taille des chaines de caracteres pour les noms */
 
-void printStrikeDepl(TCoupIa coup){
-  printf("Type : %d Piece : %d \n",coup.typeCoup, coup.piece);
-  printf("Case : Col :%d Lig : %d \n Case : Col :%d Lig : %d \n Capture %d \n",coup.params.deplPiece.caseDep.c,coup.params.deplPiece.caseDep.l,coup.params.deplPiece.caseArr.c,coup.params.deplPiece.caseArr.l,coup.params.deplPiece.estCapt);
-}
+
 int main(int argc, char **argv) {
     /* Checking args */
     if (argc != 6) {
@@ -20,10 +17,10 @@ int main(int argc, char **argv) {
     int err;
 
     char* ipMachServ = argv[1];   // Game server ip
-    char *name = argv[3];         // Name of the player
+    char *name = argv[3];         // Player's name
     char* ipIa = argv[5];
 
-    bool connected;               // Connection's state
+    bool connected;               // Connection's to the server state
 
     printf("* Starting client..\n");
 
@@ -40,6 +37,10 @@ int main(int argc, char **argv) {
 
     printf("* Sending the orientation\n");
     err = send(sockIa, &orientation, sizeof(bool), 0);
+    if(err <= 0 ){
+        perror("Sending orientation has failed");
+        return -1;
+    }
 
     printf("sending a strike\n");
     TCoupRep repCoup; // Variable pour la réponse du serveur
@@ -88,18 +89,11 @@ int main(int argc, char **argv) {
     coupIa.piece = htonl(KIRIN);
     coupIa.params.deplPiece = tDepl1;
 
-    printf("Envoie du coup : \n");
-    printStrikeDepl(coupIa);
     err = send(sockIa,  &coupIa ,sizeof(TCoupIa),0);
-    printf("waiting for recv\n");
 
-    printf("taille d'un int : %ld \n",sizeof(TCoupIa));
-    printf("taille d'un bool : %ld \n",sizeof(bool));
+    printf("waiting for recv\n");
     TCoupIa recvIa;
     getCoupFromNetwork(sockIa,&recvIa);
-    // affichage d'un coup
-    printf("Je recois le coup : \n");
-    printStrikeDepl(recvIa);
 
     printf("* Trying to connect to the game-server\n");
 

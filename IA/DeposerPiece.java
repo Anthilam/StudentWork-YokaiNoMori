@@ -1,8 +1,12 @@
 import java.io.Serializable;
+import java.io.*;
 
 public class DeposerPiece implements Action,Serializable {
   private Case casePos;
 
+  public DeposerPiece(Case c){
+    this.casePos = c;
+  }
   public Case getCasePos() {
     return this.casePos;
   }
@@ -18,6 +22,5 @@ public class DeposerPiece implements Action,Serializable {
     }catch(IOException e){
       System.out.println(e);
     }
-
   }
 }

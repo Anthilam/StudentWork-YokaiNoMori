@@ -3,5 +3,4 @@ import java.io.*;
 
 public interface Action extends Serializable {
   public void sendToNetwork(DataOutputStream ods);
-  public void getFromNetwork(DataInputStream ids);
 }

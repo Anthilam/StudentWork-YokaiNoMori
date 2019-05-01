@@ -46,8 +46,4 @@ public class DeplPiece implements Action,Serializable{
       System.out.println(e);
     }
   }
-
-  public void getFromNetwork(DataInputStream ids ){
-
-  }
 }

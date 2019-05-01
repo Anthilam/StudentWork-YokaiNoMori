@@ -87,3 +87,12 @@ void getCoupFromNetwork(int sock,TCoupIa *res){
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
 }
+
+void printStrikeDepl(TCoupIa coup){
+  printf("Type : %d Piece : %d \n",coup.typeCoup, coup.piece);
+  if( coup.typeCoup == DEPLACER){
+    printf("Case : Col :%d Lig : %d \n Case : Col :%d Lig : %d \n Capture %d \n",coup.params.deplPiece.caseDep.c,coup.params.deplPiece.caseDep.l,coup.params.deplPiece.caseArr.c,coup.params.deplPiece.caseArr.l,coup.params.deplPiece.estCapt);
+  }else{
+    printf("Case : Col :%d Lig : %d \n ",coup.params.deposerPiece.c, coup.params.deposerPiece.l);
+  }
+}

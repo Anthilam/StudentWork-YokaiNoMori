@@ -32,8 +32,7 @@ public class jSicstus {
 
     ServerSocket srv = null;
     Socket s = null;
-    InputStream is = null;
-    OutputStream os = null;
+    // Communication init
     DataInputStream ids = null;
     DataOutputStream ods = null;
     int port = Integer.parseInt(args[0]);
@@ -42,16 +41,11 @@ public class jSicstus {
     System.out.println("Waiting the client to connect");
     try{
       srv = new ServerSocket(port) ;
-
       System.out.println("* Waiting client connection");
       s = srv.accept();
       System.out.println("* Client connected");
-
-      is = s.getInputStream();
-      os = s.getOutputStream();
-
-      ids = new DataInputStream(is);
-      ods =  new DataOutputStream(os);
+      ids = new DataInputStream(s.getInputStream());
+      ods =  new DataOutputStream(s.getOutputStream());
       // reading the orientation
       sens = ids.readBoolean(); // sens  0 = nord ; 1 = sud
       System.out.println("* Sens [nord (false) / sud(true)] : " + sens);
@@ -60,34 +54,10 @@ public class jSicstus {
       System.exit(-1);
     }
 
-    Coup oppStrike = null;
+    Coup oppStrike = new Coup();
     // lecture d'un coup
-    try{
-      EnumCoup typeC = EnumCoup.values()[ids.readInt()];
-      EnumPiece typeP = EnumPiece.values()[ids.readInt()];
-      System.out.println(typeP);
-      if(typeC == EnumCoup.DEPLACER){
-        Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        boolean captured = ids.readBoolean();
-        System.out.println("Lecture d'un deplacement \n : captured ? "+captured);
-        System.out.println("From : " + cFrom.toString());
-        System.out.println("To : " + cTo.toString());
-        DeplPiece deplP = new DeplPiece(cFrom,cTo,captured);
-        oppStrike = new Coup(typeC,typeP,deplP);
-
-        System.out.println(((DeplPiece)oppStrike.getParams()).getCaseArr().getCol());
-      }else{
-        Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        System.out.println("Lecture d'une pose de pièce");
-        System.out.println(cOnto.toString());
-      }
-    }catch(IOException e){
-      System.out.println("* Error : IOException");
-      e.printStackTrace();
-      System.exit(-1);
-    }
-
+    oppStrike.readFromNetwork(ids);
+    // envoie d'un coup
     oppStrike.sendToNetwork(ods);
 
 
