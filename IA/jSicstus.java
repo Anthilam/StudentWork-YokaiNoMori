@@ -8,6 +8,8 @@
 *
 * Default path jasper.jar : /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
 *
+* If lib error add : -Djava.library.path="/usr/local/sicstus4.4.1/lib"
+*
 */
 
 import se.sics.jasper.*;
