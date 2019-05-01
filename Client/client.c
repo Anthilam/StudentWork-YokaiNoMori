@@ -4,6 +4,7 @@
 
 
 int main(int argc, char **argv) {
+
     /* Checking args */
     if (argc != 6) {
       printf("usage : %s nom/IPServ port nom_joueur port_IA ip_IA\n", argv[0]);
@@ -23,24 +24,15 @@ int main(int argc, char **argv) {
     bool connected;               // Connection's to the server state
 
     printf("* Starting client..\n");
-
     printf("* Trying to connect to the AI\n");
 
     // Connection to the AI
     sockIa = socketClient(ipIa, portIa);
-
+    printf("* Connected to the AI\n");
+    
     // Orientation of the player
     TInitIa orientation;
     orientation.sens = true;
-
-    printf("* Connected to the AI\n");
-
-    printf("* Sending the orientation\n");
-    err = send(sockIa, &orientation, sizeof(bool), 0);
-    if(err <= 0 ){
-        perror("Sending orientation has failed");
-        return -1;
-    }
 
     printf("sending a strike\n");
     TCoupRep repCoup; // Variable pour la réponse du serveur
@@ -118,6 +110,12 @@ int main(int argc, char **argv) {
 
     printf("* Player's name sent\n");
 
+    printf("* Sending the orientation to the IA\n");
+    err = send(sockIa, &orientation, sizeof(bool), 0);
+    if(err <= 0 ){
+        perror("Sending orientation has failed");
+        return -1;
+    }
     // tant que le client est connecté au serveur
     // et qu'on a pas jouer deux parties
     while (connected && nbPartie < 3) {
