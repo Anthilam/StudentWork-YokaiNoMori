@@ -45,3 +45,45 @@ void readEnnemyAction(int sock, TCoupRep *coupAdv){
   printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", coupAdv->err, coupAdv->validCoup);
   // Read the opponent action
 }
+
+int receiveIntFromJava(int sock){
+  char buff[4];
+
+  int readed = 0;
+  int r=0;
+  while (readed < 4){
+    r = read(sock, buff + readed, sizeof(buff) - readed);
+    if (r < 1) {
+      break;
+    }
+    readed += r;
+  }
+  return ntohl(buff[3] << 24 | buff[2] << 16 | buff[1] << 8 | buff[0]);
+}
+
+int receiveBoolFromJava(int sock){
+  int r=0;
+  bool res;
+  r = read(sock, &res, sizeof(bool));
+  if (r < 1) {
+    exit(-1);
+  }
+  return res;
+}
+
+void getCoupFromNetwork(int sock,TCoupIa *res){
+  res->typeCoup = receiveIntFromJava(sock);
+  res->piece = receiveIntFromJava(sock);
+
+  if(res->typeCoup == DEPLACER){
+    res->params.deplPiece.caseDep.c = receiveIntFromJava(sock);
+    res->params.deplPiece.caseDep.l = receiveIntFromJava(sock);
+    res->params.deplPiece.caseArr.c = receiveIntFromJava(sock);
+    res->params.deplPiece.caseArr.l = receiveIntFromJava(sock);
+    res->params.deplPiece.estCapt = receiveBoolFromJava(sock);
+
+  }else{
+    res->params.deposerPiece.c = receiveIntFromJava(sock);
+    res->params.deposerPiece.l = receiveIntFromJava(sock);
+  }
+}

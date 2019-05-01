@@ -1,4 +1,8 @@
 import java.io.Serializable;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.io.*;
+
 public class Coup implements Serializable {
   private EnumCoup typeCoup;
   private EnumPiece piece;
@@ -32,5 +36,17 @@ public class Coup implements Serializable {
 
   public Action getParams() {
     return this.params;
+  }
+
+  public void sendToNetwork(DataOutputStream ods){
+    try{
+      System.out.println(this.typeCoup.ordinal());
+      ods.writeInt(this.typeCoup.ordinal());
+      System.out.println(this.piece.ordinal());
+      ods.writeInt(this.piece.ordinal());
+    }catch(IOException e){
+      System.out.println(e);
+    }
+    this.params.sendToNetwork(ods);
   }
 }

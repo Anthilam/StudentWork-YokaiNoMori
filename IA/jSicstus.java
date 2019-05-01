@@ -60,27 +60,24 @@ public class jSicstus {
       System.exit(-1);
     }
 
-    Coup oppStrike;
+    Coup oppStrike = null;
     // lecture d'un coup
     try{
       EnumCoup typeC = EnumCoup.values()[ids.readInt()];
       EnumPiece typeP = EnumPiece.values()[ids.readInt()];
+      System.out.println(typeP);
       if(typeC == EnumCoup.DEPLACER){
-        // lire un objet ' deplacer '
-        // lire boolean, une case , une case
-        //
-        System.out.println("ici");
         Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        System.out.println("ici2");
         Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        System.out.println("ici3");
         boolean captured = ids.readBoolean();
         System.out.println("Lecture d'un deplacement \n : captured ? "+captured);
         System.out.println("From : " + cFrom.toString());
         System.out.println("To : " + cTo.toString());
+        DeplPiece deplP = new DeplPiece(cFrom,cTo,captured);
+        oppStrike = new Coup(typeC,typeP,deplP);
+
+        System.out.println(((DeplPiece)oppStrike.getParams()).getCaseArr().getCol());
       }else{
-        // lire un objet ' deposer '
-        // lire une case:  EnumCol EnumLig
         Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
         System.out.println("Lecture d'une pose de pièce");
         System.out.println(cOnto.toString());
@@ -90,10 +87,9 @@ public class jSicstus {
       e.printStackTrace();
       System.exit(-1);
     }
-    /*
-    DeposerPiece dPiece = new DeposerPiece();
-    Coup pIa = new Coup(EnumCoup.DEPOSER,EnumPiece.KODAMA,dPiece);
-    */
+
+    oppStrike.sendToNetwork(ods);
+
 
 
     /*--------------------------------------------------------------------------

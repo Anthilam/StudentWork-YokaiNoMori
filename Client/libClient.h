@@ -56,4 +56,9 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
  */
 void readEnnemyAction(int sock,TCoupRep *coupAdv);
 
+int receiveIntFromJava(int sock);
+
+int receiveBoolFromJava(int sock);
+
+void getCoupFromNetwork(int sock,TCoupIa *res);
 #endif

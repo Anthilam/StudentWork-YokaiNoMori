@@ -2,6 +2,10 @@
 
 /* Taille des chaines de caracteres pour les noms */
 
+void printStrikeDepl(TCoupIa coup){
+  printf("Type : %d Piece : %d \n",coup.typeCoup, coup.piece);
+  printf("Case : Col :%d Lig : %d \n Case : Col :%d Lig : %d \n Capture %d \n",coup.params.deplPiece.caseDep.c,coup.params.deplPiece.caseDep.l,coup.params.deplPiece.caseArr.c,coup.params.deplPiece.caseArr.l,coup.params.deplPiece.estCapt);
+}
 int main(int argc, char **argv) {
     /* Checking args */
     if (argc != 6) {
@@ -37,7 +41,7 @@ int main(int argc, char **argv) {
     printf("* Sending the orientation\n");
     err = send(sockIa, &orientation, sizeof(bool), 0);
 
-    printf("send a strike");
+    printf("sending a strike\n");
     TCoupRep repCoup; // Variable pour la réponse du serveur
     TCoupReq reqCoup; // Variable pour envoyer le coup jouer
 
@@ -71,7 +75,7 @@ int main(int argc, char **argv) {
     tCaseDep1.l = htonl(UN);
 
     TCase tCaseArr1;
-    tCaseArr1.c = htonl(A);
+    tCaseArr1.c = htonl(B);
     tCaseArr1.l = htonl(DEUX);
 
     TDeplPiece tDepl1;
@@ -81,13 +85,21 @@ int main(int argc, char **argv) {
 
     TCoupIa coupIa;
     coupIa.typeCoup = htonl(DEPLACER);
-    coupIa.piece = htonl(KODAMA);
+    coupIa.piece = htonl(KIRIN);
     coupIa.params.deplPiece = tDepl1;
 
+    printf("Envoie du coup : \n");
+    printStrikeDepl(coupIa);
     err = send(sockIa,  &coupIa ,sizeof(TCoupIa),0);
     printf("waiting for recv\n");
 
-    err = recv(sockIa, &err, sizeof(TPartieRep), 0);
+    printf("taille d'un int : %ld \n",sizeof(TCoupIa));
+    printf("taille d'un bool : %ld \n",sizeof(bool));
+    TCoupIa recvIa;
+    getCoupFromNetwork(sockIa,&recvIa);
+    // affichage d'un coup
+    printf("Je recois le coup : \n");
+    printStrikeDepl(recvIa);
 
     printf("* Trying to connect to the game-server\n");
 
