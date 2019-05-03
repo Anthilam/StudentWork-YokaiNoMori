@@ -5,6 +5,7 @@ import java.io.*;
 public class Coup implements Serializable {
   private EnumCoup typeCoup;
   private EnumPiece piece;
+  private boolean finPartie;
   private Action params;
 
   public Coup(Case cFrom, Case cTo) {
@@ -48,6 +49,7 @@ public class Coup implements Serializable {
     try{
       ods.writeInt(this.typeCoup.ordinal());
       ods.writeInt(this.piece.ordinal());
+      ods.writeBoolean(this.finPartie);
     }catch(IOException e){
       System.out.println(e);
     }
@@ -58,6 +60,7 @@ public class Coup implements Serializable {
     try{
       this.typeCoup = EnumCoup.values()[ids.readInt()];
       this.piece = EnumPiece.values()[ids.readInt()];
+      this.finPartie = ids.readBoolean();
       if(this.typeCoup == EnumCoup.DEPLACER){
         Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
         Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);

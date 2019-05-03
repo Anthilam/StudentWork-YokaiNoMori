@@ -15,9 +15,7 @@ typedef struct {
 typedef struct {
   TCoup typeCoup;               /* Type du coup */
   TTypePiece piece;             /* Info de la piece jouee */
-
-  // TODO : ajouter le TProp
-
+  bool finPartie;               /* Indique si la partie est terminée */
   union {
     TDeplPiece deplPiece;       /* Deplacement de piece */
     TDeposerPiece deposerPiece; /* Placement d'une piece capturee */

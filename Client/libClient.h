@@ -54,7 +54,7 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
       int sock : socket connecté au serveur
       TCoupRep repCoup réponse du serveur
  */
-void readEnnemyAction(int sock,TCoupRep *coupAdv);
+void readEnnemyAction(int sock,TCoupIa *coupAdv);
 
 int receiveIntFromJava(int sock);
 

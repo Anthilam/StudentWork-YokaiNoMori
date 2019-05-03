@@ -29,22 +29,31 @@ void sendPartieGetRep(int sock, TPartieReq req, TPartieRep* res){
 
 void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
   int err;
-  err = send(sock, &reqCoup, sizeof(TPartieReq), 0);
+  err = send(sock, &reqCoup, sizeof(reqCoup), 0);
   checkSendError(err, sock);
 
-  err = recv(sock, repCoup, sizeof(TPartieRep), 0);
+  err = recv(sock, repCoup, sizeof(repCoup), 0);
   checkRecvrError(err, sock);
 
   printf("* sendCoupGetRep\n\tCode : %d\n\tValue : %d\n", repCoup->err, repCoup->validCoup);
 }
 
-void readEnnemyAction(int sock, TCoupRep *coupAdv){
-  int err = recv(sock, coupAdv, sizeof(TPartieRep), 0);
+void readEnnemyAction(int sock,TCoupIa *coupAdv){
+  TCoupRep res;
+  TCoupReq coup;
+  int err = recv(sock, &res, sizeof(res), 0);
   checkRecvrError(err, sock);
 
-  printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", coupAdv->err, coupAdv->validCoup);
+  printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", res.err, res.validCoup);
 
   // TODO : lire le coup adverse
+  if(res.propCoup != CONT){
+    coupAdv->finPartie =true;
+  }else{
+    int err = recv(sock, &coup,sizeof(coup),0);
+    checkRecvrError(err,sock);
+  }
+
 }
 
 int receiveIntFromJava(int sock){
@@ -75,7 +84,7 @@ int receiveBoolFromJava(int sock){
 void getCoupFromAI(int sock,TCoupIa *res){
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
-
+  res->finPartie = receiveBoolFromJava(sock);
   if(res->typeCoup == DEPLACER){
     res->params.deplPiece.caseDep.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseDep.l = receiveIntFromJava(sock);
