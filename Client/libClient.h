@@ -60,5 +60,8 @@ int receiveIntFromJava(int sock);
 
 int receiveBoolFromJava(int sock);
 
-void getCoupFromNetwork(int sock,TCoupIa *res);
+void getCoupFromAI(int sock,TCoupIa *res);
+
+void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie);
+
 #endif

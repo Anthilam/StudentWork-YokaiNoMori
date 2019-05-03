@@ -4,20 +4,23 @@
 // Permet d'informer du sens à l'IA
 typedef struct {
   bool sens; // false = nord ; true = sud
-}TInitIa;
+} TInitIa;
 
 // Permet la confirmation d'un coup
 typedef struct {
   bool estValide;
-}TValidIa;
+} TValidIa;
 
 // Light version of the TCoup defined in protocolYokai.h
 typedef struct {
-  TCoup      typeCoup;      /* Type du coup : deplacement, placement ou aucune action */
-  TTypePiece     piece;         /* Info de la piece jouee */
+  TCoup typeCoup;               /* Type du coup */
+  TTypePiece piece;             /* Info de la piece jouee */
+
+  // TODO : ajouter le TProp
+
   union {
-    TDeplPiece deplPiece;        /* Deplacement de piece */
-    TDeposerPiece deposerPiece;  /* Placement d'une piece capturee */
+    TDeplPiece deplPiece;       /* Deplacement de piece */
+    TDeposerPiece deposerPiece; /* Placement d'une piece capturee */
   } params;
 } TCoupIa;
 

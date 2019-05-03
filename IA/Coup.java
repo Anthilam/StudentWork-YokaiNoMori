@@ -7,9 +7,13 @@ public class Coup implements Serializable {
   private EnumPiece piece;
   private Action params;
 
-  public Coup(){
-
+  public Coup(Case cFrom, Case cTo) {
+    typeCoup = EnumCoup.DEPLACER;
+    piece = EnumPiece.KODAMA;
+    boolean captured = true;
+    params = new DeplPiece(cFrom, cTo, captured);
   }
+
   public Coup(EnumCoup tpCoup, EnumPiece p, Action param) {
     this.typeCoup = tpCoup;
     this.piece = p;

@@ -43,7 +43,8 @@ void readEnnemyAction(int sock, TCoupRep *coupAdv){
   checkRecvrError(err, sock);
 
   printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", coupAdv->err, coupAdv->validCoup);
-  // Read the opponent action
+
+  // TODO : lire le coup adverse
 }
 
 int receiveIntFromJava(int sock){
@@ -71,7 +72,7 @@ int receiveBoolFromJava(int sock){
   return res;
 }
 
-void getCoupFromNetwork(int sock,TCoupIa *res){
+void getCoupFromAI(int sock,TCoupIa *res){
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
 
@@ -86,6 +87,32 @@ void getCoupFromNetwork(int sock,TCoupIa *res){
     res->params.deposerPiece.c = receiveIntFromJava(sock);
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
+}
+
+void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
+	// Construction du coup depuis le coup de l'IA
+	TPiece tP;
+	if (sens == true) {
+		tP.sensTetePiece = SUD;
+	}
+	else {
+		tP.sensTetePiece = NORD;
+	}
+
+	tP.typePiece = ai->piece;
+
+	// Construction de la requete d'un coup
+	req->idRequest = COUP;
+	req->numPartie = nbPartie;
+	req->typeCoup = ai->typeCoup;
+	req->piece = tP;
+
+	if (ai->typeCoup == DEPLACER) {
+		req->params.deplPiece = ai->params.deplPiece;
+	}
+	else if (ai->typeCoup == DEPOSER) {
+		req->params.deposerPiece = ai->params.deposerPiece;
+	}
 }
 
 void printStrikeDepl(TCoupIa coup){

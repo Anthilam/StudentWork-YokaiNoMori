@@ -29,68 +29,11 @@ int main(int argc, char **argv) {
     // Connection to the AI
     sockIa = socketClient(ipIa, portIa);
     printf("* Connected to the AI\n");
-    
-    // Orientation of the player
-    TInitIa orientation;
-    orientation.sens = true;
-
-    printf("sending a strike\n");
-    TCoupRep repCoup; // Variable pour la réponse du serveur
-    TCoupReq reqCoup; // Variable pour envoyer le coup jouer
-
-    // Construction du coup
-    TPiece tP;
-    tP.sensTetePiece = SUD;
-    tP.typePiece = KODAMA;
-
-    TCase tCaseDep;
-    tCaseDep.c = A;
-    tCaseDep.l = UN;
-
-    TCase tCaseArr;
-    tCaseArr.c = A;
-    tCaseArr.l = DEUX;
-
-    TDeplPiece tDepl;
-    tDepl.caseDep = tCaseDep;
-    tDepl.caseArr = tCaseArr;
-    tDepl.estCapt = false;
-
-    // Construction de la requete d'un coup
-    reqCoup.idRequest = COUP;
-    reqCoup.numPartie = nbPartie;
-    reqCoup.typeCoup = DEPLACER;
-    reqCoup.piece = tP;
-    reqCoup.params.deplPiece = tDepl;
-
-    TCase tCaseDep1;
-    tCaseDep1.c = htonl(A);
-    tCaseDep1.l = htonl(UN);
-
-    TCase tCaseArr1;
-    tCaseArr1.c = htonl(B);
-    tCaseArr1.l = htonl(DEUX);
-
-    TDeplPiece tDepl1;
-    tDepl1.caseDep = tCaseDep1;
-    tDepl1.caseArr = tCaseArr1;
-    tDepl1.estCapt = false;
-
-    TCoupIa coupIa;
-    coupIa.typeCoup = htonl(DEPLACER);
-    coupIa.piece = htonl(KIRIN);
-    coupIa.params.deplPiece = tDepl1;
-
-    err = send(sockIa,  &coupIa ,sizeof(TCoupIa),0);
-
-    printf("waiting for recv\n");
-    TCoupIa recvIa;
-    getCoupFromNetwork(sockIa,&recvIa);
 
     printf("* Trying to connect to the game-server\n");
 
     // Connection to the game server
-    sock = socketClient(ipMachServ,port);
+    sock = socketClient(ipMachServ, port);
     connected = true;
 
     printf("* Connected to the game-server\n");
@@ -101,52 +44,104 @@ int main(int argc, char **argv) {
     initGame.idReq = PARTIE;
 
     stpcpy(initGame.nomJoueur, name);
-    initGame.piece = NORD;
+    initGame.piece = SUD;
 
-    printf("* Player's name : %s\n", initGame.nomJoueur);
+    printf("* Sending player's data to the game-server :\n");
+    printf("\tName : %s\n", initGame.nomJoueur);
+    printf("\tOrientation : SUD\n");
+    sendPartieGetRep(sock, initGame, &repServeur);
 
-    printf("* Sending player's name to the game-server\n");
-    sendPartieGetRep(sock,initGame,&repServeur);
+    printf("* Player's data sent\n");
 
-    printf("* Player's name sent\n");
+    // Update side with server response
+    printf("* Orientation sent by server : ");
 
-    printf("* Sending the orientation to the IA\n");
+    TInitIa orientation;
+    if (repServeur.validSensTete == OK) {
+      orientation.sens = true;
+      printf("SUD\n");
+    }
+    else {
+      orientation.sens = false;
+      printf("NORTH\n");
+    }
+
+    printf("* Sending the orientation to the AI\n");
     err = send(sockIa, &orientation, sizeof(bool), 0);
-    if(err <= 0 ){
+    if (err <= 0) {
         perror("Sending orientation has failed");
         return -1;
     }
-    // tant que le client est connecté au serveur
-    // et qu'on a pas jouer deux parties
+
+    /* Tant que le client est connecté au serveur
+    et qu'on a pas joué deux parties */
     while (connected && nbPartie < 3) {
-      // Envoie des données et
-      // Consultation d'IA
+      TCoupRep repCoup; // Variable pour la réponse du serveur
+      TCoupReq reqCoup; // Variable pour envoyer le coup jouer
 
+      // Si côté sud et partie 1 ou côté nord et partie 2
+      if ((orientation.sens == true && nbPartie == 1)
+          || (orientation.sens == false && nbPartie == 2)) {
 
-      // Notre joueur demande toujours le coté sud
-      if (repServeur.validSensTete == OK && nbPartie == 1) {
-        // On commence la partie
-        printf("coté sud");
+        // Génération d'un coup par l'IA
+        TCoupIa recvIa;
+        getCoupFromAI(sockIa, &recvIa);
+
+        convertAItoServer(&recvIa, &reqCoup, orientation.sens, nbPartie);
 
         // Envoie du coup jouer
         sendCoupGetRep(sock, reqCoup, &repCoup);
 
-        // Coup de l'adversaire
-        readEnnemyAction(sock, &repCoup);
+        /* TODO : ajouter le propCoup au TCoupIa pour savoir quand
+        une partie se termine */
 
+        // Si la partie se termine, notifier l'IA
         if (repCoup.propCoup != CONT) {
           nbPartie++;
+
+          /*TCoupIa end;
+            send(sockIa, &end, sizeof(TCoupIa));
+          */
+        }
+        // Sinon lire le coup adverse
+        else {
+          // Lecture coup adverse
+          readEnnemyAction(sock, &repCoup);
+
+          // Si le coup adverse termine la partie, notifier l'IA
+          if (repCoup.propCoup != CONT) {
+            nbPartie++;
+
+            /*
+            TCoupIa end;
+            send(sockIa, &end, sizeof(TCoupIa));
+            */
+          }
+          // Sinon mettre à jour l'IA avec le coup adverse
+          else {
+            /*
+            TCoupIa coupIa;
+            coupIa.typeCoup = repCoup.typeCoup;
+            coupIa.piece = repCoup.piece;
+            if (repCoup.typeCoup == DEPLACER) {
+              coupIa.params.deplPiece = repCoup.params.deplPiece;
+            }
+            else if (repCoup.typeCOup == DEPOSER) {
+              coupIa.params.deposerPiece == repCoup.params.deposerPiece;
+            }
+
+            send(sockIa, &coupIa, sizeof(TCoupIa), 0);
+            */
+          }
         }
       }
+      // TODO : Même chose qu'au dessus à l'inverse
       else {
-        // L'adversaire commence
-        printf("coté nord");
-
-        // Coup de l'adversaire
+        // Lecture du coup de l'adversaire
         readEnnemyAction(sock, &repCoup);
 
-        // Envoie du coup jouer
-        sendCoupGetRep(sock,reqCoup, &repCoup);
+        // Envoi du coup
+        sendCoupGetRep(sock, reqCoup, &repCoup);
       }
     }
 

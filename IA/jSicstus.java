@@ -34,35 +34,36 @@ public class jSicstus {
 
     ServerSocket srv = null;
     Socket s = null;
-    // Communication init
+
     DataInputStream ids = null;
     DataOutputStream ods = null;
+
     int port = Integer.parseInt(args[0]);
-    boolean sens = false; // piece's sens  false = nord ; true = sud
+
+    boolean sens = false; // false = nord ; true = sud
+
     // Server creation and waiting the client's connection
-    System.out.println("Waiting the client to connect");
-    try{
+    try {
       srv = new ServerSocket(port) ;
+
       System.out.println("* Waiting client connection");
+
       s = srv.accept();
+
       System.out.println("* Client connected");
+
       ids = new DataInputStream(s.getInputStream());
       ods =  new DataOutputStream(s.getOutputStream());
-      // reading the orientation
-      sens = ids.readBoolean(); // sens  0 = nord ; 1 = sud
+
+      // Read the orientation sent by the game-server
+      sens = ids.readBoolean();
+
       System.out.println("* Sens [nord (false) / sud(true)] : " + sens);
-    }catch(IOException e){
+    }
+    catch (IOException e) {
       System.out.println(e);
       System.exit(-1);
     }
-
-    Coup oppStrike = new Coup();
-    // lecture d'un coup
-    oppStrike.readFromNetwork(ids);
-    // envoie d'un coup
-    oppStrike.sendToNetwork(ods);
-
-
 
     /*--------------------------------------------------------------------------
      * JAVA <-> Prolog
@@ -81,7 +82,7 @@ public class jSicstus {
     String side = "north";      // Our side (north/south)
     String opposide = "south";  // Opponent side (north/south)
 
-    if (sens == true) {
+    if (sens == false) {
       side = "south";
       opposide = "north";
     }
@@ -112,6 +113,34 @@ public class jSicstus {
       System.out.println("* Error : SPException");
       e.printStackTrace();
       System.exit(-1);
+    }
+
+    // MAIN LOOP
+    // TODO : ajouter prolog à la création de coup
+    // TODO : gérer ordre partie
+    while (run) {
+      if (sens == true) {
+        // Création d'un coup
+        Coup oppStrike = new Coup(new Case(EnumCol.C, EnumLig.QUATRE), new Case(EnumCol.C, EnumLig.TROIS));
+
+        // Envoi d'un coup
+        oppStrike.sendToNetwork(ods);
+
+        // TODO : gérer la fin de partie
+        // Lecture du coup adverse
+        oppStrike.readFromNetwork(ids);
+      }
+      else {
+        // Création d'un coup
+        Coup oppStrike = new Coup(new Case(EnumCol.C, EnumLig.TROIS), new Case(EnumCol.C, EnumLig.QUATRE));
+
+        // TODO : gérer la fin de partie
+        // Lecture du coup adverse
+        oppStrike.readFromNetwork(ids);
+
+        // Envoi d'un coup
+        oppStrike.sendToNetwork(ods);
+      }
     }
 
     // Initialize the board
