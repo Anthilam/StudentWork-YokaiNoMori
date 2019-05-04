@@ -1,5 +1,7 @@
 #include "libClient.h"
 
+#include <sys/ioctl.h>
+
 void checkRecvrError(int err,int sock){
   if (err <= 0) {
     perror("* Error while receiving");
@@ -29,25 +31,25 @@ void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res){
 void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
   printStrikeServer(reqCoup);
 
-  int err = send(sock, &reqCoup, sizeof(reqCoup), 0);
+  int err = send(sock, &reqCoup, sizeof(TCoupReq), 0);
   checkSendError(err, sock);
 
-  err = recv(sock, repCoup, sizeof(repCoup), 0);
+  err = recv(sock, repCoup, sizeof(TCoupRep), 0);
   checkRecvrError(err, sock);
 
-  printf("* sendCoupGetRep\n\tCode : %d\n\tValue : %d\n", repCoup->err, repCoup->validCoup);
+  printf("* sendCoupGetRep\n\tCode : %d\n\tValid : %d\n\tProp : %d\n", repCoup->err, repCoup->validCoup, repCoup->propCoup);
 }
 
 void readEnnemyAction(int sock, TCoupIa *coupAdv){
   TCoupRep res;
   TCoupReq coup;
 
-  int err = recv(sock, &res, sizeof(res), 0);
+  int err = recv(sock, &res, sizeof(TCoupRep), 0);
   checkRecvrError(err, sock);
 
-  printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", res.err, res.validCoup);
+  printf("* readEnnemyAction\n\tCode : %d\n\tValid : %d\n\tProp : %d\n", res.err, res.validCoup, res.propCoup);
 
-  err = recv(sock, &coup, sizeof(coup), 0);
+  err = recv(sock, &coup, sizeof(TCoupReq), 0);
   checkRecvrError(err, sock);
 
   printStrikeServer(coup);
@@ -67,27 +69,31 @@ int receiveIntFromJava(int sock){
 
   int readed = 0;
   int r = 0;
-  while (readed < 4){
+
+  while (readed < 4) {
     r = read(sock, buff + readed, sizeof(buff) - readed);
     if (r < 1) {
       break;
     }
     readed += r;
   }
+
   return ntohl(buff[3] << 24 | buff[2] << 16 | buff[1] << 8 | buff[0]);
 }
 
 int receiveBoolFromJava(int sock){
   int r = 0;
   bool res;
+
   r = read(sock, &res, sizeof(bool));
   if (r < 1) {
     exit(-1);
   }
+
   return res;
 }
 
-void getCoupFromAI(int sock, TCoupIa *res){
+void getCoupFromAI(int sock, TCoupIa *res) {
   res->finPartie = receiveIntFromJava(sock);
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
@@ -124,7 +130,7 @@ void sendCoupToAI(int sock, TCoupIa coupIa) {
   coupIa.piece = htonl(coupIa.piece);
   coupIa.finPartie = htonl(coupIa.finPartie);
 
-  send(sock, &coupIa, sizeof(coupIa), 0);
+  send(sock, &coupIa, sizeof(TCoupIa), 0);
 }
 
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
