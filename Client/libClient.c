@@ -97,7 +97,7 @@ void getCoupFromAI(int sock, TCoupIa *res){
     res->params.deposerPiece.c = receiveIntFromJava(sock);
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
-  printStrikeIa(*res);
+  //printStrikeIa(*res);
 }
 
 void sendCoupToAI(int sock, TCoupIa coupIa){

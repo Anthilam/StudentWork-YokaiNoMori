@@ -126,8 +126,6 @@ public class jSicstus {
 
       System.out.println("* Newgame : " + newgame);
 
-
-
       if ((side == "south" && newgame == true)
         || (side == "north" && newgame == false)) {
         // Création d'un coup

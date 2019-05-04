@@ -80,6 +80,7 @@ int main(int argc, char **argv) {
     TCoupIa coupIa;   // Structure envoi IA
     TCoupIa recvIa;   // Structure réponse IA
     // Si orienté sud et partie 1 ou orienté nord et partie 2
+    printf("Partie numéro %d : \n\n",nbPartie);
     if ((orientation.sens == true && nbPartie == 1)
     || (orientation.sens == false && nbPartie == 2)) {
 
