@@ -52,16 +52,32 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
     aussi les érreurs de réseau et de réponse du serveur ( coup valide ou non ...).
     params:
       int sock : socket connecté au serveur
-      TCoupRep repCoup réponse du serveur
+      TCoupRep repCoup : réponse du serveur
  */
 void readEnnemyAction(int sock,TCoupIa *coupAdv);
 
+/*
+  params:
+    int sock :
+  */
 int receiveIntFromJava(int sock);
 
+/*
+  params:
+    int sock :
+  */
 int receiveBoolFromJava(int sock);
 
+/*
+  params:
+    int sock :
+  */
 void getCoupFromAI(int sock,TCoupIa *res);
 
+/*
+  params:
+    
+  */
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie);
 
 #endif

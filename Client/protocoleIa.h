@@ -1,15 +1,10 @@
 #ifndef PROTOCOL_IA
 #define PROTOCOL_IA
 
-// Permet d'informer du sens à l'IA
+// Structure used to
 typedef struct {
   bool sens; // false = nord ; true = sud
 } TInitIa;
-
-// Permet la confirmation d'un coup
-typedef struct {
-  bool estValide;
-} TValidIa;
 
 // Light version of the TCoup defined in protocolYokai.h
 typedef struct {
