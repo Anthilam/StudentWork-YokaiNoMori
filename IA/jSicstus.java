@@ -4,11 +4,13 @@
 * Compiling rules :
 * javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
 *
-* java -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus
+* java;-Djava.library.path="/usr/local/sicstus4.4.1/lib" -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus
 *
-* Default path jasper.jar : /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
+* Default path jasper.jar :
+*   /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
 *
-* If lib error add : -Djava.library.path="/usr/local/sicstus4.4.1/lib"
+* Default lib path for jasper :
+*   -Djava.library.path="/usr/local/sicstus4.4.1/lib"
 *
 */
 
@@ -41,6 +43,7 @@ public class jSicstus {
     int port = Integer.parseInt(args[0]);
 
     boolean sens = false; // false = nord ; true = sud
+    boolean newgame = false;
 
     // Server creation and waiting the client's connection
     try {
@@ -119,24 +122,57 @@ public class jSicstus {
     // TODO : ajouter prolog à la création de coup
     // TODO : gérer ordre partie
     while (run) {
-      if (sens == true) {
+
+      System.out.println("* Newgame : " + newgame);
+
+      if ((side == "south" && newgame == true)
+        || (side == "north" && newgame == false)) {
         // Création d'un coup
-        Coup oppStrike = new Coup(new Case(EnumCol.C, EnumLig.QUATRE), new Case(EnumCol.C, EnumLig.TROIS));
+        Coup oppStrike;
+        if (side == "south") {
+          oppStrike = new Coup(new Case(EnumCol.C, EnumLig.QUATRE), new Case(EnumCol.C, EnumLig.TROIS));
+        }
+        else {
+          oppStrike = new Coup(new Case(EnumCol.D, EnumLig.TROIS), new Case(EnumCol.D, EnumLig.QUATRE));
+        }
+
+        System.out.println("* Sending strike to client");
 
         // Envoi d'un coup
         oppStrike.sendToNetwork(ods);
 
         // TODO : gérer la fin de partie
         // Lecture du coup adverse
+        System.out.println("* Getting ennemy strike from client");
+
         oppStrike.readFromNetwork(ids);
+
+        if (oppStrike.getFinPartie()) {
+          newgame = true;
+        }
       }
       else {
         // Création d'un coup
-        Coup oppStrike = new Coup(new Case(EnumCol.C, EnumLig.TROIS), new Case(EnumCol.C, EnumLig.QUATRE));
+        Coup oppStrike = new Coup();
 
         // TODO : gérer la fin de partie
         // Lecture du coup adverse
+        System.out.println("* Getting ennemy strike from client");
+
         oppStrike.readFromNetwork(ids);
+
+        if (oppStrike.getFinPartie()) {
+          newgame = true;
+        }
+
+        if (side == "south") {
+          oppStrike = new Coup(new Case(EnumCol.B, EnumLig.QUATRE), new Case(EnumCol.B, EnumLig.TROIS));
+        }
+        else {
+          oppStrike = new Coup(new Case(EnumCol.D, EnumLig.TROIS), new Case(EnumCol.D, EnumLig.QUATRE));
+        }
+
+        System.out.println("* Sending strike to client");
 
         // Envoi d'un coup
         oppStrike.sendToNetwork(ods);

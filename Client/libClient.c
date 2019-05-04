@@ -47,13 +47,14 @@ void readEnnemyAction(int sock,TCoupIa *coupAdv){
   printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", res.err, res.validCoup);
 
   // TODO : lire le coup adverse
-  if(res.propCoup != CONT){
-    coupAdv->finPartie =true;
-  }else{
-    int err = recv(sock, &coup,sizeof(coup),0);
-    checkRecvrError(err,sock);
+  if (res.propCoup != CONT) {
+    convertServerToAI(coupAdv, &coup, true);
   }
-
+  else {
+    int err = recv(sock, &coup, sizeof(coup), 0);
+    checkRecvrError(err, sock);
+    convertServerToAI(coupAdv, &coup, false);
+  }
 }
 
 int receiveIntFromJava(int sock){
@@ -81,7 +82,7 @@ int receiveBoolFromJava(int sock){
   return res;
 }
 
-void getCoupFromAI(int sock,TCoupIa *res){
+void getCoupFromAI(int sock, TCoupIa *res){
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
   res->finPartie = receiveBoolFromJava(sock);
@@ -122,6 +123,19 @@ void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
 	else if (ai->typeCoup == DEPOSER) {
 		req->params.deposerPiece = ai->params.deposerPiece;
 	}
+}
+
+void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end) {
+  ai->typeCoup = req->typeCoup;
+  ai->piece = req->piece.typePiece;
+  ai->finPartie = end;
+
+  if (req->typeCoup == DEPLACER) {
+    ai->params.deplPiece = req->params.deplPiece;
+  }
+  else if (ai->typeCoup == DEPOSER) {
+    ai->params.deposerPiece = req->params.deposerPiece;
+  }
 }
 
 void printStrikeDepl(TCoupIa coup){

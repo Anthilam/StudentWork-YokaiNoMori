@@ -64,4 +64,6 @@ void getCoupFromAI(int sock,TCoupIa *res);
 
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie);
 
+void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end);
+
 #endif

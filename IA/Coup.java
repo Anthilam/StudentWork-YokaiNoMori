@@ -8,6 +8,8 @@ public class Coup implements Serializable {
   private boolean finPartie;
   private Action params;
 
+  public Coup() {}
+
   public Coup(Case cFrom, Case cTo) {
     typeCoup = EnumCoup.DEPLACER;
     piece = EnumPiece.KODAMA;
@@ -43,6 +45,10 @@ public class Coup implements Serializable {
 
   public Action getParams() {
     return this.params;
+  }
+
+  public boolean getFinPartie() {
+    return this.finPartie;
   }
 
   public void sendToNetwork(DataOutputStream ods){

@@ -76,67 +76,93 @@ int main(int argc, char **argv) {
   /* Tant que le client est connecté au serveur
   et qu'on a pas joué deux parties */
   while (connected && nbPartie < 3) {
-    printf("New Strike incoming\n");
-    TCoupRep repCoup; // Variable pour la réponse du serveur
-    TCoupReq reqCoup; // Variable pour envoyer le coup jouer
-    TCoupIa coupIa; // structure d'envoie à l'Ia
+    TCoupRep repCoup; // Structure réponse serveur
+    TCoupReq reqCoup; // Structure envoi serveur
+    TCoupIa coupIa;   // Structure envoi IA
+    TCoupIa recvIa;   // Structure réponse IA
 
     // Si côté sud et partie 1 ou côté nord et partie 2
     if ((orientation.sens == true && nbPartie == 1)
-    || (orientation.sens == false && nbPartie == 2)) {
+      || (orientation.sens == false && nbPartie == 2)) {
 
-      // Génération d'un coup par l'IA
-      TCoupIa recvIa;
-      printf("Getting strike from IA\n");
+      printf("* Getting strike from AI\n");
       getCoupFromAI(sockIa, &recvIa);
 
       convertAItoServer(&recvIa, &reqCoup, orientation.sens, nbPartie);
-      printf("Sending to the server\n");
-      // Envoie du coup jouer
+
+      printf("* Sending strike to server\n");
       sendCoupGetRep(sock, reqCoup, &repCoup);
 
       // Si la partie se termine, notifier l'IA
       if (repCoup.propCoup != CONT) {
+        printf("* Game ended, notifying AI\n");
         nbPartie++;
+
+        recvIa.finPartie = true;
+        send(sockIa, &recvIa, sizeof(recvIa), 0);
+
+        printf("* AI has been notified\n");
       }
       // Sinon lire le coup adverse
       else {
+        recvIa.finPartie = false;
+
         // Lecture coup adverse
-        printf("Reading ennemy action\n");
+        printf("* Getting ennemy action\n");
         readEnnemyAction(sock, &coupIa);
 
         // Si le coup adverse termine la partie, notifier l'IA
         if (coupIa.finPartie) {
+          printf("* Game ended, notifying AI\n");
           nbPartie++;
+
+          send(sockIa, &coupIa, sizeof(coupIa), 0);
+
+          printf("* AI has been notified\n");
         }
       }
-      printf("Sending ennemy action to ia\n");
-      send(sockIa,&coupIa,sizeof(coupIa),0);
+
+      printf("* Sending ennemy action to AI\n");
+      send(sockIa, &coupIa, sizeof(coupIa), 0);
+      printf("* Ennemy action sent to AI\n");
     }
     // TODO : Même chose qu'au dessus à l'inverse
     else {
-      printf("Reading ennemy action\n");
-      // Lecture coup adverse
+      printf("* Getting ennemy action\n");
       readEnnemyAction(sock, &coupIa);
-      // Si le coup adverse termine la partie
+
+      // Si le coup adverse termine la partie, notifier l'IA
       if (coupIa.finPartie) {
+        printf("* Game ended, notifying AI\n");
         nbPartie++;
+
+        send(sockIa, &coupIa, sizeof(coupIa), 0);
+
+        printf("* AI has been notified\n");
       }
-      printf("Sending ennemy action to ia\n");
-      send(sockIa,&coupIa,sizeof(coupIa),0);
-      // Génération d'un coup par l'IA
-      TCoupIa recvIa;
-      printf("Getting strike from IA\n");
-      getCoupFromAI(sockIa, &recvIa);
+      else {
+        printf("* Sending ennemy action to AI\n");
+        send(sockIa, &coupIa, sizeof(coupIa), 0);
 
-      convertAItoServer(&recvIa, &reqCoup, orientation.sens, nbPartie);
-      printf("Sending to the server\n");
-      // Envoie du coup jouer
-      sendCoupGetRep(sock, reqCoup, &repCoup);
+        // Génération d'un coup par l'IA
+        printf("* Getting strike from AI\n");
+        getCoupFromAI(sockIa, &recvIa);
 
-      // Si la partie se termine, notifier l'IA
-      if (repCoup.propCoup != CONT) {
-        nbPartie++;
+        convertAItoServer(&recvIa, &reqCoup, orientation.sens, nbPartie);
+
+        printf("* Sending strike to the server\n");
+        sendCoupGetRep(sock, reqCoup, &repCoup);
+
+        // Si la partie se termine, notifier l'IA
+        if (repCoup.propCoup != CONT) {
+          printf("* Game ended, notifying AI\n");
+          nbPartie++;
+
+          recvIa.finPartie = true;
+          send(sockIa, &recvIa, sizeof(recvIa), 0);
+
+          printf("* AI has been notified\n");
+        }
       }
     }
   }
