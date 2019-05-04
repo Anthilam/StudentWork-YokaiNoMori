@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
       // Si la partie se termine, notifier l'IA
       if (repCoup.propCoup != CONT) {
         nbPartie++;
+        coupIa.finPartie=true;
       }
       // Sinon lire le coup adverse
       else {
@@ -113,7 +114,6 @@ int main(int argc, char **argv) {
       printf("Sending ennemy action to ia\n");
       send(sockIa,&coupIa,sizeof(coupIa),0);
     }
-    // TODO : Même chose qu'au dessus à l'inverse
     else {
       printf("Reading ennemy action\n");
       // Lecture coup adverse
@@ -137,6 +137,8 @@ int main(int argc, char **argv) {
       // Si la partie se termine, notifier l'IA
       if (repCoup.propCoup != CONT) {
         nbPartie++;
+        coupIa.finPartie = true;
+        send(sockIa,&coupIa,sizeof(coupIa),0); // notification de fin partie 
       }
     }
   }
