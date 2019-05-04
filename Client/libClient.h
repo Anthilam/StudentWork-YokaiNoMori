@@ -22,7 +22,7 @@
       TPartieReq req : stucture envoyer au serveur
       TPartieRep rep : structure stockant la réponse du serveur à la réquete
   */
-void sendPartieGetRep(int sock, TPartieReq req, TPartieRep* res);
+void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res);
 
 /* Fonction permettant de vérifié les érreurs RÉSEAU sur la fonction RECV
   params:
@@ -86,5 +86,7 @@ void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie);
 void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end);
 
 void printStrikeIa(TCoupIa coup);
+
+void printStrikeServer(TCoupReq coup);
 
 #endif

@@ -71,13 +71,13 @@ public class Coup implements Serializable {
   public void readFromNetwork(DataInputStream ids){
     try{
       int boolValue =ids.readInt();
-      System.out.println(boolValue);
+
       if(boolValue == 0){
         this.finPartie = false;
       }else{
         this.finPartie = true;
       }
-      System.out.println(this.finPartie);
+
       if(this.finPartie == false){
         this.typeCoup = EnumCoup.values()[ids.readInt()];
         this.piece = EnumPiece.values()[ids.readInt()];

@@ -16,9 +16,8 @@ void checkSendError(int err, int sock ){
   }
 }
 
-void sendPartieGetRep(int sock, TPartieReq req, TPartieRep* res){
-  int err;
-  err = send(sock, &req, sizeof(TPartieReq), 0);
+void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res){
+  int err = send(sock, &req, sizeof(TPartieReq), 0);
   checkSendError(err, sock);
 
   err = recv(sock, res, sizeof(TPartieRep), 0);
@@ -28,8 +27,9 @@ void sendPartieGetRep(int sock, TPartieReq req, TPartieRep* res){
 }
 
 void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
-  int err;
-  err = send(sock, &reqCoup, sizeof(reqCoup), 0);
+  printStrikeServer(reqCoup);
+
+  int err = send(sock, &reqCoup, sizeof(reqCoup), 0);
   checkSendError(err, sock);
 
   err = recv(sock, repCoup, sizeof(repCoup), 0);
@@ -38,29 +38,35 @@ void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
   printf("* sendCoupGetRep\n\tCode : %d\n\tValue : %d\n", repCoup->err, repCoup->validCoup);
 }
 
-void readEnnemyAction(int sock,TCoupIa *coupAdv){
+void readEnnemyAction(int sock, TCoupIa *coupAdv){
   TCoupRep res;
   TCoupReq coup;
+
   int err = recv(sock, &res, sizeof(res), 0);
   checkRecvrError(err, sock);
 
   printf("* readEnnemyAction\n\tCode : %d\n\tValue : %d\n", res.err, res.validCoup);
 
-  // TODO : lire le coup adverse
+  err = recv(sock, &coup, sizeof(coup), 0);
+  checkRecvrError(err, sock);
+
+  printStrikeServer(coup);
+
   if (res.propCoup != CONT) {
     convertServerToAI(coupAdv, &coup, true);
-  } else {
-    int err = recv(sock, &coup, sizeof(coup), 0);
-    checkRecvrError(err, sock);
+  }
+  else {
     convertServerToAI(coupAdv, &coup, false);
   }
+
+  printStrikeIa(*coupAdv);
 }
 
 int receiveIntFromJava(int sock){
   char buff[4];
 
   int readed = 0;
-  int r=0;
+  int r = 0;
   while (readed < 4){
     r = read(sock, buff + readed, sizeof(buff) - readed);
     if (r < 1) {
@@ -72,7 +78,7 @@ int receiveIntFromJava(int sock){
 }
 
 int receiveBoolFromJava(int sock){
-  int r=0;
+  int r = 0;
   bool res;
   r = read(sock, &res, sizeof(bool));
   if (r < 1) {
@@ -86,38 +92,38 @@ void getCoupFromAI(int sock, TCoupIa *res){
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
 
-  if(res->typeCoup == DEPLACER){
+  if (res->typeCoup == DEPLACER) {
     res->params.deplPiece.caseDep.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseDep.l = receiveIntFromJava(sock);
     res->params.deplPiece.caseArr.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseArr.l = receiveIntFromJava(sock);
     res->params.deplPiece.estCapt = receiveBoolFromJava(sock);
 
-  }else{
+  }
+  else {
     res->params.deposerPiece.c = receiveIntFromJava(sock);
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
+
   printStrikeIa(*res);
 }
 
-void sendCoupToAI(int sock, TCoupIa coupIa){
-  //printStrikeIa(coupIa);
-  if(coupIa.typeCoup == DEPLACER){
+void sendCoupToAI(int sock, TCoupIa coupIa) {
+  if (coupIa.typeCoup == DEPLACER) {
     coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
     coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
     coupIa.params.deplPiece.caseArr.c = htonl(coupIa.params.deplPiece.caseArr.c);
     coupIa.params.deplPiece.caseArr.l = htonl(coupIa.params.deplPiece.caseArr.l);
-  }else if(coupIa.typeCoup == DEPOSER){
+  }
+  else if (coupIa.typeCoup == DEPOSER) {
     coupIa.params.deposerPiece.c = htonl(coupIa.params.deposerPiece.c);
     coupIa.params.deposerPiece.l = htonl(coupIa.params.deposerPiece.l);
   }
+
   coupIa.typeCoup = htonl(coupIa.typeCoup);
   coupIa.piece = htonl(coupIa.piece);
   coupIa.finPartie = htonl(coupIa.finPartie);
-  /*
-  printf("\n apres conversion \n");
-  printStrikeIa(coupIa);
-  */
+
   send(sock, &coupIa, sizeof(coupIa), 0);
 }
 
@@ -160,18 +166,47 @@ void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end) {
   }
 }
 
-void printStrikeIa(TCoupIa coup){
-  printf("Partie finie ? %d ", coup.finPartie);
-  if(coup.finPartie == true){
-    printf(" oui \n");
-  }else{
-    printf(" non \n");
+void printStrikeIa(TCoupIa coup) {
+  printf("* Strike IA\n\tPartie finie ? ");
+
+  if (coup.finPartie == true) {
+    printf("oui\n");
   }
-  printf("Type : %d Piece : %d \n",coup.typeCoup, coup.piece);
-  if( coup.typeCoup == DEPLACER){
-    printf("Case : Col :%d Lig : %d \n Case : Col :%d Lig : %d \n Capture %d \n",coup.params.deplPiece.caseDep.c,coup.params.deplPiece.caseDep.l,coup.params.deplPiece.caseArr.c,coup.params.deplPiece.caseArr.l,coup.params.deplPiece.estCapt);
-  }else{
-    printf("Case : Col :%d Lig : %d \n ",coup.params.deposerPiece.c, coup.params.deposerPiece.l);
+  else {
+    printf("non\n");
   }
-  printf("\n");
+
+  printf("\tType : %d\n\tPiece : %d\n", coup.typeCoup, coup.piece);
+
+  if (coup.typeCoup == DEPLACER) {
+    printf("\tCaseDep > Col: %d Lig: %d\n\tCaseArr > Col: %d Lig: %d\n\tCapture %d\n\n",
+      coup.params.deplPiece.caseDep.c, coup.params.deplPiece.caseDep.l,
+      coup.params.deplPiece.caseArr.c, coup.params.deplPiece.caseArr.l,
+      coup.params.deplPiece.estCapt
+    );
+  }
+  else {
+    printf("\tCase > Col: %d Lig: %d\n\n",
+      coup.params.deposerPiece.c, coup.params.deposerPiece.l
+    );
+  }
+}
+
+void printStrikeServer(TCoupReq coup) {
+  printf("* Strike Server\n\tNum partie : %d\n", coup.numPartie);
+
+  printf("\tType : %d\n\tPiece : %d\n", coup.typeCoup, coup.piece.typePiece);
+
+  if (coup.typeCoup == DEPLACER) {
+    printf("\tCaseDep > Col: %d Lig: %d\n\tCaseArr > Col: %d Lig: %d\n\tCapture %d\n\n",
+      coup.params.deplPiece.caseDep.c, coup.params.deplPiece.caseDep.l,
+      coup.params.deplPiece.caseArr.c, coup.params.deplPiece.caseArr.l,
+      coup.params.deplPiece.estCapt
+    );
+  }
+  else {
+    printf("\tCase > Col: %d Lig: %d\n\n",
+      coup.params.deposerPiece.c, coup.params.deposerPiece.l
+    );
+  }
 }

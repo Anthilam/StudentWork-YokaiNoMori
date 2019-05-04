@@ -44,7 +44,6 @@ public class jSicstus {
     DataInputStream ids = null;
     DataOutputStream ods= null;
     boolean sens = false; // false = nord ; true = sud
-    boolean newgame = false;
 
     // Server creation and waiting the client's connection
     try {
@@ -78,6 +77,7 @@ public class jSicstus {
 
     // Main loop switch
     boolean run = true;
+    int nbPartie = 1;
 
     // Specify turn order
     boolean opponentTurn = false;
@@ -119,71 +119,54 @@ public class jSicstus {
       System.exit(-1);
     }
 
-    // MAIN LOOP
-    // TODO : ajouter prolog à la création de coup
-    // TODO : gérer ordre partie
-    while (run) {
+    // PARTIE 1
 
-      System.out.println("* Newgame : " + newgame);
-
-
-
-      if ((side == "south" && newgame == true)
-        || (side == "north" && newgame == false)) {
+    System.out.println("** STARTING GAME 1 **");
+    while (run && nbPartie == 1) {
+      if (side == "north") {
         // Création d'un coup
         Coup oppStrike;
-        if (side == "south") {
-          oppStrike = new Coup(new Case(EnumCol.C, EnumLig.QUATRE), new Case(EnumCol.C, EnumLig.TROIS));
-        }
-        else {
-          oppStrike = new Coup(new Case(EnumCol.D, EnumLig.TROIS), new Case(EnumCol.D, EnumLig.QUATRE));
-        }
+        oppStrike = new Coup(new Case(EnumCol.D, EnumLig.TROIS), new Case(EnumCol.D, EnumLig.QUATRE));
 
         System.out.println("* Sending strike to client");
 
         // Envoi d'un coup
         oppStrike.sendToNetwork(ods);
 
-        // TODO : gérer la fin de partie
         // Lecture du coup adverse
         System.out.println("* Getting ennemy strike from client");
 
         oppStrike.readFromNetwork(ids);
 
         if (oppStrike.getFinPartie()) {
-          newgame = true;
-        }else{
-          newgame = false;
+          nbPartie++;
         }
       }
       else {
         // Création d'un coup
         Coup oppStrike = new Coup();
 
-        // TODO : gérer la fin de partie
         // Lecture du coup adverse
         System.out.println("* Getting ennemy strike from client");
 
         oppStrike.readFromNetwork(ids);
 
         if (oppStrike.getFinPartie()) {
-          newgame = true;
-        }else{
-          newgame = false;
+          nbPartie++;
         }
 
-        if (side == "south") {
-          oppStrike = new Coup(new Case(EnumCol.B, EnumLig.QUATRE), new Case(EnumCol.B, EnumLig.TROIS));
-        }
-        else {
-          oppStrike = new Coup(new Case(EnumCol.D, EnumLig.TROIS), new Case(EnumCol.D, EnumLig.QUATRE));
-        }
+        oppStrike = new Coup(new Case(EnumCol.B, EnumLig.QUATRE), new Case(EnumCol.B, EnumLig.TROIS));
 
         System.out.println("* Sending strike to client");
 
         // Envoi d'un coup
         oppStrike.sendToNetwork(ods);
       }
+    }
+
+    System.out.println("** STARTING GAME 2 **");
+    while (run && nbPartie == 2) {
+
     }
 
     // Initialize the board
