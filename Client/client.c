@@ -126,7 +126,6 @@ int main(int argc, char **argv) {
       send(sockIa, &coupIa, sizeof(coupIa), 0);
       printf("* Ennemy action sent to AI\n");
     }
-    // TODO : Même chose qu'au dessus à l'inverse
     else {
       printf("* Getting ennemy action\n");
       readEnnemyAction(sock, &coupIa);
