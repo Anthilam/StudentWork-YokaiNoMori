@@ -4,7 +4,6 @@
 
 
 int main(int argc, char **argv) {
-
   /* Checking args */
   if (argc != 6) {
     printf("usage : %s nom/IPServ port nom_joueur port_IA ip_IA\n", argv[0]);
@@ -80,7 +79,6 @@ int main(int argc, char **argv) {
     TCoupReq reqCoup; // Structure envoi serveur
     TCoupIa coupIa;   // Structure envoi IA
     TCoupIa recvIa;   // Structure réponse IA
-
     // Si côté sud et partie 1 ou côté nord et partie 2
     if ((orientation.sens == true && nbPartie == 1)
     || (orientation.sens == false && nbPartie == 2)) {
@@ -115,18 +113,20 @@ int main(int argc, char **argv) {
         if (coupIa.finPartie) {
           printf("* Game ended, notifying AI\n");
           nbPartie++;
-
-          sendCoupToAI(sockIa,coupIa);
-
-          printf("* AI has been notified\n");
+        }
+        if(!coupIa.finPartie){
+          printf("* Sending strike to the server");
+        }
+        sendCoupToAI(sockIa,coupIa);
+        if(coupIa.finPartie){
+            printf("* AI has been notified\n");
         }
       }
-
-      printf("* Sending ennemy action to AI\n");
-
-      printf("* Ennemy action sent to AI\n");
     }
     else {
+      // reset variable
+      recvIa.finPartie = false;
+
       printf("* Getting ennemy action\n");
       readEnnemyAction(sock, &coupIa);
 
@@ -138,25 +138,26 @@ int main(int argc, char **argv) {
 
       printf("* Sending ennemy action to AI\n");
       sendCoupToAI(sockIa,coupIa);
+      if(!coupIa.finPartie){
+        // Génération d'un coup par l'IA
+        printf("* Getting strike from AI\n");
+        getCoupFromAI(sockIa, &recvIa);
 
-      // Génération d'un coup par l'IA
-      printf("* Getting strike from AI\n");
-      getCoupFromAI(sockIa, &recvIa);
+        convertAItoServer(&recvIa, &reqCoup, orientation.sens, nbPartie);
 
-      convertAItoServer(&recvIa, &reqCoup, orientation.sens, nbPartie);
+        printf("* Sending strike to the server\n");
+        sendCoupGetRep(sock, reqCoup, &repCoup);
 
-      printf("* Sending strike to the server\n");
-      sendCoupGetRep(sock, reqCoup, &repCoup);
+        // Si la partie se termine, notifier l'IA
+        if (repCoup.propCoup != CONT) {
+          printf("* Game ended, notifying AI\n");
+          nbPartie++;
 
-      // Si la partie se termine, notifier l'IA
-      if (repCoup.propCoup != CONT) {
-        printf("* Game ended, notifying AI\n");
-        nbPartie++;
+          recvIa.finPartie = true;
+          sendCoupToAI(sockIa,recvIa);
 
-        recvIa.finPartie = true;
-        sendCoupToAI(sockIa,recvIa);
-
-        printf("* AI has been notified\n");
+          printf("* AI has been notified\n");
+        }
       }
     }
   }

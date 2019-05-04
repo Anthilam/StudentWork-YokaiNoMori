@@ -125,6 +125,13 @@ public class jSicstus {
 
       System.out.println("* Newgame : " + newgame);
 
+        try{
+          ids = new DataInputStream(s.getInputStream());
+          ods =  new DataOutputStream(s.getOutputStream());
+        }catch(IOException e){
+          System.out.println(e);
+        }
+
       if ((side == "south" && newgame == true)
         || (side == "north" && newgame == false)) {
         // Création d'un coup
@@ -149,6 +156,8 @@ public class jSicstus {
 
         if (oppStrike.getFinPartie()) {
           newgame = true;
+        }else{
+          newgame = false;
         }
       }
       else {

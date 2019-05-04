@@ -64,22 +64,26 @@ public class Coup implements Serializable {
 
   public void readFromNetwork(DataInputStream ids){
     try{
-      this.finPartie = ids.readInt() == 0 ? false : true;
-      System.out.println(this.finPartie);
+      this.finPartie = ids.readBoolean();
+      System.out.println(" FIN DE LA PARTIE ?" +this.finPartie);
       if(!this.finPartie){
         this.typeCoup = EnumCoup.values()[ids.readInt()];
         this.piece = EnumPiece.values()[ids.readInt()];
         if(this.typeCoup == EnumCoup.DEPLACER){
           Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
           Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-          boolean captured = ids.readInt() == 0 ? false : true;
-          this.params = new DeplPiece(cFrom,cTo,captured);
+          // captured ?
+          if( ids.readInt() == 0 ){
+            this.params = new DeplPiece(cFrom,cTo, false);
+          }else{
+            this.params = new DeplPiece(cFrom,cTo, true);
+          }
+
         }else{
           Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
           this.params = new DeposerPiece(cOnto);
         }
       }
-
     }catch(IOException e){
       System.out.println("* Error : IOException");
       e.printStackTrace();
