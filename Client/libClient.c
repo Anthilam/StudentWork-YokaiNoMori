@@ -100,7 +100,7 @@ void getCoupFromAI(int sock, TCoupIa *res){
 }
 
 void sendCoupToAI(int sock, TCoupIa coupIa){
-  printStrikeIa(coupIa);
+  //printStrikeIa(coupIa);
   if(coupIa.typeCoup == DEPLACER){
     coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
     coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
@@ -113,8 +113,10 @@ void sendCoupToAI(int sock, TCoupIa coupIa){
   coupIa.typeCoup = htonl(coupIa.typeCoup);
   coupIa.piece = htonl(coupIa.piece);
   coupIa.finPartie = htonl(coupIa.finPartie);
+  /*
   printf("apres conversion \n");
   printStrikeIa(coupIa);
+  */
   send(sock, &coupIa, sizeof(coupIa), 0);
 }
 
