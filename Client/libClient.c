@@ -49,8 +49,7 @@ void readEnnemyAction(int sock,TCoupIa *coupAdv){
   // TODO : lire le coup adverse
   if (res.propCoup != CONT) {
     convertServerToAI(coupAdv, &coup, true);
-  }
-  else {
+  } else {
     int err = recv(sock, &coup, sizeof(coup), 0);
     checkRecvrError(err, sock);
     convertServerToAI(coupAdv, &coup, false);
@@ -83,9 +82,10 @@ int receiveBoolFromJava(int sock){
 }
 
 void getCoupFromAI(int sock, TCoupIa *res){
+  res->finPartie = receiveIntFromJava(sock);
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
-  res->finPartie = receiveBoolFromJava(sock);
+
   if(res->typeCoup == DEPLACER){
     res->params.deplPiece.caseDep.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseDep.l = receiveIntFromJava(sock);
@@ -97,38 +97,27 @@ void getCoupFromAI(int sock, TCoupIa *res){
     res->params.deposerPiece.c = receiveIntFromJava(sock);
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
+  printStrikeIa(*res);
 }
 
 void sendCoupToAI(int sock, TCoupIa coupIa){
-  printStrikeIa(coupIa);
-  if(coupIa.finPartie == true){
-    if(coupIa.typeCoup == DEPLACER){
-      coupIa.params.deplPiece.caseDep.c = htonl(0);
-      coupIa.params.deplPiece.caseDep.l = htonl(0);
-      coupIa.params.deplPiece.caseArr.c = htonl(0);
-      coupIa.params.deplPiece.caseArr.l = htonl(0);
-    }else if(coupIa.typeCoup == DEPOSER){
-      coupIa.params.deposerPiece.c = htonl(0);
-      coupIa.params.deposerPiece.l = htonl(0);
-    }
-    coupIa.typeCoup = htonl(0);
-    coupIa.piece = htonl(0);
-  }else{
-    if(coupIa.typeCoup == DEPLACER){
-      coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
-      coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
-      coupIa.params.deplPiece.caseArr.c = htonl(coupIa.params.deplPiece.caseArr.c);
-      coupIa.params.deplPiece.caseArr.l = htonl(coupIa.params.deplPiece.caseArr.l);
-    }else if(coupIa.typeCoup == DEPOSER){
-      coupIa.params.deposerPiece.c = htonl(coupIa.params.deposerPiece.c);
-      coupIa.params.deposerPiece.l = htonl(coupIa.params.deposerPiece.l);
-    }
-    coupIa.typeCoup = htonl(coupIa.typeCoup);
-    coupIa.piece = htonl(coupIa.piece);
+  //printStrikeIa(coupIa);
+  if(coupIa.typeCoup == DEPLACER){
+    coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
+    coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
+    coupIa.params.deplPiece.caseArr.c = htonl(coupIa.params.deplPiece.caseArr.c);
+    coupIa.params.deplPiece.caseArr.l = htonl(coupIa.params.deplPiece.caseArr.l);
+  }else if(coupIa.typeCoup == DEPOSER){
+    coupIa.params.deposerPiece.c = htonl(coupIa.params.deposerPiece.c);
+    coupIa.params.deposerPiece.l = htonl(coupIa.params.deposerPiece.l);
   }
+  coupIa.typeCoup = htonl(coupIa.typeCoup);
+  coupIa.piece = htonl(coupIa.piece);
+  coupIa.finPartie = htonl(coupIa.finPartie);
+  /*
   printf("\n apres conversion \n");
   printStrikeIa(coupIa);
-
+  */
   send(sock, &coupIa, sizeof(coupIa), 0);
 }
 
