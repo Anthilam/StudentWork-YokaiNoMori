@@ -8,9 +8,9 @@ typedef struct {
 
 // Light version of the TCoup defined in protocolYokai.h
 typedef struct {
+  bool finPartie;               /* Indique si la partie est terminée */
   TCoup typeCoup;               /* Type du coup */
   TTypePiece piece;             /* Info de la piece jouee */
-  bool finPartie;               /* Indique si la partie est terminée */
   union {
     TDeplPiece deplPiece;       /* Deplacement de piece */
     TDeposerPiece deposerPiece; /* Placement d'une piece capturee */

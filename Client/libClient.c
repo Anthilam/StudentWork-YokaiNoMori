@@ -99,6 +99,25 @@ void getCoupFromAI(int sock, TCoupIa *res){
   }
 }
 
+void sendCoupToAI(int sock, TCoupIa coupIa){
+  printStrikeIa(coupIa);
+  if(coupIa.typeCoup == DEPLACER){
+    coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
+    coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
+    coupIa.params.deplPiece.caseArr.c = htonl(coupIa.params.deplPiece.caseArr.c);
+    coupIa.params.deplPiece.caseArr.l = htonl(coupIa.params.deplPiece.caseArr.l);
+  }else if(coupIa.typeCoup == DEPOSER){
+    coupIa.params.deposerPiece.c = htonl(coupIa.params.deposerPiece.c);
+    coupIa.params.deposerPiece.l = htonl(coupIa.params.deposerPiece.l);
+  }
+  coupIa.typeCoup = htonl(coupIa.typeCoup);
+  coupIa.piece = htonl(coupIa.piece);
+  coupIa.finPartie = htonl(coupIa.finPartie);
+  printf("apres conversion \n");
+  printStrikeIa(coupIa);
+  send(sock, &coupIa, sizeof(coupIa), 0);
+}
+
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
 	// Construction du coup depuis le coup de l'IA
 	TPiece tP;
@@ -138,7 +157,8 @@ void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end) {
   }
 }
 
-void printStrikeDepl(TCoupIa coup){
+void printStrikeIa(TCoupIa coup){
+  printf(" Partie finie ? %d\n",coup.finPartie);
   printf("Type : %d Piece : %d \n",coup.typeCoup, coup.piece);
   if( coup.typeCoup == DEPLACER){
     printf("Case : Col :%d Lig : %d \n Case : Col :%d Lig : %d \n Capture %d \n",coup.params.deplPiece.caseDep.c,coup.params.deplPiece.caseDep.l,coup.params.deplPiece.caseArr.c,coup.params.deplPiece.caseArr.l,coup.params.deplPiece.estCapt);

@@ -74,12 +74,17 @@ int receiveBoolFromJava(int sock);
   */
 void getCoupFromAI(int sock,TCoupIa *res);
 
+
+void sendCoupToAI(int sock, TCoupIa coupIa);
+
 /*
   params:
-    
+
   */
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie);
 
 void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end);
+
+void printStrikeIa(TCoupIa coup);
 
 #endif

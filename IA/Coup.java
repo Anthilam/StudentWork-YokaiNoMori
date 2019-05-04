@@ -53,9 +53,9 @@ public class Coup implements Serializable {
 
   public void sendToNetwork(DataOutputStream ods){
     try{
+      ods.writeBoolean(this.finPartie);
       ods.writeInt(this.typeCoup.ordinal());
       ods.writeInt(this.piece.ordinal());
-      ods.writeBoolean(this.finPartie);
     }catch(IOException e){
       System.out.println(e);
     }
@@ -64,18 +64,22 @@ public class Coup implements Serializable {
 
   public void readFromNetwork(DataInputStream ids){
     try{
-      this.typeCoup = EnumCoup.values()[ids.readInt()];
-      this.piece = EnumPiece.values()[ids.readInt()];
-      this.finPartie = ids.readBoolean();
-      if(this.typeCoup == EnumCoup.DEPLACER){
-        Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        boolean captured = ids.readBoolean();
-        this.params = new DeplPiece(cFrom,cTo,captured);
-      }else{
-        Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-        this.params = new DeposerPiece(cOnto);
+      this.finPartie = ids.readInt() == 0 ? false : true;
+      System.out.println(this.finPartie);
+      if(!this.finPartie){
+        this.typeCoup = EnumCoup.values()[ids.readInt()];
+        this.piece = EnumPiece.values()[ids.readInt()];
+        if(this.typeCoup == EnumCoup.DEPLACER){
+          Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+          Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+          boolean captured = ids.readInt() == 0 ? false : true;
+          this.params = new DeplPiece(cFrom,cTo,captured);
+        }else{
+          Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
+          this.params = new DeposerPiece(cOnto);
+        }
       }
+
     }catch(IOException e){
       System.out.println("* Error : IOException");
       e.printStackTrace();
