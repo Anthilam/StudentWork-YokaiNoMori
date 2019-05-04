@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
     TCoupReq reqCoup; // Structure envoi serveur
     TCoupIa coupIa;   // Structure envoi IA
     TCoupIa recvIa;   // Structure réponse IA
-    // Si côté sud et partie 1 ou côté nord et partie 2
+    // Si orienté sud et partie 1 ou orienté nord et partie 2
     if ((orientation.sens == true && nbPartie == 1)
     || (orientation.sens == false && nbPartie == 2)) {
 
@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
     }
   }
 
-
+  printf("\n\nFIN DES PARTIES\n\n nbGame : %d",nbPartie);
   // Fermeture de la socket
   shutdown(sock, SHUT_RDWR);
   close(sock);

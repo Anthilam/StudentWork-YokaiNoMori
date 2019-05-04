@@ -41,7 +41,8 @@ public class jSicstus {
     //DataOutputStream ods = null;
 
     int port = Integer.parseInt(args[0]);
-
+    DataInputStream ids = null;
+    DataOutputStream ods= null;
     boolean sens = false; // false = nord ; true = sud
     boolean newgame = false;
 
@@ -55,8 +56,8 @@ public class jSicstus {
 
       System.out.println("* Client connected");
 
-      DataInputStream ids = new DataInputStream(s.getInputStream());
-      DataOutputStream ods =  new DataOutputStream(s.getOutputStream());
+      ids = new DataInputStream(s.getInputStream());
+      ods =  new DataOutputStream(s.getOutputStream());
 
       // Read the orientation sent by the game-server
       sens = ids.readBoolean();
@@ -122,16 +123,10 @@ public class jSicstus {
     // TODO : ajouter prolog à la création de coup
     // TODO : gérer ordre partie
     while (run) {
-      DataInputStream ids = null;
-      DataOutputStream ods= null;
+
       System.out.println("* Newgame : " + newgame);
 
-        try{
-          ids = new DataInputStream(s.getInputStream());
-          ods =  new DataOutputStream(s.getOutputStream());
-        }catch(IOException e){
-          System.out.println(e);
-        }
+
 
       if ((side == "south" && newgame == true)
         || (side == "north" && newgame == false)) {
@@ -174,7 +169,7 @@ public class jSicstus {
         if (oppStrike.getFinPartie()) {
           newgame = true;
         }else{
-           newgame = false;
+          newgame = false;
         }
 
         if (side == "south") {

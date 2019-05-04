@@ -53,11 +53,17 @@ public class Coup implements Serializable {
 
   public void sendToNetwork(DataOutputStream ods){
     try{
-      ods.writeInt(this.finPartie ? 1 : 0);
+      if(this.finPartie){
+        ods.writeInt(1);
+      }else{
+        ods.writeInt(0);
+      }
+
       ods.writeInt(this.typeCoup.ordinal());
       ods.writeInt(this.piece.ordinal());
     }catch(IOException e){
-      System.out.println(e);
+      System.out.println("this :"+e);
+      System.exit(-1);
     }
     this.params.sendToNetwork(ods);
   }
@@ -90,7 +96,6 @@ public class Coup implements Serializable {
           this.params = new DeposerPiece(cOnto);
         }
       }
-      while(ids.read()>0){System.out.println("lecture");}
     }catch(IOException e){
       System.out.println("* Error : IOException");
       e.printStackTrace();
