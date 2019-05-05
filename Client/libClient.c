@@ -11,7 +11,7 @@ void checkRecvrError(int err,int sock){
 }
 
 void checkSendError(int err, int sock ){
-  if( err <= 0){
+  if (err <= 0) {
     perror("* Error while sending");
     shutdown(sock, SHUT_RDWR); close(sock);
     exit(-2);
@@ -49,8 +49,10 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv){
 
   printf("* readEnnemyAction\n\tCode : %d\n\tValid : %d\n\tProp : %d\n", res.err, res.validCoup, res.propCoup);
 
-  err = recv(sock, &coup, sizeof(TCoupReq), 0);
-  checkRecvrError(err, sock);
+  if (res.propCoup == CONT) {
+    err = recv(sock, &coup, sizeof(TCoupReq), 0);
+    checkRecvrError(err, sock);
+  }
 
   printStrikeServer(coup);
 

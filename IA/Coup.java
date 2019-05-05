@@ -52,51 +52,58 @@ public class Coup implements Serializable {
   }
 
   public void sendToNetwork(DataOutputStream ods){
-    try{
-      if(this.finPartie){
+    try {
+      if (this.finPartie) {
         ods.writeInt(1);
-      }else{
+      }
+      else{
         ods.writeInt(0);
       }
 
       ods.writeInt(this.typeCoup.ordinal());
       ods.writeInt(this.piece.ordinal());
-    }catch(IOException e){
+    }
+    catch(IOException e) {
       System.out.println("this :"+e);
       System.exit(-1);
     }
+
     this.params.sendToNetwork(ods);
   }
 
-  public void readFromNetwork(DataInputStream ids){
-    try{
-      int boolValue =ids.readInt();
+  public void readFromNetwork(DataInputStream ids) {
+    try {
+      int boolValue = ids.readInt();
 
-      if(boolValue == 0){
+      if (boolValue == 0) {
         this.finPartie = false;
-      }else{
+      }
+      else {
         this.finPartie = true;
       }
 
-      if(this.finPartie == false){
+      if (this.finPartie == false) {
         this.typeCoup = EnumCoup.values()[ids.readInt()];
         this.piece = EnumPiece.values()[ids.readInt()];
-        if(this.typeCoup == EnumCoup.DEPLACER){
+
+        if (this.typeCoup == EnumCoup.DEPLACER) {
           Case cFrom = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
           Case cTo = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
-          // captured ?
-          if( ids.readInt() == 0 ){
+
+          if (ids.readInt() == 0) {
             this.params = new DeplPiece(cFrom,cTo, false);
-          }else{
+          }
+          else {
             this.params = new DeplPiece(cFrom,cTo, true);
           }
-
-        }else{
+        }
+        else {
           Case cOnto = new Case(EnumCol.values()[ids.readInt()],EnumLig.values()[ids.readInt()]);
           this.params = new DeposerPiece(cOnto);
         }
       }
-    }catch(IOException e){
+    }
+    catch(IOException e) {
       System.out.println("* Error : IOException");
       e.printStackTrace();
       System.exit(-1);

@@ -140,6 +140,8 @@ public class jSicstus {
 
         if (oppStrike.getFinPartie()) {
           nbPartie++;
+
+          System.out.println("* Game end received");
         }
       }
       else {
@@ -153,20 +155,73 @@ public class jSicstus {
 
         if (oppStrike.getFinPartie()) {
           nbPartie++;
-        }
 
-        oppStrike = new Coup(new Case(EnumCol.B, EnumLig.QUATRE), new Case(EnumCol.B, EnumLig.TROIS));
+          System.out.println("* Game end received");
+        }
+        else {
+          oppStrike = new Coup(new Case(EnumCol.B, EnumLig.QUATRE), new Case(EnumCol.B, EnumLig.TROIS));
+
+          System.out.println("* Sending strike to client");
+
+          // Envoi d'un coup
+          oppStrike.sendToNetwork(ods);
+        }
+      }
+    }
+
+    try {
+      ids.skip(ids.available());
+    }
+    catch(IOException e) {
+      e.printStackTrace();
+    }
+
+    System.out.println("** STARTING GAME 2 **");
+    while (run && nbPartie == 2) {
+      if (side == "south") {
+        // Création d'un coup
+        Coup oppStrike;
+        oppStrike = new Coup(new Case(EnumCol.D, EnumLig.QUATRE), new Case(EnumCol.D, EnumLig.TROIS));
 
         System.out.println("* Sending strike to client");
 
         // Envoi d'un coup
         oppStrike.sendToNetwork(ods);
+
+        // Lecture du coup adverse
+        System.out.println("* Getting ennemy strike from client");
+
+        oppStrike.readFromNetwork(ids);
+
+        if (oppStrike.getFinPartie()) {
+          nbPartie++;
+
+          System.out.println("* Game end received");
+        }
       }
-    }
+      else {
+        // Création d'un coup
+        Coup oppStrike = new Coup();
 
-    System.out.println("** STARTING GAME 2 **");
-    while (run && nbPartie == 2) {
+        // Lecture du coup adverse
+        System.out.println("* Getting ennemy strike from client");
 
+        oppStrike.readFromNetwork(ids);
+
+        if (oppStrike.getFinPartie()) {
+          nbPartie++;
+
+          System.out.println("* Game end received");
+        }
+        else {
+          oppStrike = new Coup(new Case(EnumCol.B, EnumLig.TROIS), new Case(EnumCol.B, EnumLig.QUATRE));
+
+          System.out.println("* Sending strike to client");
+
+          // Envoi d'un coup
+          oppStrike.sendToNetwork(ods);
+        }
+      }
     }
 
     // Initialize the board
