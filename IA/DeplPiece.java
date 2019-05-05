@@ -35,14 +35,19 @@ public class DeplPiece implements Action,Serializable{
     this.caseArr = caseArrive;
   }
 
-  public void sendToNetwork(DataOutputStream ods){
-    try{
+  public String toString() {
+    return caseDep.toString() + "\n" + caseArr.toString() + "\n\tCapture:" + estCapt;
+  }
+
+  public void sendToNetwork(DataOutputStream ods) {
+    try {
       ods.writeInt(this.caseDep.getCol().ordinal());
       ods.writeInt(this.caseDep.getLig().ordinal());
       ods.writeInt(this.caseArr.getCol().ordinal());
       ods.writeInt(this.caseArr.getLig().ordinal());
       ods.writeBoolean(this.estCapt);
-    }catch(IOException e){
+    }
+    catch (IOException e) {
       System.out.println(e);
     }
   }

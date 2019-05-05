@@ -72,9 +72,6 @@ public class jSicstus {
      * JAVA <-> Prolog
      *------------------------------------------------------------------------*/
 
-    // Sicstus Prolog object
-    SICStus sp = null;
-
     // Main loop switch
     boolean run = true;
     int nbPartie = 1;
@@ -86,89 +83,85 @@ public class jSicstus {
     String side = "north";      // Our side (north/south)
     String opposide = "south";  // Opponent side (north/south)
 
+    // Change sides if sens is false
     if (sens == false) {
-      side = "south";
-      opposide = "north";
-    }
+			side = "south";
+			opposide = "north";
+		}
 
-    // The current board
-    ArrayList<String> currentBoard = new ArrayList();
-    // The current list of pieces captured by north player
-    ArrayList<String> currentCaptN = new ArrayList();
-    // The current list of pieces captured by south player
-    ArrayList<String> currentCaptS = new ArrayList();
+    // Create a new Prolog object
+    Prolog prolog = new Prolog(side, opposide);
 
-    // The new board
-    ArrayList<String> newBoard = new ArrayList();
-    // The new list of pieces captured by north player
-    ArrayList<String> newCaptN = new ArrayList();
-    // The new list of pieces captured by south player
-    ArrayList<String> newCaptS = new ArrayList();
+    // Initialize Prolog
+    prolog.init();
 
-    System.out.println("* AI ready with the following settings : ");
-    System.out.println("\tside = " + side);
-    System.out.println("\topposide = " + opposide);
-
-    try {
-      sp = new SICStus();   // Initialize Sicstus
-      sp.load("./ia.pl");   // Load Prolog file
-    }
-    catch (SPException e) {
-      System.out.println("* Error : SPException");
-      e.printStackTrace();
-      System.exit(-1);
-    }
-
-    // PARTIE 1
-
+    /*-- GAME 1 --------------------------------------------------------------*/
     System.out.println("** STARTING GAME 1 **");
+
     while (run && nbPartie == 1) {
+      // Print the board
+      prolog.printBoard();
+
       if (side == "north") {
-        // Création d'un coup
-        Coup oppStrike;
-        oppStrike = new Coup(new Case(EnumCol.D, EnumLig.TROIS), new Case(EnumCol.D, EnumLig.QUATRE));
+        // Create a strike
+        Coup oppStrike = prolog.tryMove();
+        System.out.println(oppStrike);
 
+        // Send the strike
         System.out.println("* Sending strike to client");
-
-        // Envoi d'un coup
         oppStrike.sendToNetwork(ods);
 
-        // Lecture du coup adverse
+        // Read ennemy strike
         System.out.println("* Getting ennemy strike from client");
-
         oppStrike.readFromNetwork(ids);
 
+        // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
           System.out.println("* Game end received");
+        }
+        // Otherwise
+        else {
+          System.out.println(oppStrike);
+
+          // Update Prolog
+          prolog.forceEnnemyStrike(oppStrike);
         }
       }
       else {
-        // Création d'un coup
+        // Create a strike
         Coup oppStrike = new Coup();
 
-        // Lecture du coup adverse
+        // Read ennemy strike
         System.out.println("* Getting ennemy strike from client");
-
         oppStrike.readFromNetwork(ids);
 
+        // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
           System.out.println("* Game end received");
         }
+        // Otherwise
         else {
-          oppStrike = new Coup(new Case(EnumCol.B, EnumLig.QUATRE), new Case(EnumCol.B, EnumLig.TROIS));
+          System.out.println(oppStrike);
 
+          // Update Prolog
+          prolog.forceEnnemyStrike(oppStrike);
+
+          // Create a strike
+          oppStrike = prolog.tryMove();
+          System.out.println(oppStrike);
+
+          // Send the strike
           System.out.println("* Sending strike to client");
-
-          // Envoi d'un coup
           oppStrike.sendToNetwork(ods);
         }
       }
     }
 
+    // Skip bytes that are still avaiblable
     try {
       ids.skip(ids.available());
     }
@@ -176,212 +169,74 @@ public class jSicstus {
       e.printStackTrace();
     }
 
+    // Re-initialize Prolog
+    prolog.init();
+
+    /*-- GAME 2 --------------------------------------------------------------*/
     System.out.println("** STARTING GAME 2 **");
+
     while (run && nbPartie == 2) {
+      // Print the board
+      prolog.printBoard();
+
       if (side == "south") {
-        // Création d'un coup
-        Coup oppStrike;
-        oppStrike = new Coup(new Case(EnumCol.D, EnumLig.QUATRE), new Case(EnumCol.D, EnumLig.TROIS));
+        // Create a strike
+        Coup oppStrike = prolog.tryMove();
+        System.out.println(oppStrike);
 
+        // Send the strike
         System.out.println("* Sending strike to client");
-
-        // Envoi d'un coup
         oppStrike.sendToNetwork(ods);
 
-        // Lecture du coup adverse
+        // Read ennemy strike
         System.out.println("* Getting ennemy strike from client");
-
         oppStrike.readFromNetwork(ids);
 
+        // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
           System.out.println("* Game end received");
+        }
+        // Otherwise
+        else {
+          System.out.println(oppStrike);
+
+          // Update Prolog
+          prolog.forceEnnemyStrike(oppStrike);
         }
       }
       else {
-        // Création d'un coup
         Coup oppStrike = new Coup();
 
-        // Lecture du coup adverse
+        // Read ennemy strike
         System.out.println("* Getting ennemy strike from client");
-
         oppStrike.readFromNetwork(ids);
 
+        // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
           System.out.println("* Game end received");
         }
+        // Otherwise
         else {
-          oppStrike = new Coup(new Case(EnumCol.B, EnumLig.TROIS), new Case(EnumCol.B, EnumLig.QUATRE));
+          System.out.println(oppStrike);
 
+          // Update Prolog
+          prolog.forceEnnemyStrike(oppStrike);
+
+          // Create a strike
+          oppStrike = prolog.tryMove();
+          System.out.println(oppStrike);
+
+          // Send the strike
           System.out.println("* Sending strike to client");
-
-          // Envoi d'un coup
           oppStrike.sendToNetwork(ods);
         }
       }
     }
 
-    // Initialize the board
-    try {
-      HashMap<String, Term> results = new HashMap();
-
-      // Create a Sicstus query
-      Query qu = sp.openQuery("initial_board(Board).", results);
-
-      // Get a solution
-      boolean sol = qu.nextSolution();
-
-      // If there is a solution
-      if (sol) {
-        // Convert list into Java arraylist
-        if (results.get("Board").isList()) {
-          Term[] term = results.get("Board").toPrologTermArray();
-
-          for (int i = 0; i < term.length; i++) {
-            currentBoard.add(term[i].toString());
-          }
-        }
-      }
-
-      qu.close();
-    }
-    catch (SPException e) {
-      System.out.println("* Error : SPException");
-      e.printStackTrace();
-      System.exit(-1);
-    }
-    catch (Exception e) {
-      System.out.println("* Error : Exception");
-      e.printStackTrace();
-      System.exit(-1);
-    }
-
-    // Main AI loop
-    while (run) {
-      // Communication avec le fichier client.c
-      // afin d'informer du coup de l'adversaire
-
-      System.out.println("* New turn");
-      System.out.println("\tcurrentBoard : " + currentBoard);
-      System.out.println("\tcurrentCaptN : " + currentCaptN);
-      System.out.println("\tcurrentCaptS : " + currentCaptS);
-
-      // Store the result in an hashmap : PrologVarN -> Value
-      HashMap<String, Term> results = new HashMap();
-
-      try {
-        String request = "";
-
-        if (opponentTurn) {
-          String oppopiece = "kodama";      // Opponent piece
-          int oppox = 3, oppoy = 4;         // Opponent piece coords
-          int opponewx = 3, opponewy = 3;   // Opponent piece new coords
-
-          request = "force_move("
-          + opposide + ", "
-          + oppopiece + ", "
-          + oppox + ", "
-          + oppoy + ", "
-          + opponewx + ", "
-          + opponewy + ", "
-          + currentBoard + ", "
-          + currentCaptN + ", "
-          + currentCaptS + ", NewBoard, NewCaptN, NewCaptS).";
-        }
-        else {
-          request = "try_move("
-          + currentBoard + ", "
-          + currentCaptN + ", "
-          + currentCaptS + ", "
-          + side + ", NewBoard, NewCaptN, NewCaptS).";
-        }
-
-        // Create a Sicstus query
-        Query qu = sp.openQuery(request, results);
-
-        // Get a solution
-        boolean sol = qu.nextSolution();
-
-        // If there is a solution
-        if (sol) {
-          // Convert lists into Java arrays
-          if (results.get("NewBoard").isList()) {
-            Term[] term = results.get("NewBoard").toPrologTermArray();
-
-            for (int i = 0; i < term.length; i++) {
-              newBoard.add(term[i].toString());
-            }
-          }
-
-          if (results.get("NewCaptN").isList()) {
-            Term[] term = results.get("NewCaptN").toPrologTermArray();
-
-            for (int i = 0; i < term.length; i++) {
-              newCaptN.add(term[i].toString());
-            }
-          }
-
-          if (results.get("NewCaptS").isList()) {
-            Term[] term = results.get("NewCaptS").toPrologTermArray();
-
-            for (int i = 0; i < term.length; i++) {
-              newCaptS.add(term[i].toString());
-            }
-          }
-
-          // Print
-          System.out.println("* Turn end");
-          System.out.println("\tnewBoard : " + newBoard);
-          System.out.println("\tnewCaptN : " + newCaptN);
-          System.out.println("\tnewCaptS : " + newCaptS);
-
-          // TODO : attendre validation serveur
-          currentBoard = newBoard;
-          currentCaptN = newCaptN;
-          currentCaptS = newCaptS;
-        }
-
-        newBoard = new ArrayList();
-        newCaptN = new ArrayList();
-        newCaptS = new ArrayList();
-
-        // Close the query
-        qu.close();
-      }
-      catch (SPException e) {
-        System.out.println("* Error : SPException");
-        e.printStackTrace();
-        System.exit(-1);
-      }
-      catch (Exception e) {
-        System.out.println("* Error : Exception");
-        e.printStackTrace();
-        System.exit(-1);
-      }
-
-      System.out.print("*\n*");
-      saisieClavier();
-    }
-
     System.out.println("* AI shutting down..");
-  }
-
-  public static String saisieClavier() {
-    // declaration du buffer clavier
-    BufferedReader buff = new BufferedReader(new InputStreamReader(System.in));
-
-    try {
-      return buff.readLine();
-    }
-    catch (IOException e) {
-      System.err.println("IOException " + e);
-      e.printStackTrace();
-      System.exit(-1);
-    }
-
-    return ("halt.");
   }
 }

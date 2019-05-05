@@ -15,6 +15,10 @@ public class DeposerPiece implements Action,Serializable {
     this.casePos = casePo;
   }
 
+  public String toString() {
+    return casePos.toString();
+  }
+
   public void sendToNetwork(DataOutputStream ods){
     try{
       ods.writeInt(this.casePos.getCol().ordinal());

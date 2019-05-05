@@ -10,13 +10,6 @@ public class Coup implements Serializable {
 
   public Coup() {}
 
-  public Coup(Case cFrom, Case cTo) {
-    typeCoup = EnumCoup.DEPLACER;
-    piece = EnumPiece.KODAMA;
-    boolean captured = true;
-    params = new DeplPiece(cFrom, cTo, captured);
-  }
-
   public Coup(EnumCoup tpCoup, EnumPiece p, Action param) {
     this.typeCoup = tpCoup;
     this.piece = p;
@@ -49,6 +42,10 @@ public class Coup implements Serializable {
 
   public boolean getFinPartie() {
     return this.finPartie;
+  }
+
+  public String toString() {
+    return "* Coup :\n\tTypeCoup: " + typeCoup + "\n\tPiece: " +  piece + "\n" + params.toString();
   }
 
   public void sendToNetwork(DataOutputStream ods){

@@ -1,8 +1,5 @@
 #include "libClient.h"
 
-/* Taille des chaines de caracteres pour les noms */
-
-
 int main(int argc, char **argv) {
   /* Checking args */
   if (argc != 6) {
@@ -267,6 +264,7 @@ int main(int argc, char **argv) {
   }
 
   printf("\n** FIN DES PARTIES **\n");
+  
   // Fermeture de la socket
   shutdown(sock, SHUT_RDWR);
   close(sock);

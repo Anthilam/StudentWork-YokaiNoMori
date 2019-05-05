@@ -6,7 +6,9 @@ JC = javac
 JFLAGS = -g -sourcepath $(JAVA) -classpath $(JAVA)jasper.jar:.
 
 JSRC = \
-	$(JAVA)jSicstus.java $(JAVA)Coup.java
+	$(JAVA)jSicstus.java \
+	$(JAVA)Coup.java \
+	$(JAVA)Prolog.java
 
 classes = $(JSRC:.java=.class)
 

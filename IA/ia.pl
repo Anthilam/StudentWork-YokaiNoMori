@@ -101,7 +101,7 @@ move(Piece, Board, NewBoard):-
 %----------------------------------------------------------------
 
 % try_move north kodama
-try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, kodama, X, Y, N_X, N_Y, Capture):-
 	select(piece(north, kodama, X, Y), Board, TempBoard),
 	N_X is X, N_Y is Y + 1,
 	(
@@ -111,25 +111,29 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
 			% Try moving
 			isEmpty(N_X, N_Y, Board),
 			move(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptN = CaptN
+			NewCaptN = CaptN,
+      Capture = 0
 			;
 			% Try capturing
-			capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+			capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+      Capture = 1
 		)
 		;
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptN = CaptN
+			NewCaptN = CaptN,
+      Capture = 0
 			;
-			capture(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+			capture(piece(north, kodama, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+      Capture = 1
 		)
 	),
 	NewCaptS = CaptS.
 
 
 % try_move south kodama
-try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, kodama, X, Y, N_X, N_Y, Capture):-
 	select(piece(south, kodama, X, Y), Board, TempBoard),
 	N_X is X, N_Y is Y - 1,
 	(
@@ -138,23 +142,27 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptS = CaptS
+			NewCaptS = CaptS,
+      Capture = 0
 			;
-			capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+			capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+      Capture = 1
 		)
 		;
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptS = CaptS
+			NewCaptS = CaptS,
+      Capture = 0
 			;
-			capture(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+			capture(piece(south, kodama, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+      Capture = 1
 		)
 	),
 	NewCaptN = CaptN.
 
 % try_move north samourai
-try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, samourai, X, Y, N_X, N_Y, Capture):-
 	select(piece(north, samourai, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -167,14 +175,16 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptN = CaptN
+		NewCaptN = CaptN,
+    Capture = 0
 		;
-		capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		capture(piece(north, samourai, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+    Capture = 1
 	),
 	NewCaptS = CaptS.
 
 % try_move south samourai
-try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, samourai, X, Y, N_X, N_Y, Capture):-
 	select(piece(south, samourai, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -187,14 +197,16 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptS = CaptS
+		NewCaptS = CaptS,
+    Capture = 0
 		;
-		capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		capture(piece(south, samourai, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+    Capture = 1
 	),
 	NewCaptN = CaptN.
 
 % try_move north oni
-try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, oni, X, Y, N_X, N_Y, Capture):-
 	select(piece(north, oni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -209,23 +221,27 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptN = CaptN
+			NewCaptN = CaptN,
+      Capture = 0
 			;
-			capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+			capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+      Capture = 1
 		)
 		;
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(north, oni, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptN = CaptN
+			NewCaptN = CaptN,
+      Capture = 0
 			;
-			capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+			capture(piece(north, oni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+      Capture = 1
 		)
 	),
 	NewCaptS = CaptS.
 
 % try_move south oni
-try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, oni, X, Y, N_X, N_Y, Capture):-
 	select(piece(south, oni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y - 1;
@@ -240,23 +256,27 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptS = CaptS
+			NewCaptS = CaptS,
+      Capture = 0
 			;
-			capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+			capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+      Capture = 1
 		)
 		;
 		(
 			isEmpty(N_X, N_Y, Board),
 			move(piece(south, oni, N_X, N_Y), TempBoard, NewBoard),
-			NewCaptS = CaptS
+			NewCaptS = CaptS,
+      Capture = 0
 			;
-			capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+			capture(piece(south, oni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+      Capture = 1
 		)
 	),
 	NewCaptN = CaptN.
 
 % try_move north superoni
-try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, superoni, X, Y, N_X, N_Y, Capture):-
 	select(piece(north, superoni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -269,14 +289,16 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptN = CaptN
+		NewCaptN = CaptN,
+    Capture = 0
 		;
-		capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		capture(piece(north, superoni, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+    Capture = 1
 	),
 	NewCaptS = CaptS.
 
 % try_move south superoni
-try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, superoni, X, Y, N_X, N_Y, Capture):-
 	select(piece(south, superoni, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -289,14 +311,16 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptS = CaptS
+		NewCaptS = CaptS,
+    Capture = 0
 		;
-		capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		capture(piece(south, superoni, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+    Capture = 1
 	),
 	NewCaptN = CaptN.
 
 % try_move north kirin
-try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, kirin, X, Y, N_X, N_Y, Capture):-
 	select(piece(north, kirin, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -309,14 +333,16 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptN = CaptN
+		NewCaptN = CaptN,
+    Capture = 0
 		;
-		capture(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		capture(piece(north, kirin, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+    Capture = 1
 	),
 	NewCaptS = CaptS.
 
 % try_move south kirin
-try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, kirin, X, Y, N_X, N_Y, Capture):-
 	select(piece(south, kirin, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -329,14 +355,16 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptS = CaptS
+		NewCaptS = CaptS,
+    Capture = 0
 		;
-		capture(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		capture(piece(south, kirin, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+    Capture = 1
 	),
 	NewCaptN = CaptN.
 
 % try_move north koropokkuru
-try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, koropokkuru, X, Y, N_X, N_Y, Capture):-
 	select(piece(north, koropokkuru, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -351,14 +379,16 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptN = CaptN
+		NewCaptN = CaptN,
+    Capture = 0
 		;
-		capture(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN)
+		capture(piece(north, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+    Capture = 1
 	),
 	NewCaptS = CaptS.
 
 % try_move south koropokkuru
-try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
+try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, koropokkuru, X, Y, N_X, N_Y, Capture):-
 	select(piece(south, koropokkuru, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
@@ -373,9 +403,11 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS):-
 	(
 		isEmpty(N_X, N_Y, Board),
 		move(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard),
-		NewCaptS = CaptS
+		NewCaptS = CaptS,
+    Capture = 0
 		;
-		capture(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS)
+		capture(piece(south, koropokkuru, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+    Capture = 1
 	),
 	NewCaptN = CaptN.
 
@@ -406,7 +438,7 @@ force_move(Side, Type, X, Y, N_X, N_Y, Board, CaptN, CaptS, NewBoard, NewCaptN, 
 %----------------------------------------------------------------
 % put : put a piece on the board and remove it from the Capt list
 %----------------------------------------------------------------
-put(piece(Side, Type, X, Y), Board, Capt, NewBoard, NewCapt):-
+put(Side, Type, X, Y, Board, Capt, NewBoard, NewCapt):-
 	% Check coordinates
 	between(1, 5, X),
 	(
