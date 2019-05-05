@@ -8,6 +8,7 @@
 int main(int argc, char** argv) {
   int sockConx, port, sizeAddr;
   int connexionP1, connexionP2;
+  int numeroPartie = 1;
 
   struct sockaddr_in addClient;	/* adresse de la socket client connectee */
   fd_set readSet;              /* variable pour le select */
@@ -28,8 +29,9 @@ int main(int argc, char** argv) {
 
   connexionP1 = accept(sockConx,(struct sockaddr *)&addClient,(socklen_t *)&sizeAddr);
   connexionP2 = accept(sockConx,(struct sockaddr *)&addClient,(socklen_t *)&sizeAddr);
-
-  while(1) {
+  bool bothConnected = true;
+  while(bothConnected) {
+    printf("Partie %d\n",numeroPartie);
 
   }
 

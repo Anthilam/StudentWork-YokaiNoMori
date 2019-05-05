@@ -238,5 +238,11 @@ public class jSicstus {
     }
 
     System.out.println("* AI shutting down..");
+    try{
+      srv.close();
+    }catch(IOException e){
+      System.out.println(e);
+    }
+
   }
 }

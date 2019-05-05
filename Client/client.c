@@ -268,6 +268,8 @@ int main(int argc, char **argv) {
 
   printf("\n** FIN DES PARTIES **\n");
 
+  shutdown(sockIa,SHUT_RDWR);
+  close(sockIa);
   // Fermeture de la socket
   shutdown(sock, SHUT_RDWR);
   close(sock);
