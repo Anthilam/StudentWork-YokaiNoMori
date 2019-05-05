@@ -33,7 +33,7 @@ public class Prolog {
 
 		try {
 			sp = new SICStus();   // Initialize Sicstus
-			sp.load("./ia.pl");   // Load Prolog file
+			sp.load("./IA/ia.pl");   // Load Prolog file
 		}
 		catch (SPException e) {
 			System.out.println("* Error : SPException");
