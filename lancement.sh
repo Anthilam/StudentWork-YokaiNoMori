@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "lancement du script"
-if [[ "$#" -lt 4 && "$#" -gt 5 ]]
+if [[ "$#" -lt 4 || "$#" -gt 5 ]]
 then
   echo "Utilisation : ./lancement.sh ipServeur portServeur ipIa portIa name?"
   exit 1
@@ -14,7 +14,7 @@ echo "Compilation"
 
 make
 
-java -cp .:IA/:IA/jasper.jar jSicstus "$4" &
+java -Djava.library.path="/usr/local/sicstus4.4.1/lib" -cp .:IA/:IA/jasper.jar jSicstus "$4" &
 
 sleep 1
 
