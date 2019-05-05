@@ -4,7 +4,7 @@
 * Compiling rules :
 * javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
 *
-* java;-Djava.library.path="/usr/local/sicstus4.4.1/lib" -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus
+* java -Djava.library.path="/usr/local/sicstus4.4.1/lib" -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus
 *
 * Default path jasper.jar :
 *   /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
