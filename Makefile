@@ -38,7 +38,7 @@ libServeur.o: ./Serveur/libServeur.c ./Serveur/libServeur.h ./TCP/protocolYokai.
 clean:
 	rm -f ./TCP/fonctionsTCP.o;
 	rm -f ./Client/*.o
-	rm -f ./Serveur/*.o
+	rm -f ./Serveur/libServeur.o
 	rm -f ./Shared/*.o
 	rm -f ./IA/*.class
 
