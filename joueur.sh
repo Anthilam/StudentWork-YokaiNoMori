@@ -26,11 +26,11 @@ fi
 
 # Compilation
 echo "Compilation du joueur"
-xterm -e make client
+make client
 
 # Start AI
 echo "Lancement de l'IA"
-xterm -e java -Djava.library.path=$SICSTUSLIB -cp .:IA/:IA/jasper.jar jSicstus $PORT &
+java -Djava.library.path=$SICSTUSLIB -cp .:IA/:IA/jasper.jar jSicstus $PORT &
 
 sleep 1
 
