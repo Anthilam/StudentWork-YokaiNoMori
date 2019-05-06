@@ -2,9 +2,6 @@
 
 int main(int argc, char **argv) {
   /* Checking args */
-  for(int i= 0; i < argc;i++){
-    printf("%s\n",argv[i]);
-  }
   if (argc != 6) {
     printf("usage : %s IPServ port nom_joueur port_IA ip_IA\n", argv[0]);
     return -1;
