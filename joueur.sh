@@ -9,7 +9,7 @@ fi
 # Vars
 PORT=55555
 LOCALHOST="127.0.0.1"
-SICSTUSLIB="/usr/local/sicstus4.4.1/lib"
+SICSTUSLIB="./IA/libSicstus4.4.1"
 
 if [ "$#" -eq 4 ]
 then
@@ -26,11 +26,11 @@ fi
 
 # Compilation
 echo "Compilation du joueur"
-xterm -e make client
+make client
 
 # Start AI
 echo "Lancement de l'IA"
-xterm -e java -Djava.library.path=$SICSTUSLIB -cp .:IA/:IA/jasper.jar jSicstus $PORT &
+java -Djava.library.path=$SICSTUSLIB -cp .:IA/:IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar jSicstus $PORT &
 
 sleep 1
 
