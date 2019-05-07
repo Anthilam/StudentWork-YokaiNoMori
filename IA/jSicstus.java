@@ -1,16 +1,23 @@
 /* jSicstus
 * A Java class that communicates with Sicstus Prolog using Jasper
 *
-* Compiling rules :
-* javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
+* Compiling rule :
+*   javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
 *
-* java -Djava.library.path="/usr/local/sicstus4.4.1/lib" -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus
+* Launching rule :
+*   java -Djava.library.path="./IA/libSicstus4.4.1" -cp ./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar:./IA/:. jSicstus port
 *
-* Default path jasper.jar :
+* Default jasper.jar path :
 *   /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
 *
-* Default lib path for jasper :
+* Our jasper.jar path :
+*   ./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar
+*
+* Default sicstus lib path :
 *   -Djava.library.path="/usr/local/sicstus4.4.1/lib"
+*
+* Our sisctus lib path :
+*   ./IA/libSicstus4.4.1/
 *
 */
 

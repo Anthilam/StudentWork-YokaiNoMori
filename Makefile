@@ -3,10 +3,11 @@
 ################################################################################
 
 JAVA = ./IA/
+JASPER = ./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar
 
 JC = javac
 
-JFLAGS = -g -sourcepath $(JAVA) -classpath $(JAVA)jasper.jar:.
+JFLAGS = -g -sourcepath $(JAVA) -classpath $(JASPER):.
 
 JSRC = \
 	$(JAVA)jSicstus.java \
