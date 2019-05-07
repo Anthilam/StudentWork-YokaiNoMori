@@ -44,8 +44,8 @@ fonctionsTCP.o: ./TCP/fonctionsTCP.c ./TCP/fonctionsTCP.h
 libClient.o: ./Client/libClient.c ./Client/libClient.h ./TCP/protocolYokai.h
 	gcc -W -Wall -g -std=c99 -o ./Client/$@ -c $<
 
-Serveur: ./Serveur/serveur.c ./TCP/fonctionsTCP.o ./Serveur/libServeur.o ./TCP/protocolYokai.h ./Serveur/validation.h
-	gcc -Wall ./Serveur/serveur.c -o serveur  ./TCP/fonctionsTCP.o ./Serveur/libServeur.o $(LD_FLAGS)
+Serveur: ./Serveur/serveur.c ./TCP/fonctionsTCP.o ./Serveur/libServeur.o ./Serveur/yokai-fPIC.o ./TCP/protocolYokai.h ./Serveur/validation.h
+	gcc -Wall ./Serveur/serveur.c -o serveur  ./TCP/fonctionsTCP.o ./Serveur/libServeur.o ./Serveur/yokai-fPIC.o $(LD_FLAGS)
 
 libServeur.o: ./Serveur/libServeur.c ./Serveur/libServeur.h ./TCP/protocolYokai.h
 	gcc -W -Wall -g -std=c99 -o ./Serveur/$@ -c $<
