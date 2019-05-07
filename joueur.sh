@@ -31,7 +31,7 @@ make client
 # Start AI
 echo ""
 echo "Lancement de l'IA"
-x-terminal-emulator -e "cd $PWD; java -Djava.library.path=$SICSTUSLIB -cp .:IA/:./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar jSicstus $PORT"
+java -Djava.library.path=$SICSTUSLIB -cp .:IA/:./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar jSicstus $PORT
 
 sleep 1
 
