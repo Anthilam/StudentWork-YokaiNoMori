@@ -197,28 +197,28 @@
 
 	test('put first opponent line (north, fail)', [fail]):-
 		Capt = [piece(south, kodama, 0, 0)],
-		put(piece(south, kodama, 1, 1), _, Capt, _, _).
+		put(south, kodama, 1, 1, _, Capt, _, _).
 
 	test('put first opponent line (south, fail)', [fail]):-
 		Capt = [piece(north, kodama, 0, 0)],
-		put(piece(north, kodama, 1, 6), _, Capt, _, _).
+		put(north, kodama, 1, 6, _, Capt, _, _).
 
 	test('put south'):-
 		Capt = [piece(south, kodama, 0, 0)],
-		put(piece(south, kodama, 3, 3), [], Capt, NewBoard, NewCapt),
+		put(south, kodama, 3, 3, [], Capt, NewBoard, NewCapt),
 		member(piece(south, kodama, 3, 3), NewBoard),
 		\+member(piece(south, kodama, 0, 0), NewCapt).
 
 	test('put north'):-
 		Capt = [piece(north, kodama, 0, 0)],
-		put(piece(north, kodama, 3, 3), [], Capt, NewBoard, NewCapt),
+		put(north, kodama, 3, 3, [], Capt, NewBoard, NewCapt),
 		member(piece(north, kodama, 3, 3), NewBoard),
 		\+member(piece(north, kodama, 0, 0), NewCapt).
 
 	test('put column not empty', [fail]):-
 		Capt = [piece(south, kodama, 0, 0)],
 		Board = [piece(south, kodama, 3, 2)],
-		put(piece(south, kodama, 3, 3), Board, Capt, _, _).
+		put(south, kodama, 3, 3, Board, Capt, _, _).
 
 	test('force_move south'):-
 		Board = [piece(south, kodama, 1, 1)],

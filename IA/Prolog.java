@@ -137,7 +137,7 @@ public class Prolog {
 			oppoy = depo.getCasePos().getY();
 
 			// Build the request
-			request = "force_move("
+			request = "put("
 				+ opposide + ", "
 				+ oppopiece + ", "
 				+ oppox + ", "
