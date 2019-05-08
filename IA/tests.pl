@@ -246,4 +246,9 @@
 		\+member(piece(north, kodama, 1, 1), NewBoard),
 		member(piece(north, kirin, 0, 0), B).
 
+	test('heuristic'):-
+		initial_board(Board),
+		get_moves(Board, [], [], south, MoveList),
+		process_cost(Board, MoveList, NewMoveList).
+
 :-end_tests(tp4tests).

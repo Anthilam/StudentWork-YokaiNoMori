@@ -170,7 +170,7 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, samourai, X, 
 		N_X is X + 1, N_Y is Y;
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y + 1
+		N_X is X - 1, N_Y is Y + 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -192,7 +192,7 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, samourai, X, 
 		N_X is X + 1, N_Y is Y;
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -212,8 +212,8 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, oni, X, Y, N_
 		N_X is X, N_Y is Y + 1;
 		N_X is X + 1, N_Y is Y + 1;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y + 1;
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		% Promote
@@ -247,8 +247,8 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, oni, X, Y, N_
 		N_X is X, N_Y is Y - 1;
 		N_X is X + 1, N_Y is Y + 1;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y + 1;
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		% Promote
@@ -284,7 +284,7 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, superoni, X, 
 		N_X is X + 1, N_Y is Y;
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y + 1
+		N_X is X - 1, N_Y is Y + 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -306,7 +306,7 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, superoni, X, 
 		N_X is X + 1, N_Y is Y;
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -328,7 +328,7 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, kirin, X, Y, 
 		N_X is X + 1, N_Y is Y;
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y + 1
+		N_X is X - 1, N_Y is Y + 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -343,14 +343,14 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, kirin, X, Y, 
 
 % try_move south kirin
 try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, kirin, X, Y, N_X, N_Y, Capture):-
-	select(piece(south, kirin, X, Y), Board, TempBoard),
+  select(piece(south, kirin, X, Y), Board, TempBoard),
 	(
 		N_X is X, N_Y is Y + 1;
 		N_X is X, N_Y is Y - 1;
 		N_X is X + 1, N_Y is Y;
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -373,8 +373,8 @@ try_move(Board, CaptN, CaptS, north, NewBoard, NewCaptN, NewCaptS, koropokkuru, 
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y + 1;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y + 1;
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -397,8 +397,8 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, koropokkuru, 
 		N_X is X - 1, N_Y is Y;
 		N_X is X + 1, N_Y is Y + 1;
 		N_X is X + 1, N_Y is Y - 1;
-		N_X is X - 1; N_Y is Y + 1;
-		N_X is X - 1; N_Y is Y - 1
+		N_X is X - 1, N_Y is Y + 1;
+		N_X is X - 1, N_Y is Y - 1
 	),
 	(
 		isEmpty(N_X, N_Y, Board),
@@ -457,11 +457,30 @@ put(Side, Type, X, Y, Board, Capt, NewBoard, NewCapt):-
 	% Create the new board
 	NewBoard = [piece(Side, Type, X, Y), Board].
 
-% Avancement du jeu
+%----------------------------------------------------------------
+% Heuristic : WIP
+%----------------------------------------------------------------
 
-% Condition de fin du jeu
+get_moves(Board, CaptN, CaptS, Side, MoveList):-
+  findall(
+    [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, 0],
+    try_move(Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture),
+    MoveList
+  ).
 
-% Heuristique
+distance_to_koropokkuru(Board, Side, N_X, N_Y, Cost, NewCost):-
+  opponent(Side, Opposide),
+  select(piece(Opposide, koropokkuru, KX, KY), Board, _),
+  NewCost is -abs(KX - N_X) - abs(KY - N_Y).
+
+process_cost(_, [], _):-!.
+
+process_cost(Board, [Head|Tail], [NewHead|NewTail]):-
+  Head = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, Cost],
+  distance_to_koropokkuru(Board, Side, N_X, N_Y, Cost, NewCost),
+  NewHead = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, NewCost],
+  process_cost(Board, Tail, NewTail),
+  write([Side, Type, X, Y, N_X, N_Y, Capture, NewCost]), nl.
 
 %----------------------------------------------------------------
 % Print functions
