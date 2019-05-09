@@ -248,7 +248,14 @@
 
 	test('heuristic'):-
 		initial_board(Board),
-		get_moves(Board, [], [], south, MoveList),
-		process_cost(Board, MoveList, NewMoveList).
+		get_moves(Board, [], [], north, MoveList),
+		process_score(Board, MoveList, NewMoveList),
+		best_move_start(NewMoveList, BestMove),
+		write(BestMove),nl.
+
+	test('heuristic2'):-
+		initial_board(Board),
+		generate_move(Board, [], [], north, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture),
+		write(hres), write([Type, X, Y, N_X, N_Y, Capture]), nl.
 
 :-end_tests(tp4tests).

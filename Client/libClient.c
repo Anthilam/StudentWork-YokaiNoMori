@@ -62,8 +62,6 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv){
   else {
     convertServerToAI(coupAdv, &coup, false);
   }
-
-  printStrikeIa(*coupAdv);
 }
 
 int receiveIntFromJava(int sock){

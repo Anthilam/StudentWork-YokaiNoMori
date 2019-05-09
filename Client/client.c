@@ -159,7 +159,7 @@ int main(int argc, char **argv) {
           printf("* Game ended, notifying AI\n");
           nbPartie++;
 
-          recvIa.finPartie = true;
+          coupIa.finPartie = true;
           sendCoupToAI(sockIa, coupIa);
 
           printf("* AI has been notified\n");

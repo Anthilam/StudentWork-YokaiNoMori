@@ -12,18 +12,18 @@ public class Prolog {
 	String side, opposide;
 
 	// The current board
-	ArrayList<String> currentBoard = new ArrayList();
+	ArrayList<String> currentBoard;
 	// The current list of pieces captured by north player
-	ArrayList<String> currentCaptN = new ArrayList();
+	ArrayList<String> currentCaptN;
 	// The current list of pieces captured by south player
-	ArrayList<String> currentCaptS = new ArrayList();
+	ArrayList<String> currentCaptS;
 
 	// The new board
-	ArrayList<String> newBoard = new ArrayList();
+	ArrayList<String> newBoard;
 	// The new list of pieces captured by north player
-	ArrayList<String> newCaptN = new ArrayList();
+	ArrayList<String> newCaptN;
 	// The new list of pieces captured by south player
-	ArrayList<String> newCaptS = new ArrayList();
+	ArrayList<String> newCaptS;
 
 	// Constructor
 	public Prolog(String side, String opposide) {
@@ -48,6 +48,14 @@ public class Prolog {
 
 	// Initialize the Prolog object
 	public void init() {
+		currentBoard = new ArrayList();
+		currentCaptN = new ArrayList();
+		currentCaptS = new ArrayList();
+
+		newBoard = new ArrayList();
+		newCaptN = new ArrayList();
+		newCaptS = new ArrayList();
+
 		try {
 			HashMap<String, Term> results = new HashMap();
 
@@ -244,9 +252,9 @@ public class Prolog {
 		}
 	}
 
-	/* tryMove : a function that creates a strike,
-	 * using the try_move predicate */
-	public Coup tryMove() {
+	/* generateMove : a function that creates a strike,
+	 * using the generate_move predicate */
+	public Coup generateMove() {
 		String type = "";				// Piece's type
 
 		long x = 0, y = 0;			// Current coordinates
@@ -257,7 +265,7 @@ public class Prolog {
 		HashMap<String, Term> results = new HashMap();
 
 		// Build the request
-		String request = "try_move("
+		String request = "generate_move("
 			+ currentBoard + ", "
 			+ currentCaptN + ", "
 			+ currentCaptS + ", "

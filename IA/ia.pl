@@ -468,19 +468,41 @@ get_moves(Board, CaptN, CaptS, Side, MoveList):-
     MoveList
   ).
 
-distance_to_koropokkuru(Board, Side, N_X, N_Y, Cost, NewCost):-
+distance_to_koropokkuru(Board, Side, N_X, N_Y, Score, NewScore):-
   opponent(Side, Opposide),
   select(piece(Opposide, koropokkuru, KX, KY), Board, _),
-  NewCost is -abs(KX - N_X) - abs(KY - N_Y).
+  NewScore is Score - abs(KX - N_X) - abs(KY - N_Y).
 
-process_cost(_, [], _):-!.
+process_score(_, [], _):-!.
 
-process_cost(Board, [Head|Tail], [NewHead|NewTail]):-
-  Head = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, Cost],
-  distance_to_koropokkuru(Board, Side, N_X, N_Y, Cost, NewCost),
-  NewHead = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, NewCost],
-  process_cost(Board, Tail, NewTail),
-  write([Side, Type, X, Y, N_X, N_Y, Capture, NewCost]), nl.
+process_score(Board, [Head|Tail], [NewHead|NewTail]):-
+  Head = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, Score],
+  distance_to_koropokkuru(Board, Side, N_X, N_Y, Score, NewScore),
+  NewHead = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, NewScore],
+  process_score(Board, Tail, NewTail).
+  %write(pscore), write([Side, Type, X, Y, N_X, N_Y, Capture, NewScore]), nl.
+
+best_move_start([Head|Tail], BestMove):-
+  best_move(Tail, Head, BestMove).
+
+best_move([], BestMove, BestMove).
+
+best_move([Head|Tail], BestMove, NewBestMove):-
+  Head = [_, _, _, _, _, _, _, _, _, _, _, _, _, Score],
+  BestMove = [_, _, _, _, _, _, _, _, _, _, _, _, _, BScore],
+  (
+    Score >= BScore,
+    best_move(Tail, Head, NewBestMove)
+    ;
+    best_move(Tail, BestMove, NewBestMove)
+  ).
+
+generate_move(Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture):-
+  get_moves(Board, CaptN, CaptS, Side, MoveList),
+  process_score(Board, MoveList, NewMoveList),
+  best_move_start(NewMoveList, BestMove),
+  BestMove = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, Score].
+
 
 %----------------------------------------------------------------
 % Print functions

@@ -83,9 +83,6 @@ public class jSicstus {
     boolean run = true;
     int nbPartie = 1;
 
-    // Specify turn order
-    boolean opponentTurn = false;
-
     // Initialize sides
     String side = "north";      // Our side (north/south)
     String opposide = "south";  // Opponent side (north/south)
@@ -106,27 +103,25 @@ public class jSicstus {
     System.out.println("** STARTING GAME 1 **");
 
     while (run && nbPartie == 1) {
-      // Print the board
-      prolog.printBoard();
-
       if (side == "north") {
         // Create a strike
-        Coup oppStrike = prolog.tryMove();
+        System.out.println("[N] * Getting strike from Prolog");
+        Coup oppStrike = prolog.generateMove();
         System.out.println(oppStrike);
 
         // Send the strike
-        System.out.println("* Sending strike to client");
+        System.out.println("[N] * Sending strike to client");
         oppStrike.sendToNetwork(ods);
 
         // Read ennemy strike
-        System.out.println("* Getting ennemy strike from client");
+        System.out.println("[N] * Getting ennemy strike from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
-          System.out.println("* Game end received");
+          System.out.println("[N] * Game end received");
         }
         // Otherwise
         else {
@@ -141,14 +136,14 @@ public class jSicstus {
         Coup oppStrike = new Coup();
 
         // Read ennemy strike
-        System.out.println("* Getting ennemy strike from client");
+        System.out.println("[S] * Getting ennemy strike from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
-          System.out.println("* Game end received");
+          System.out.println("[S] * Game end received");
         }
         // Otherwise
         else {
@@ -158,11 +153,12 @@ public class jSicstus {
           prolog.forceEnnemyStrike(oppStrike);
 
           // Create a strike
-          oppStrike = prolog.tryMove();
+          System.out.println("[S] * Getting strike from Prolog");
+          oppStrike = prolog.generateMove();
           System.out.println(oppStrike);
 
           // Send the strike
-          System.out.println("* Sending strike to client");
+          System.out.println("[S] * Sending strike to client");
           oppStrike.sendToNetwork(ods);
         }
       }
@@ -183,27 +179,25 @@ public class jSicstus {
     System.out.println("** STARTING GAME 2 **");
 
     while (run && nbPartie == 2) {
-      // Print the board
-      prolog.printBoard();
-
       if (side == "south") {
         // Create a strike
-        Coup oppStrike = prolog.tryMove();
+        System.out.println("[S] * Getting strike from Prolog");
+        Coup oppStrike = prolog.generateMove();
         System.out.println(oppStrike);
 
         // Send the strike
-        System.out.println("* Sending strike to client");
+        System.out.println("[S] * Sending strike to client");
         oppStrike.sendToNetwork(ods);
 
         // Read ennemy strike
-        System.out.println("* Getting ennemy strike from client");
+        System.out.println("[S] * Getting ennemy strike from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
-          System.out.println("* Game end received");
+          System.out.println("[S] * Game end received");
         }
         // Otherwise
         else {
@@ -217,14 +211,14 @@ public class jSicstus {
         Coup oppStrike = new Coup();
 
         // Read ennemy strike
-        System.out.println("* Getting ennemy strike from client");
+        System.out.println("[N] * Getting ennemy strike from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
         if (oppStrike.getFinPartie()) {
           nbPartie++;
 
-          System.out.println("* Game end received");
+          System.out.println("[N] * Game end received");
         }
         // Otherwise
         else {
@@ -234,11 +228,12 @@ public class jSicstus {
           prolog.forceEnnemyStrike(oppStrike);
 
           // Create a strike
-          oppStrike = prolog.tryMove();
+          System.out.println("[N] * Getting strike from Prolog");
+          oppStrike = prolog.generateMove();
           System.out.println(oppStrike);
 
           // Send the strike
-          System.out.println("* Sending strike to client");
+          System.out.println("[N] * Sending strike to client");
           oppStrike.sendToNetwork(ods);
         }
       }
