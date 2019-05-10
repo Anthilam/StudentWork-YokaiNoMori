@@ -8,7 +8,6 @@ int main(int argc, char** argv) {
   int connectionP1, connectionP2;
   int err;
 
-
   TPartieReq player1;
   TPartieReq player2;
 
@@ -16,10 +15,12 @@ int main(int argc, char** argv) {
   game.gameNumber = 1;
   game.scorePlayer1 = 0;
   game.scorePlayer2 = 0;
+  game.nbStrike = 0;
 
+  bool gameOneEnded=false;
   bool bothConnected;
   // true : player1 is oriented south  ; false : player2 is orientied north
-  bool orientation = false; // does player1 is oriented nord
+  bool player1Sud = false; // does player1 is oriented nord
   struct sockaddr_in addClient;	/* adresse de la socket client connectee */
   /*
   * verification des arguments
@@ -42,7 +43,7 @@ int main(int argc, char** argv) {
   connectionP2 = accept(sockConx,(struct sockaddr *)&addClient,(socklen_t *)&sizeAddr);
   bothConnected = true;
 
-  // Détermination de l'orientation
+  // Détermination de player1Sud
   err = recv(connectionP1, &player1 ,sizeof(TPartieReq),0);
   checkRecvrError(err,connectionP1,connectionP2, game);
   err = recv(connectionP2, &player2 ,sizeof(TPartieReq),0);
@@ -55,41 +56,96 @@ int main(int argc, char** argv) {
     printf("Erreur sur les demandes de partie");
     return -1;
   }else if (res == 0){
-    orientation = false;
+    player1Sud = false;
   }else{
-    orientation = true;
+    player1Sud = true;
   }
+
+  printf("player1Sud :%d\n",player1Sud);
+
+  strcpy(game.player1Name,player1.nomJoueur);
+  strcpy(game.player2Name,player2.nomJoueur);
+
+  printf("Joueur 1 : %s\n",game.player1Name) ;
+  printf("Joueur 2 : %s\n",game.player2Name) ;
 
   // setting up the timeout
   struct timeval tv;
   tv.tv_sec = TIMEOUT_SEC;
   tv.tv_usec = 0;
+  /*
   setsockopt(connectionP1, SOL_SOCKET,SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval));
   setsockopt(connectionP2, SOL_SOCKET,SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval));
+  */
 
-  TCoupReq reqPlayer1;
-  TCoupRep repPlayer1;
-
-  TCoupReq reqPlayer2;
-  TCoupRep repPlayer2;
+  TCoupReq strikeReq;
+  TCoupRep strikeRep;
 
   bool validation;
   // game initialization
   initialiserPartie();
 
-  while(bothConnected) {
+  while(bothConnected && game.gameNumber < 3) {
     TPropCoup propCoup;
-    printf("Partie %d\n",game.gameNumber);
+
     // player1 is first first game(oriented nord)
-    if(orientation == true && game.gameNumber == 1){
-      err = recv(connectionP1,&reqPlayer1,sizeof(TCoupReq),0);
+    if((player1Sud == true && game.gameNumber == 1) ||
+    ( player1Sud == false && game.gameNumber == 2 )){
+
+      // Player 1 is playing
+      err = recv(connectionP1,&strikeReq,sizeof(TCoupReq),0);
       checkRecvrError(err,connectionP1,connectionP2,game);
-      validation = validationCoup(1,reqPlayer1,&propCoup);
-      
+
+      validation = validationCoup(1,strikeReq,&propCoup);
+
+      prepareStrikeAnswer(connectionP1,connectionP2,validation,strikeReq,propCoup,&strikeRep);
+      sendStrikeAnswer(connectionP1,connectionP2,strikeReq,strikeRep,game);
+
+      if(strikeRep.propCoup != CONT){
+        initialiserPartie();
+        switch(strikeRep.propCoup){
+          case GAGNE : game.scorePlayer1++;
+            break;
+          case PERDU : game.scorePlayer2++;
+            break;
+          default : // case NUL no one win a point
+            break;
+        }
+        game.gameNumber++;
+        if(game.gameNumber == 3 ){
+          endGame(connectionP1,connectionP2,game);
+        }
+        printf("Début de la deuxième partie ");
+      }
+      // Player 2 is playing
+      err = recv(connectionP2,&strikeReq,sizeof(TCoupReq),0);
+      checkRecvrError(err,connectionP2,connectionP1,game);
+
+      validation = validationCoup(2,strikeReq,&propCoup);
+      prepareStrikeAnswer(connectionP2,connectionP1,validation,strikeReq,propCoup,&strikeRep);
+      sendStrikeAnswer(connectionP2,connectionP1,strikeReq,strikeRep,game);
+
+      if(strikeRep.propCoup != CONT){
+        switch(strikeRep.propCoup){
+          case GAGNE : game.scorePlayer2++;
+            break;
+          case PERDU : game.scorePlayer1++;
+            break;
+          default : // case NUL no one win a point
+            break;
+        }
+        initialiserPartie();
+        game.gameNumber++;
+        if(game.gameNumber == 3 ){
+          endGame(connectionP1,connectionP2,game);
+        }
+        printf("Début de la deuxième partie ");
+      }
     }
     // player1 is second first game (oriented south)
     else{
-
+      err = recv(connectionP2,&strikeReq,sizeof(TCoupReq),0);
+      printf("ici 2\n");
     }
   }
 

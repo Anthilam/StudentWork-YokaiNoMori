@@ -12,14 +12,13 @@
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
 
-#define BOARD_SIZE 5
-
 typedef struct {
   int gameNumber;
   int scorePlayer1;
   int scorePlayer2;
-  char *player1Name;
-  char *player2Name;
+  char player1Name[T_NOM];
+  char player2Name[T_NOM];
+  int nbStrike;
 }TPartie;
 
 /* Fonction permettant de vérifié les érreurs RÉSEAU sur la fonction RECV
@@ -40,5 +39,11 @@ void checkSendError(int err,int checkingSock,int sock,TPartie game);
 int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPartie *game);
 
 void endGame(int sock1,int sock2,TPartie game);
+
+void prepareStrikeAnswer(int sock1,int sock2,bool validation, TCoupReq strike,TPropCoup strikeProp,TCoupRep *strikeAns);
+
+void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game);
+
+void printStrikeServer(TCoupReq coup);
 
 #endif
