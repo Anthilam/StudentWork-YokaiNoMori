@@ -24,8 +24,10 @@ typedef struct {
 
 /* Fonction permettant de vérifié les érreurs RÉSEAU sur la fonction RECV
   params:
-    int err : valeur de retour de la fonction recv
+    int err : return's value of the verificated function
     int sock : socket connecté au serveur
+    TPartie game :
+    int idPlayer
  */
 void checkRecvrError(int err,int checkingSock,int sock,TPartie game, int idPlayer);
 

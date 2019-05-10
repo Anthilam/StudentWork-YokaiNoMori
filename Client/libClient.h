@@ -16,91 +16,112 @@
 #include "../TCP/protocolYokai.h"
 #include "protocoleIa.h"
 
-/*  Envoie une requete de type PARTIE au serveur
+/*  Function to send a game request to the server
+
     params:
-      int sock : socket connecté au serveur
-      TPartieReq req : stucture envoyer au serveur
-      TPartieRep rep : structure stockant la réponse du serveur à la réquete
+      int sock : socket connected to the server
+      TPartieReq req  : stucture send to the server
+      TPartieRep *rep : structure used to read the server's answer
   */
 void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res);
 
-/* Fonction permettant de vérifié les érreurs RÉSEAU sur la fonction RECV
+/* Function to check the recv's errors
+
   params:
-    int err : valeur de retour de la fonction recv
-    int sock : socket connecté au serveur
+    int err : recv's return value
+    int sock : socket connected to the server
  */
 void checkRecvrError(int err,int sock);
 
-/* Fonction permettant de vérifié les érreurs RÉSEAU sur la fonction SEND
+/* Function to check the send's errors
+
   params:
-    int err : valeur de retour de la fonction recv
-    int sock : socket connecté au serveur
+    int err : send's return value
+    int sock : socket connected to the server
  */
 void checkSendError(int err,int sock );
 
-/*  Fonction permettant d'envoyer un coup, celle-ci traite aussi les érreurs de
-    réseau et de réponse du serveur ( coup valide ou non ...). La fonction appel aussi
-    la fonction de mise à jours du plateau de jeu dans le cas où le coup est valide.
+/*  Function to send a strike to the server, and process the anwser
+
     params:
-      int sock : socket connecté au serveur
-      TCoupReq reqCoup requête à envoyer
-      TCoupRep repCoup réponse du serveur
+      int sock : socket connected to the server
+      TCoupReq reqCoup  : request to send
+      TCoupRep *repCoup : server's answer
  */
 void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
 
-/*  Fonction permettant de récupérer le coup de l'adversaire, celle-ci traite
-    aussi les érreurs de réseau et de réponse du serveur ( coup valide ou non ...).
+/*  Function to send a strike to the server, and process the anwser
+
     params:
-      int sock : socket connecté au serveur
-      TCoupRep repCoup : réponse du serveur
+      int sock : socket connected to the server
+      TCoupRep repCoup : opponent's strike
  */
 void readEnnemyAction(int sock,TCoupIa *coupAdv);
 
-/*
-  params:
-    int sock :
+/*  Function to read a int from a java server
+
+    params:
+      int sock : socket connected to the java server
+
+    return : the int value
   */
 int receiveIntFromJava(int sock);
 
-/*
-  params:
-    int sock :
+/*  Funtion to read a boolean from a java server
+
+    params:
+      int sock : socket connected to the server
+
+    return : the boolean value
   */
 int receiveBoolFromJava(int sock);
 
-/*
-  params:
-    int sock :
+/*  Function to read a strike from the AI ( java server )
+
+    params:
+      int sock : socket connected to the AI ( java server )
+      TCoupIa *res : the strike
   */
 void getCoupFromAI(int sock,TCoupIa *res);
 
-/*
-  params:
-    int sock :
+/*  Function to send a strike to the AI ( java server )
+
+    params:
+      int sock : socket connected to the AI
+      TCoupIa : the strike to send
   */
 void sendCoupToAI(int sock, TCoupIa coupIa);
 
-/*
-  params:
+/*  Function to convert a AI shape strike to a server shape strike
 
+    params:
+      TCoupIa *ai : the AI shape strike
+      TCoupReq *req ; the convertion result into a server shape strike
+      bool sens : the orientation in the game
+      int nbPartie : the game number
   */
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie);
 
-/*
-  params:
+/*  Function to convert a serveur shape strike to a AI shape strike
 
+    params:
+      TCoupIa *ai : the convertion result into a AI shape strike
+      TCoupReq *req ; the server shape strike
+      bool end : boolean representing the game's end
   */
 void convertServerToAI(TCoupIa *ai, TCoupReq *req, bool end);
 
-/*
-  params:
+/*  Function to print a AI shape strike
 
+    params:
+      TCoupIa coup : the strike to print
   */
 void printStrikeIa(TCoupIa coup);
 
-/*
-  params:
+/*  Function to print a serveur shape strike
 
+    params:
+      TCoupReq coup : the strike to print
   */
 void printStrikeServer(TCoupReq coup);
 
