@@ -246,16 +246,9 @@
 		\+member(piece(north, kodama, 1, 1), NewBoard),
 		member(piece(north, kirin, 0, 0), B).
 
-	test('heuristic'):-
+	test('generate_move'):-
 		initial_board(Board),
-		get_moves(Board, [], [], north, MoveList),
-		process_score(Board, MoveList, NewMoveList),
-		best_move_start(NewMoveList, BestMove),
-		write(BestMove),nl.
-
-	test('heuristic2'):-
-		initial_board(Board),
-		generate_move(Board, [], [], north, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture),
-		write(hres), write([Type, X, Y, N_X, N_Y, Capture]), nl.
+		generate_move(Board, [], [], north, _, _, _, Type, X, Y, N_X, N_Y, Capture),
+		write(move), write([Type, X, Y, N_X, N_Y, Capture]), nl.
 
 :-end_tests(tp4tests).

@@ -3,6 +3,8 @@ import java.net.Socket;
 import java.io.*;
 
 public class Coup implements Serializable {
+  private static final long serialVersionUID = 59771629617947L;
+
   private EnumCoup typeCoup;
   private EnumPiece piece;
   private boolean finPartie;

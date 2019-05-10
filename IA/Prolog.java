@@ -149,18 +149,17 @@ public class Prolog {
 				+ opposide + ", "
 				+ oppopiece + ", "
 				+ oppox + ", "
-				+ oppoy + ", ";
+				+ oppoy + ", "
+				+ currentBoard + ", ";
 
 			if (opposide == "north") {
-				request += currentBoard + ", "
-				+ currentCaptN + ", "
-				+ ", NewBoard, NewCaptN).";
+				request += currentCaptN + ", ";
 			}
 			else {
-				request += currentBoard + ", "
-				+ currentCaptS + ", "
-				+ ", NewBoard, NewCaptS).";
+				request += currentCaptS + ", ";
 			}
+
+			request += "NewBoard, NewCapt).";
 		}
 
 		try {
@@ -206,6 +205,9 @@ public class Prolog {
 				// If put
 				else {
 					// Convert lists into Java arrays
+
+					System.out.println("\n" + results + "\n");
+
 					if (results.get("NewBoard").isList()) {
 						Term[] term = results.get("NewBoard").toPrologTermArray();
 
@@ -215,7 +217,7 @@ public class Prolog {
 					}
 
 					if (results.get("NewCapt").isList()) {
-						Term[] term = results.get("NewCaptN").toPrologTermArray();
+						Term[] term = results.get("NewCapt").toPrologTermArray();
 
 						for (int i = 0; i < term.length; i++) {
 							newCaptN.add(term[i].toString());

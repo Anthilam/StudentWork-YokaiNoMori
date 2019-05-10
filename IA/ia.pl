@@ -416,22 +416,45 @@ try_move(Board, CaptN, CaptS, south, NewBoard, NewCaptN, NewCaptS, koropokkuru, 
 % of the moving piece and its coordinates of arrival
 %----------------------------------------------------------------
 force_move(Side, Type, X, Y, N_X, N_Y, Board, CaptN, CaptS, NewBoard, NewCaptN, NewCaptS):-
+  (
+    Side = north,
+    N_Y >= 5,
+    (
+      Type = kodama,
+      NewType = samourai
+      ;
+      Type = oni,
+      NewType = superoni
+    )
+    ;
+    Side = south,
+    N_Y =< 2,
+    (
+      Type = kodama,
+      NewType = samourai
+      ;
+      Type = oni,
+      NewType = superoni
+    )
+    ;
+    NewType = Type
+  ),
 	select(piece(Side, Type, X, Y), Board, TempBoard),
 	(
 		% Try moving
 		isEmpty(N_X, N_Y, Board),
-		move(piece(Side, Type, N_X, N_Y), TempBoard, NewBoard),
+		move(piece(Side, NewType, N_X, N_Y), TempBoard, NewBoard),
 		NewCaptN = CaptN,
 		NewCaptS = CaptS
 		;
 		% Try capturing if side is north
 		Side = north,
-		capture(piece(Side, Type, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
+		capture(piece(Side, NewType, N_X, N_Y), TempBoard, NewBoard, CaptN, NewCaptN),
 		NewCaptS = CaptS
 		;
 		% Try capturing if side is south
 		Side = south,
-		capture(piece(Side, Type, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
+		capture(piece(Side, NewType, N_X, N_Y), TempBoard, NewBoard, CaptS, NewCaptS),
 		NewCaptN = CaptN
 	).
 
@@ -455,10 +478,10 @@ put(Side, Type, X, Y, Board, Capt, NewBoard, NewCapt):-
 	% Extract the piece from the list of captured pieces
 	select(piece(Side, Type, _, _), Capt, NewCapt),
 	% Create the new board
-	NewBoard = [piece(Side, Type, X, Y), Board].
+	NewBoard = [piece(Side, Type, X, Y)| Board].
 
 %----------------------------------------------------------------
-% Heuristic : WIP
+% get_moves : get all possible moves for a side
 %----------------------------------------------------------------
 
 get_moves(Board, CaptN, CaptS, Side, MoveList):-
@@ -468,19 +491,101 @@ get_moves(Board, CaptN, CaptS, Side, MoveList):-
     MoveList
   ).
 
-distance_to_koropokkuru(Board, Side, N_X, N_Y, Score, NewScore):-
+%----------------------------------------------------------------
+% distance_to_koropokkuru : get the distance between a given
+% piece and the opponent koropokkuru, substract this distance
+% to the score
+%----------------------------------------------------------------
+
+distance_to_koropokkuru(Board, Side, _, N_X, N_Y, Score, NewScore):-
   opponent(Side, Opposide),
   select(piece(Opposide, koropokkuru, KX, KY), Board, _),
   NewScore is Score - abs(KX - N_X) - abs(KY - N_Y).
 
-process_score(_, [], _):-!.
+%----------------------------------------------------------------
+% is_capturing : increase the score if a piece is capturing an
+% opponent piece
+%----------------------------------------------------------------
 
-process_score(Board, [Head|Tail], [NewHead|NewTail]):-
+is_capturing(Board, Side, Type, N_X, N_Y, Capture, Score, NewScore):-
+  opponent(Side, Opposide),
+  (
+    Capture = 1,
+    (
+      Type = koropokkuru,
+      NewScore is Score - 5
+      ;
+      select(piece(Opposide, OppoType, N_X, N_Y), Board, _),
+      (
+        OppoType = kodama,
+        NewScore is Score + 1
+        ;
+        OppoType = samourai,
+        NewScore is Score + 3
+        ;
+        OppoType = oni,
+        NewScore is Score + 2
+        ;
+        OppoType = superoni,
+        NewScore is Score + 3
+        ;
+        OppoType = kirin,
+        NewScore is Score + 3
+        ;
+        OppoType = koropokkuru,
+        NewScore is Score + 10
+      )
+    )
+    ;
+    Capture = 0,
+    NewScore is Score
+  ).
+
+%----------------------------------------------------------------
+% oppo_moves : for a given move, test if its going to be in
+% the range of an opponent move, if its the case, substract score
+%----------------------------------------------------------------
+
+oppo_moves([], _, _, _, _, _, _, NewScore, NewScore):-!.
+
+oppo_moves([Head|Tail], Board, Side, Type, N_X, N_Y, Capture, Score, NewScore):-
+  Head = [_, _, _, _, _, _, _, _, _, _, HN_X, HN_Y, _, _],
+  (
+    HN_X = N_X, HN_Y = N_Y,
+    (
+      Type = koropokkuru,
+      NewScore is Score - 1000
+      ;
+      NewScore is Score - 2
+    )
+    ;
+    oppo_moves(Tail, Board, Side, Type, N_X, N_Y, Capture, Score, NewScore)
+  ).
+
+%----------------------------------------------------------------
+% process_score : process score for each piece of a list of piece
+%----------------------------------------------------------------
+
+process_score(_, _, [], _):-!.
+
+process_score(Board, OppoMoveList, [Head|Tail], [NewHead|NewTail]):-
   Head = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, Score],
-  distance_to_koropokkuru(Board, Side, N_X, N_Y, Score, NewScore),
-  NewHead = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, NewScore],
-  process_score(Board, Tail, NewTail).
-  %write(pscore), write([Side, Type, X, Y, N_X, N_Y, Capture, NewScore]), nl.
+  % Calculate distance to opponent koropokkuru
+  distance_to_koropokkuru(Board, Side, Type, N_X, N_Y, Score, NewScore),
+  % Increase score if the piece is capturing another
+  is_capturing(Board, Side, Type, N_X, N_Y, Capture, NewScore, NewScore2),
+  % Process opponent moves
+  oppo_moves(OppoMoveList, Board, Side, Type, N_X, N_Y, Capture, NewScore2, NewScore3),
+  % Get the new strike
+  NewHead = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, NewScore3],
+  % Print calculated score
+  % write(pscore), write([Side, Type, X, Y, N_X, N_Y, Capture, NewScore3]), nl,
+  % Loop
+  process_score(Board, OppoMoveList, Tail, NewTail).
+
+%----------------------------------------------------------------
+% best_move : get the best possible move
+%----------------------------------------------------------------
 
 best_move_start([Head|Tail], BestMove):-
   best_move(Tail, Head, BestMove).
@@ -491,18 +596,28 @@ best_move([Head|Tail], BestMove, NewBestMove):-
   Head = [_, _, _, _, _, _, _, _, _, _, _, _, _, Score],
   BestMove = [_, _, _, _, _, _, _, _, _, _, _, _, _, BScore],
   (
-    Score >= BScore,
+    Score > BScore,
     best_move(Tail, Head, NewBestMove)
     ;
     best_move(Tail, BestMove, NewBestMove)
   ).
 
-generate_move(Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture):-
-  get_moves(Board, CaptN, CaptS, Side, MoveList),
-  process_score(Board, MoveList, NewMoveList),
-  best_move_start(NewMoveList, BestMove),
-  BestMove = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, Score].
+%----------------------------------------------------------------
+% generate_move : generate (in theory), the best possible move
+%----------------------------------------------------------------
 
+generate_move(Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture):-
+  % Get opponent side
+  opponent(Side, Opposide),
+  % Get possible moves for our side
+  get_moves(Board, CaptN, CaptS, Side, MoveList),
+  % Get possible moves of the opponent
+  get_moves(Board, CaptN, CaptS, Opposide, OppoMoveList),
+  % Process scores
+  process_score(Board, OppoMoveList, MoveList, NewMoveList),
+  % Get the best move
+  best_move_start(NewMoveList, BestMove),
+  BestMove = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, _].
 
 %----------------------------------------------------------------
 % Print functions
