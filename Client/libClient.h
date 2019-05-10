@@ -41,7 +41,7 @@ void checkRecvrError(int err,int sock);
  */
 void checkSendError(int err,int sock );
 
-/*  Function to send a strike to the server, and process the anwser
+/*  Function to send a strike to the server, and process the answer
 
     params:
       int sock : socket connected to the server
@@ -50,7 +50,7 @@ void checkSendError(int err,int sock );
  */
 void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
 
-/*  Function to send a strike to the server, and process the anwser
+/*  Function to send a strike to the server, and process the answer
 
     params:
       int sock : socket connected to the server
