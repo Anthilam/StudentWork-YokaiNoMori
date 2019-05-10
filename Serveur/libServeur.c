@@ -1,21 +1,35 @@
 #include "libServeur.h"
 
-void checkRecvrError(int err,int checkingSock,int sock,TPartie game){
+void checkRecvrError(int err,int checkingSock,int sock,TPartie game, int playerId){
   if (err <= 0) {
     perror("* Error while receiving");
 
     // Envoie de reponse coup timeout
-
+    TCoupRep timeOut;
+    timeOut.err = ERR_COUP;
+    timeOut.validCoup = TIMEOUT;
+    if(playerId == 1){
+      game.scorePlayer2 = 2;
+    }else{
+      game.scorePlayer1 = 2;
+    }
     endGame(checkingSock,sock,game);
   }
 }
 
-void checkSendError(int err,int checkingSock,int sock,TPartie game){
+void checkSendError(int err,int checkingSock,int sock,TPartie game, int playerId ){
   if (err <= 0) {
     perror("* Error while sending");
 
     // Envoie de reponse coup timeout
-
+    TCoupRep timeOut;
+    timeOut.err = ERR_COUP;
+    timeOut.validCoup = TIMEOUT;
+    if(playerId == 1){
+      game.scorePlayer2 = 2;
+    }else{
+      game.scorePlayer1 = 2;
+    }
     endGame(checkingSock,sock,game);
   }
 }
@@ -65,16 +79,23 @@ int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPar
     }
   }
   err = send(sockP1,&answerP1,sizeof(TPartieRep),0);
-  checkSendError(err,sockP1,sockP2,*game);
+  checkSendError(err,sockP1,sockP2,*game,1);
 
   err = send(sockP2,&answerP2,sizeof(TPartieRep),0);
-  checkSendError(err,sockP2,sockP1,*game);
+  checkSendError(err,sockP2,sockP1,*game,2);
 
   return orientation;
 }
 
 void endGame(int sock1,int sock2,TPartie game){
-  printf("Le joueur X gagne");
+  if(game.scorePlayer1 > game.scorePlayer2){
+    printf("*** Le joueur ' %s ' gagne ***\n",game.player1Name);
+  }
+  else if(game.scorePlayer2 > game.scorePlayer1){
+    printf("*** Le joueur ' %s ' gagne ***\n",game.player2Name);
+  }else{
+    printf("*** Le match se termine sur une égalité ! :'( *** \n");
+  }
 
   shutdown(sock1, SHUT_RDWR); close(sock1);
   shutdown(sock2, SHUT_RDWR); close(sock2);
@@ -96,20 +117,27 @@ void prepareStrikeAnswer(int sock1,int sock2,bool validation, TCoupReq strike,TP
   strikeAns->propCoup = strikeProp;
 }
 
-void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game){
+void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game,int playerId){
   int err;
+  int secondPlayerId;
+  if(playerId == 1){
+    secondPlayerId = 2;
+  }else{
+    secondPlayerId = 1;
+  }
+
   // validation to the player
   err = send(sock1,&strikeAns,sizeof(TCoupRep),0);
-  checkSendError(err,sock1,sock2,game);
+  checkSendError(err,sock1,sock2,game,playerId);
 
   //validation to the other player
   err = send(sock2,&strikeAns,sizeof(TCoupRep),0);
-  checkSendError(err,sock2,sock1,game);
+  checkSendError(err,sock2,sock1,game,secondPlayerId);
 
   // sending to the strike to the other player if the game should continue
   if(strikeAns.propCoup == CONT){
     err = send(sock2,&strike,sizeof(TCoupReq),0);
-    checkSendError(err,sock2,sock1,game);
+    checkSendError(err,sock2,sock1,game,secondPlayerId);
   }
 }
 

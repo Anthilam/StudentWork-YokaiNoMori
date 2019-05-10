@@ -26,14 +26,14 @@ typedef struct {
     int err : valeur de retour de la fonction recv
     int sock : socket connecté au serveur
  */
-void checkRecvrError(int err,int checkingSock,int sock,TPartie game);
+void checkRecvrError(int err,int checkingSock,int sock,TPartie game, int idPlayer);
 
 /* Fonction permettant de vérifié les érreurs RÉSEAU sur la fonction SEND
   params:
     int err : valeur de retour de la fonction recv
     int sock : socket connecté au serveur
  */
-void checkSendError(int err,int checkingSock,int sock,TPartie game);
+void checkSendError(int err,int checkingSock,int sock,TPartie game, int playerId);
 
 
 int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPartie *game);
@@ -42,7 +42,7 @@ void endGame(int sock1,int sock2,TPartie game);
 
 void prepareStrikeAnswer(int sock1,int sock2,bool validation, TCoupReq strike,TPropCoup strikeProp,TCoupRep *strikeAns);
 
-void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game);
+void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game,int playerId);
 
 void printStrikeServer(TCoupReq coup);
 
