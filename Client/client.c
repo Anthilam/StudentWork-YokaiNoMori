@@ -69,30 +69,33 @@ int main(int argc, char **argv) {
     return -1;
   }
 
-  /* Tant que le client est connecté au serveur
-  et qu'on a pas joué deux parties */
+  /* while the client is connected to the server
+  and we are playing the first game */
 
-  // PARTIE 1
+  // FIRST GAME
   printf("** STARTING GAME 1 **\n");
-
   while (connected && nbPartie == 1) {
-    TCoupRep repCoup; // Structure réponse serveur
-    TCoupReq reqCoup; // Structure envoi serveur
-    TCoupIa coupIa;   // Structure envoi IA
-    TCoupIa recvIa;   // Structure réponse IA
 
-    // Si orienté sud
+    TCoupRep repCoup; // Structure used to get the answer from the server
+    TCoupReq reqCoup; // Structure used to send a strike to server
+    TCoupIa coupIa;   // Structure used to send a strike to AI
+    TCoupIa recvIa;   // Structure used to get the answer from the AI
+
+    // If the client is oriented south
     if (orientation.sens == true) {
-      // Génération du coup par l'IA
+
+      // Receptioning the strike from the AI
       printf("* Getting strike from AI\n");
       getCoupFromAI(sockIa, &coupIa);
 
-      // Envoi du coup au serveur
+
       printf("* Sending strike to server\n");
+      // Converting the strike from AI shape to server shape
       convertAItoServer(&coupIa, &reqCoup, orientation.sens, nbPartie);
+      // Sending the strike to the server
       sendCoupGetRep(sock, reqCoup, &repCoup);
 
-      // Si la partie se termine, notifier l'IA
+      // If the game end, notifiying the AI
       if (repCoup.propCoup != CONT) {
         printf("* Game ended, notifying AI\n");
         nbPartie++;
@@ -102,13 +105,14 @@ int main(int argc, char **argv) {
 
         printf("* AI has been notified\n");
       }
-      // Sinon lire le coup adverse
+      // If the game isn't ended read opponent strike
       else {
-        // Lecture coup adverse
+
         printf("* Getting ennemy action\n");
+        // Reading opponent's strike
         readEnnemyAction(sock, &recvIa);
 
-        // Si le coup adverse termine la partie, notifier l'IA
+        // If the opponent's strike is ending the game, notifying the AI
         if (recvIa.finPartie) {
           printf("* Game ended, notifying AI\n");
           nbPartie++;
@@ -117,20 +121,22 @@ int main(int argc, char **argv) {
 
           printf("* AI has been notified\n");
         }
-        // Sinon envoyer le coup adverse à l'IA
+        // Else, sending the opponent's strike to the AI
         else {
+
           printf("* Sending ennemy action to AI\n");
           sendCoupToAI(sockIa, recvIa);
         }
       }
     }
-    // Si orienté nord
+    // If the client is oriented north
     else {
-      // Lecture du coup adverse
+
+      // Reading the opponent's strike
       printf("* Getting ennemy action\n");
       readEnnemyAction(sock, &recvIa);
 
-      // Si le coup adverse termine la partie, notifier l'IA
+      // If the opponent's is ending the game, notifiying the AI
       if (recvIa.finPartie) {
         printf("* Game ended, notifying AI\n");
         nbPartie++;
@@ -139,22 +145,26 @@ int main(int argc, char **argv) {
 
         printf("* AI has been notified\n");
       }
-      // Sinon
+      // if the game isn't ended
       else {
-        // Envoi du coup adverse à l'IA
+
+        // Sending the opponent's strike to the AI
         printf("* Sending ennemy action to AI\n");
         sendCoupToAI(sockIa, recvIa);
 
-        // Génération du coup par l'IA
+        // Getting strike from the AI
         printf("* Getting strike from AI\n");
         getCoupFromAI(sockIa, &coupIa);
 
-        // Envoi du coup au serveur
+
         printf("* Sending strike to the server\n");
+
+        // converting the AI shape to the server shape
         convertAItoServer(&coupIa, &reqCoup, orientation.sens, nbPartie);
+        // sending the strike to the server
         sendCoupGetRep(sock, reqCoup, &repCoup);
 
-        // Si la partie se termine, notifier l'IA
+        // If the game is ended, notifying the AI
         if (repCoup.propCoup != CONT) {
           printf("* Game ended, notifying AI\n");
           nbPartie++;
@@ -171,23 +181,25 @@ int main(int argc, char **argv) {
   printf("** STARTING GAME 2 **\n");
 
   while (connected && nbPartie == 2) {
-    TCoupRep repCoup; // Structure réponse serveur
-    TCoupReq reqCoup; // Structure envoi serveur
-    TCoupIa coupIa;   // Structure envoi IA
-    TCoupIa recvIa;   // Structure réponse IA
+    TCoupRep repCoup; // Structure used to get the answer from the server
+    TCoupReq reqCoup; // Structure used to send a strike to server
+    TCoupIa coupIa;   // Structure used to send a strike to AI
+    TCoupIa recvIa;   // Structure used to get the answer from the AI
 
-    // Si orienté sud
+    // // If the client is oriented south
     if (orientation.sens == false) {
-      // Génération du coup par l'IA
+
+      // Receptioning the strike from the AI
       printf("* Getting strike from AI\n");
       getCoupFromAI(sockIa, &coupIa);
 
-      // Envoi du coup au serveur
       printf("* Sending strike to server\n");
+      // Converting the strike from AI shape to server shape
       convertAItoServer(&coupIa, &reqCoup, orientation.sens, nbPartie);
+      // Sending the strike to the server
       sendCoupGetRep(sock, reqCoup, &repCoup);
 
-      // Si la partie se termine, notifier l'IA
+      // If the game end, notifiying the AI
       if (repCoup.propCoup != CONT) {
         printf("* Game ended, notifying AI\n");
         nbPartie++;
@@ -197,13 +209,13 @@ int main(int argc, char **argv) {
 
         printf("* AI has been notified\n");
       }
-      // Sinon lire le coup adverse
+      // If the game isn't ended read opponent strike
       else {
-        // Lecture coup adverse
+        // Reading opponent's strike
         printf("* Getting ennemy action\n");
         readEnnemyAction(sock, &recvIa);
 
-        // Si le coup adverse termine la partie, notifier l'IA
+        // If the opponent's strike is ending the game, notifying the AI
         if (recvIa.finPartie) {
           printf("* Game ended, notifying AI\n");
           nbPartie++;
@@ -212,20 +224,21 @@ int main(int argc, char **argv) {
 
           printf("* AI has been notified\n");
         }
-        // Sinon envoyer le coup adverse à l'IA
+        // Else, sending the opponent's strike to the AI
         else {
+
           printf("* Sending ennemy action to AI\n");
           sendCoupToAI(sockIa, recvIa);
         }
       }
     }
-    // Si orienté nord
+    // If the client is oriented north
     else {
-      // Lecture du coup adverse
+      // Reading opponent's strike
       printf("* Getting ennemy action\n");
       readEnnemyAction(sock, &recvIa);
 
-      // Si le coup adverse termine la partie, notifier l'IA
+      // If the opponent's strike is ending the game, notifying the AI
       if (recvIa.finPartie) {
         printf("* Game ended, notifying AI\n");
         nbPartie++;
@@ -234,22 +247,24 @@ int main(int argc, char **argv) {
 
         printf("* AI has been notified\n");
       }
-      // Sinon
+      // Else, sending the opponent's strike to the AI
       else {
-        // Envoi du coup adverse à l'IA
+        // Sending the opponent's strike to the AI
         printf("* Sending ennemy action to AI\n");
         sendCoupToAI(sockIa, recvIa);
 
-        // Génération du coup par l'IA
+        // Getting strike from the AI
         printf("* Getting strike from AI\n");
         getCoupFromAI(sockIa, &coupIa);
 
-        // Envoi du coup au serveur
+
         printf("* Sending strike to the server\n");
+        // converting the AI shape to the server shape
         convertAItoServer(&coupIa, &reqCoup, orientation.sens, nbPartie);
+        // sending the strike to the server
         sendCoupGetRep(sock, reqCoup, &repCoup);
 
-        // Si la partie se termine, notifier l'IA
+        // If the game is ended, notifying the AI
         if (repCoup.propCoup != CONT) {
           printf("* Game ended, notifying AI\n");
           nbPartie++;
@@ -264,10 +279,10 @@ int main(int argc, char **argv) {
   }
 
   printf("\n** FIN DES PARTIES **\n");
-
+  // shutdown and closing the socket to the AI
   shutdown(sockIa,SHUT_RDWR);
   close(sockIa);
-  // Fermeture de la socket
+  // shutdown and closing the socket to the server
   shutdown(sock, SHUT_RDWR);
   close(sock);
 

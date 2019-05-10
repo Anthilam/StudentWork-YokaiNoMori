@@ -12,6 +12,7 @@
 #include "../TCP/fonctionsTCP.h"
 #include "../TCP/protocolYokai.h"
 
+// Structure use to regroup game's information
 typedef struct {
   int gameNumber;
   int scorePlayer1;
@@ -35,15 +36,38 @@ void checkRecvrError(int err,int checkingSock,int sock,TPartie game, int idPlaye
  */
 void checkSendError(int err,int checkingSock,int sock,TPartie game, int playerId);
 
-
+/*
+  params:
+    int sockP1 :
+    int sockP2
+  */
 int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPartie *game);
 
+/*
+  params:
+    int sockP1 :
+    int sockP2
+  */
 void endGame(int sock1,int sock2,TPartie game);
 
+/*
+  params:
+    int sockP1 :
+    int sockP2
+  */
 void prepareStrikeAnswer(int sock1,int sock2,bool validation, TCoupReq strike,TPropCoup strikeProp,TCoupRep *strikeAns);
 
+/*
+  params:
+    int sockP1 :
+    int sockP2
+  */
 void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game,int playerId);
 
+/*
+  params:
+
+  */
 void printStrikeServer(TCoupReq coup);
 
 #endif

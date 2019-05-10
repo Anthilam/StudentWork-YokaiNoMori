@@ -3,10 +3,11 @@
 
 // Structure used to
 typedef struct {
-  bool sens; // false = nord ; true = sud
+  bool sens; // false = north; true = south
 } TInitIa;
 
 // Light version of the TCoup defined in protocolYokai.h
+// used to communicate with the AI
 typedef struct {
   int finPartie;               /* Numéro de la partie */
   TCoup typeCoup;               /* Type du coup */
