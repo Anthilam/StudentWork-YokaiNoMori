@@ -1,3 +1,11 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * Coup.java - a move
+ *
+ */
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
@@ -5,31 +13,22 @@ import java.io.*;
 public class Coup implements Serializable {
   private static final long serialVersionUID = 59771629617947L;
 
-  private EnumCoup typeCoup;
-  private EnumPiece piece;
-  private boolean finPartie;
-  private Action params;
+  private EnumCoup typeCoup;  // Move type
+  private EnumPiece piece;    // Move piece
+  private boolean finPartie;  // Game end flag
+  private Action params;      // Move action (movement/placement)
 
+  // Constructor
   public Coup() {}
 
+  // Constuctor 2
   public Coup(EnumCoup tpCoup, EnumPiece p, Action param) {
     this.typeCoup = tpCoup;
     this.piece = p;
     this.params = param;
   }
 
-  public void setTypeCoup(EnumCoup typeCoup) {
-    this.typeCoup = typeCoup;
-  }
-
-  public void setEnumPiece(EnumPiece p) {
-    this.piece = p;
-  }
-
-  public void setParams(Action act) {
-    this.params = act;
-  }
-
+  // Getters
   public EnumCoup getTypeCoup() {
     return this.typeCoup;
   }
@@ -46,10 +45,25 @@ public class Coup implements Serializable {
     return this.finPartie;
   }
 
+  // Setters
+  public void setTypeCoup(EnumCoup typeCoup) {
+    this.typeCoup = typeCoup;
+  }
+
+  public void setEnumPiece(EnumPiece p) {
+    this.piece = p;
+  }
+
+  public void setParams(Action act) {
+    this.params = act;
+  }
+
+  // toString
   public String toString() {
     return "* Coup :\n\tTypeCoup: " + typeCoup + "\n\tPiece: " +  piece + "\n" + params.toString();
   }
 
+  // Function to send the move over the network
   public void sendToNetwork(DataOutputStream ods){
     try {
       if (this.finPartie) {
@@ -70,10 +84,12 @@ public class Coup implements Serializable {
     this.params.sendToNetwork(ods);
   }
 
+  // Function to read a move from the network
   public void readFromNetwork(DataInputStream ids) {
     try {
       int boolValue = ids.readInt();
 
+      // Get game end flag
       if (boolValue == 0) {
         this.finPartie = false;
       }
@@ -81,6 +97,7 @@ public class Coup implements Serializable {
         this.finPartie = true;
       }
 
+      // If the game isn't ended, read values
       if (this.finPartie == false) {
         this.typeCoup = EnumCoup.values()[ids.readInt()];
         this.piece = EnumPiece.values()[ids.readInt()];

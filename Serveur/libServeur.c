@@ -1,61 +1,74 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * libServeur.c - function library for the server
+ *
+ */
+
 #include "libServeur.h"
 
-void checkRecvrError(int err,int checkingSock,int sock,TPartie game, int playerId){
+void checkRecvrError(int err, int checkingSock, int sock, TPartie game, int playerId) {
   if (err <= 0) {
     perror("* Error while receiving");
-    // Envoie de reponse coup timeout
+
+    // Send a move with a timeout
     TCoupRep timeOut;
     timeOut.err = ERR_COUP;
     timeOut.validCoup = TIMEOUT;
 
-    // checking the player that failed a connection
-    if(playerId == 1){
+    // Check which player has failed to connect
+    if (playerId == 1) {
       game.scorePlayer2 = 2;
-    }else{
+    }
+    else {
       game.scorePlayer1 = 2;
     }
 
-    endGame(checkingSock,sock,game);
+    endGame(checkingSock, sock, game);
   }
 }
 
-void checkSendError(int err,int checkingSock,int sock,TPartie game, int playerId ){
+void checkSendError(int err, int checkingSock, int sock, TPartie game, int playerId) {
   if (err <= 0) {
     perror("* Error while sending");
-    // Envoie de reponse coup timeout
+
+    // Send a move with a timeout
     TCoupRep timeOut;
     timeOut.err = ERR_COUP;
     timeOut.validCoup = TIMEOUT;
 
-    // checking the player that failed a connection
-    if(playerId == 1){
+    // Check which player has failed to connect
+    if (playerId == 1) {
       game.scorePlayer2 = 2;
-    }else{
+    }
+    else {
       game.scorePlayer1 = 2;
     }
 
-    endGame(checkingSock,sock,game);
+    endGame(checkingSock, sock, game);
   }
 }
 
-int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPartie *game){
-  int err=0;
-  TPartieRep answerP1; // variable used to send answer to the first client
-  TPartieRep answerP2; // variable used to send answer to the second client
+int sendAnswers(int sockP1, int sockP2, TPartieReq player1, TPartieReq player2, TPartie *game){
+  int err = 0;
 
-  // 1 : player1 is oriented sud  ; 0 : player2 is orientied nord
-  // null : error ⁼> endgame
+  TPartieRep answerP1; // Used to send answers to the first client
+  TPartieRep answerP2; // Used to send answers to the second client
+
+  // 1 : player1 is oriented south ; 0 : player2 is orientied north
+  // null : error -> endgame
   int orientation = -1;
 
-  // requests verification
-  if(player1.idReq != PARTIE){
+  // Check requests
+  if (player1.idReq != PARTIE) {
     answerP1.err = ERR_PARTIE;
   }
-  else if(player2.idReq != PARTIE){
+  else if (player2.idReq != PARTIE) {
     answerP2.err = ERR_PARTIE;
   }
-  else{
-    // preparing both validation
+  else {
+    // Prepare both validation
     answerP1.validSensTete = OK;
     answerP1.err = ERR_OK;
     answerP2.err = ERR_OK;
@@ -63,100 +76,101 @@ int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPar
     strcpy(answerP1.nomAdvers, player2.nomJoueur);
     strcpy(answerP2.nomAdvers, player1.nomJoueur);
 
-    // checking orientation
-    if(player1.piece == SUD){
+    // Check orientation
+    if (player1.piece == SUD) {
+      printf("* Le joueur 1 demande le SUD\n");
 
-      printf("player 1 demande sud \n");
       orientation = 1;
-      if(player2.piece == SUD){
+      if (player2.piece == SUD) {
         answerP2.validSensTete = KO;
       }
-      else{
+      else {
         answerP2.validSensTete = OK;
       }
     }
     else {
+      printf("* Le joueur 1 demande le NORD\n");
 
-      printf("player 1 demande nord \n");
       orientation = 0;
-      if(player2.piece == SUD){
+      if (player2.piece == SUD) {
         answerP2.validSensTete = OK;
       }
-      else{
+      else {
         answerP2.validSensTete = KO;
       }
     }
   }
 
-  // sending the game validation
-  err = send(sockP1,&answerP1,sizeof(TPartieRep),0);
-  checkSendError(err,sockP1,sockP2,*game,1);
-  // sending the game validation
-  err = send(sockP2,&answerP2,sizeof(TPartieRep),0);
-  checkSendError(err,sockP2,sockP1,*game,2);
+  // Send game validation
+  err = send(sockP1, &answerP1, sizeof(TPartieRep), 0);
+  checkSendError(err, sockP1, sockP2, *game, 1);
+
+  // Send game validation
+  err = send(sockP2, &answerP2, sizeof(TPartieRep), 0);
+  checkSendError(err, sockP2, sockP1, *game, 2);
 
   return orientation;
 }
 
-void endGame(int sock1,int sock2,TPartie game){
-  // Printing score and winner
-  printf("Score du joueur %s  : %d\n",game.player1Name,game.scorePlayer1);
-  printf("Score du joueur %s  : %d\n",game.player2Name,game.scorePlayer2);
+void endGame(int sock1, int sock2, TPartie game) {
+  // Print score and winner
+  printf("Score du joueur %s  : %d\n", game.player1Name, game.scorePlayer1);
+  printf("Score du joueur %s  : %d\n", game.player2Name, game.scorePlayer2);
 
-  if(game.scorePlayer1 > game.scorePlayer2){
-    printf("*** Le joueur ' %s ' gagne ***\n",game.player1Name);
+  if (game.scorePlayer1 > game.scorePlayer2) {
+    printf("*** Le joueur ' %s ' gagne ***\n", game.player1Name);
   }
-  else if(game.scorePlayer2 > game.scorePlayer1){
-    printf("*** Le joueur ' %s ' gagne ***\n",game.player2Name);
+  else if (game.scorePlayer2 > game.scorePlayer1) {
+    printf("*** Le joueur ' %s ' gagne ***\n", game.player2Name);
   }
-  else{
-    printf("*** Le match se termine sur une égalité ! :'( *** \n");
+  else {
+    printf("*** Le match se termine sur une égalité ! ***\n");
   }
 
-  // closing socket
+  // Close sockets
   shutdown(sock1, SHUT_RDWR); close(sock1);
   shutdown(sock2, SHUT_RDWR); close(sock2);
+
   exit(-2);
 }
 
-void prepareStrikeAnswer(int sock1,int sock2,bool validation, TCoupReq strike,TPropCoup strikeProp,TCoupRep *strikeAns){
-  // cheking validation of the strike
-  if(validation == true){
-
-    strikeAns -> err = ERR_OK;
-    strikeAns -> validCoup = VALID;
+void prepareStrikeAnswer(int sock1, int sock2, bool validation, TCoupReq move, TPropCoup moveProp, TCoupRep *moveAns) {
+  // Check validation
+  if (validation == true) {
+    moveAns -> err = ERR_OK;
+    moveAns -> validCoup = VALID;
   }
-  else{
-
-    strikeAns -> err = ERR_COUP;
-    strikeAns -> validCoup = TRICHE;
+  else {
+    moveAns -> err = ERR_COUP;
+    moveAns -> validCoup = TRICHE;
   }
 
-  strikeAns->propCoup = strikeProp;
+  moveAns->propCoup = moveProp;
 }
 
-void sendStrikeAnswer(int sock1,int sock2, TCoupReq strike,TCoupRep strikeAns,TPartie game,int playerId){
+void sendStrikeAnswer(int sock1, int sock2, TCoupReq move, TCoupRep moveAns, TPartie game, int playerId) {
   int err;
   int secondPlayerId;
 
-  if(playerId == 1){
+  if (playerId == 1) {
     secondPlayerId = 2;
-  }else{
+  }
+  else {
     secondPlayerId = 1;
   }
 
-  // validation to the player
-  err = send(sock1,&strikeAns,sizeof(TCoupRep),0);
-  checkSendError(err,sock1,sock2,game,playerId);
+  // Validation of the player
+  err = send(sock1, &moveAns, sizeof(TCoupRep), 0);
+  checkSendError(err, sock1, sock2, game, playerId);
 
-  // validation to the other player
-  err = send(sock2,&strikeAns,sizeof(TCoupRep),0);
-  checkSendError(err,sock2,sock1,game,secondPlayerId);
+  // Validation of the other player
+  err = send(sock2, &moveAns, sizeof(TCoupRep), 0);
+  checkSendError(err, sock2, sock1, game, secondPlayerId);
 
-  // sending to the strike to the other player if the game should continue
-  if(strikeAns.propCoup == CONT){
-    err = send(sock2,&strike,sizeof(TCoupReq),0);
-    checkSendError(err,sock2,sock1,game,secondPlayerId);
+  // Send the move to the other player if the game should continue
+  if (moveAns.propCoup == CONT) {
+    err = send(sock2, &move, sizeof(TCoupReq), 0);
+    checkSendError(err, sock2, sock1, game, secondPlayerId);
   }
 }
 

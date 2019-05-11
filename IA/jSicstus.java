@@ -1,25 +1,31 @@
-/* jSicstus
-* A Java class that communicates with Sicstus Prolog using Jasper
-*
-* Compiling rule :
-*   javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
-*
-* Launching rule :
-*   java -Djava.library.path="./IA/libSicstus4.4.1" -cp ./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar:./IA/:. jSicstus port
-*
-* Default jasper.jar path :
-*   /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
-*
-* Our jasper.jar path :
-*   ./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar
-*
-* Default sicstus lib path :
-*   -Djava.library.path="/usr/local/sicstus4.4.1/lib"
-*
-* Our sisctus lib path :
-*   ./IA/libSicstus4.4.1/
-*
-*/
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * jSicstus.java - A Java class that communicates with :
+ *    - Sicstus Prolog using Jasper
+ *    - C client using sockets
+ *
+ * USE THE GIVEN LIBRARY FIRST (folder libSicstus4.4.1) OR USE SICSTUS 4.4.1
+ *
+ * Compiling rule :
+ *   javac -classpath [PATH TO JASPER.JAR]/jasper.jar:. jSicstus.java
+ *
+ * Launching rule :
+ *   java -Djava.library.path="[PATH TO JASPER LIB]" -cp [PATH TO JASPER.JAR]:./IA/:. jSicstus port
+ *
+ * Default jasper.jar path :
+ *   /usr/local/sicstus4.4.1/lib/sicstus-4.4.1/bin/jasper.jar
+ *
+ * Our jasper.jar path :
+ *   ./IA/libSicstus4.4.1/sicstus-4.4.1/bin/jasper.jar
+ *
+ * Default sicstus lib path :
+ *   -Djava.library.path="/usr/local/sicstus4.4.1/lib"
+ *
+ * Our sisctus lib path :
+ *   ./IA/libSicstus4.4.1/
+ */
 
 import se.sics.jasper.*;
 import java.io.*;
@@ -104,17 +110,17 @@ public class jSicstus {
 
     while (run && nbPartie == 1) {
       if (side == "north") {
-        // Create a strike
-        System.out.println("[N] * Getting strike from Prolog");
+        // Create a move
+        System.out.println("[N] * Getting move from Prolog");
         Coup oppStrike = prolog.generateMove();
         System.out.println(oppStrike);
 
-        // Send the strike
-        System.out.println("[N] * Sending strike to client");
+        // Send the move
+        System.out.println("[N] * Sending move to client");
         oppStrike.sendToNetwork(ods);
 
-        // Read ennemy strike
-        System.out.println("[N] * Getting ennemy strike from client");
+        // Read ennemy move
+        System.out.println("[N] * Getting ennemy move from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
@@ -132,11 +138,11 @@ public class jSicstus {
         }
       }
       else {
-        // Create a strike
+        // Create a move
         Coup oppStrike = new Coup();
 
-        // Read ennemy strike
-        System.out.println("[S] * Getting ennemy strike from client");
+        // Read ennemy move
+        System.out.println("[S] * Getting ennemy move from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
@@ -152,13 +158,13 @@ public class jSicstus {
           // Update Prolog
           prolog.forceEnnemyStrike(oppStrike);
 
-          // Create a strike
-          System.out.println("[S] * Getting strike from Prolog");
+          // Create a move
+          System.out.println("[S] * Getting move from Prolog");
           oppStrike = prolog.generateMove();
           System.out.println(oppStrike);
 
-          // Send the strike
-          System.out.println("[S] * Sending strike to client");
+          // Send the move
+          System.out.println("[S] * Sending move to client");
           oppStrike.sendToNetwork(ods);
         }
       }
@@ -180,17 +186,17 @@ public class jSicstus {
 
     while (run && nbPartie == 2) {
       if (side == "south") {
-        // Create a strike
-        System.out.println("[S] * Getting strike from Prolog");
+        // Create a move
+        System.out.println("[S] * Getting move from Prolog");
         Coup oppStrike = prolog.generateMove();
         System.out.println(oppStrike);
 
-        // Send the strike
-        System.out.println("[S] * Sending strike to client");
+        // Send the move
+        System.out.println("[S] * Sending move to client");
         oppStrike.sendToNetwork(ods);
 
-        // Read ennemy strike
-        System.out.println("[S] * Getting ennemy strike from client");
+        // Read ennemy move
+        System.out.println("[S] * Getting ennemy move from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
@@ -210,8 +216,8 @@ public class jSicstus {
       else {
         Coup oppStrike = new Coup();
 
-        // Read ennemy strike
-        System.out.println("[N] * Getting ennemy strike from client");
+        // Read ennemy move
+        System.out.println("[N] * Getting ennemy move from client");
         oppStrike.readFromNetwork(ids);
 
         // If game is ending
@@ -227,13 +233,13 @@ public class jSicstus {
           // Update Prolog
           prolog.forceEnnemyStrike(oppStrike);
 
-          // Create a strike
-          System.out.println("[N] * Getting strike from Prolog");
+          // Create a move
+          System.out.println("[N] * Getting move from Prolog");
           oppStrike = prolog.generateMove();
           System.out.println(oppStrike);
 
-          // Send the strike
-          System.out.println("[N] * Sending strike to client");
+          // Send the move
+          System.out.println("[N] * Sending move to client");
           oppStrike.sendToNetwork(ods);
         }
       }

@@ -1,3 +1,11 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * libClient.c - client functions library
+ *
+ */
+
 #include "libClient.h"
 
 #include <sys/ioctl.h>
@@ -19,10 +27,11 @@ void checkSendError(int err, int sock ){
 }
 
 void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res){
-  // sending a game initializator request
+  // Send a game init request
   int err = send(sock, &req, sizeof(TPartieReq), 0);
   checkSendError(err, sock);
-  // getting the answer
+
+  // Get the answer
   err = recv(sock, res, sizeof(TPartieRep), 0);
   checkRecvrError(err, sock);
 
@@ -32,10 +41,11 @@ void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res){
 void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
   printStrikeServer(reqCoup);
 
-  // sending a strike to the server
+  // Send a move to the server
   int err = send(sock, &reqCoup, sizeof(TCoupReq), 0);
   checkSendError(err, sock);
-  // getting the answer
+
+  // Get the answer
   err = recv(sock, repCoup, sizeof(TCoupRep), 0);
   checkRecvrError(err, sock);
 
@@ -46,13 +56,13 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv, bool *win){
   TCoupRep res;
   TCoupReq coup;
 
-  // getting opponent strike's validation
+  // Get opponent move's validation
   int err = recv(sock, &res, sizeof(TCoupRep), 0);
   checkRecvrError(err, sock);
 
   printf("* readEnnemyAction\n\tCode : %d\n\tValid : %d\n\tProp : %d\n", res.err, res.validCoup, res.propCoup);
 
-  // checking if the game continue, if yes we can read the opponent's strike
+  // Check if the game continue, if so we can read the opponent's move
   if (res.propCoup == CONT) {
     err = recv(sock, &coup, sizeof(TCoupReq), 0);
     checkRecvrError(err, sock);
@@ -60,10 +70,11 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv, bool *win){
 
   printStrikeServer(coup);
 
-  // preparing the AI shape strike with notifying the game ended or not
+  // Convert the move from server shape to AI shape with game end notification
   if (res.propCoup != CONT) {
     convertServerToAI(coupAdv, &coup, true);
-    // if the opponent lost the game
+
+    // If the opponent lost the game
     if(res.propCoup == PERDU){
       *win = true;
     }
@@ -79,23 +90,25 @@ int receiveIntFromJava(int sock){
   int readed = 0;
   int r = 0;
 
-  // reading the int size
+  // Read int size
   while (readed < 4) {
-
     r = read(sock, buff + readed, sizeof(buff) - readed);
     if (r < 1) {
       break;
     }
+
     readed += r;
   }
-  // restructuration of the int
+
+  // Build the int
   return ntohl(buff[3] << 24 | buff[2] << 16 | buff[1] << 8 | buff[0]);
 }
 
 int receiveBoolFromJava(int sock){
   int r = 0;
   bool res;
-  // reading one bit  ( a java's bool )
+
+  // Read one bit (Java boolean)
   r = read(sock, &res, sizeof(bool));
   if (r < 1) {
     exit(-1);
@@ -105,22 +118,19 @@ int receiveBoolFromJava(int sock){
 }
 
 void getCoupFromAI(int sock, TCoupIa *res) {
-  // reading a TCoupIa structure from the java server
+  // Read a move from the AI
   res->finPartie = receiveIntFromJava(sock);
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
 
   if (res->typeCoup == DEPLACER) {
-
     res->params.deplPiece.caseDep.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseDep.l = receiveIntFromJava(sock);
     res->params.deplPiece.caseArr.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseArr.l = receiveIntFromJava(sock);
     res->params.deplPiece.estCapt = receiveBoolFromJava(sock);
-
   }
   else {
-
     res->params.deposerPiece.c = receiveIntFromJava(sock);
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
@@ -129,16 +139,14 @@ void getCoupFromAI(int sock, TCoupIa *res) {
 }
 
 void sendCoupToAI(int sock, TCoupIa coupIa) {
-  // sending a TCoupIa to the AI server
+  // Set the move to the proper format
   if (coupIa.typeCoup == DEPLACER) {
-
     coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
     coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
     coupIa.params.deplPiece.caseArr.c = htonl(coupIa.params.deplPiece.caseArr.c);
     coupIa.params.deplPiece.caseArr.l = htonl(coupIa.params.deplPiece.caseArr.l);
   }
   else if (coupIa.typeCoup == DEPOSER) {
-
     coupIa.params.deposerPiece.c = htonl(coupIa.params.deposerPiece.c);
     coupIa.params.deposerPiece.l = htonl(coupIa.params.deposerPiece.l);
   }
@@ -147,12 +155,14 @@ void sendCoupToAI(int sock, TCoupIa coupIa) {
   coupIa.piece = htonl(coupIa.piece);
   coupIa.finPartie = htonl(coupIa.finPartie);
 
+  // Send the move to the AI
   send(sock, &coupIa, sizeof(TCoupIa), 0);
 }
 
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
 	TPiece tP;
 
+  // Set direction
 	if (sens == true) {
 		tP.sensTetePiece = SUD;
 	}
@@ -162,7 +172,7 @@ void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
 
 	tP.typePiece = ai->piece;
 
-	// Construction of a strike's request
+	// Build move request
 	req->idRequest = COUP;
 	req->numPartie = nbPartie;
 	req->typeCoup = ai->typeCoup;

@@ -1,3 +1,11 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * Prolog.java - a class that encapsulate Sicsus Prolog related functions
+ *
+ */
+
 import se.sics.jasper.*;
 import java.io.*;
 import java.util.*;
@@ -91,7 +99,7 @@ public class Prolog {
 		}
 	}
 
-	/* forceEnnemyStrike : a function that process an ennemy strike,
+	/* forceEnnemyStrike : a function that process an ennemy move,
 	 * using put or force_move predicates */
 	public void forceEnnemyStrike(Coup coup) {
 		// Store the result in an hashmap : PrologVarN -> Value
@@ -254,7 +262,7 @@ public class Prolog {
 		}
 	}
 
-	/* generateMove : a function that creates a strike,
+	/* generateMove : a function that creates a move,
 	 * using the generate_move predicate */
 	public Coup generateMove() {
 		String type = "";				// Piece's type
@@ -360,7 +368,7 @@ public class Prolog {
 			b = true;
 		}
 
-		// Return the strike
+		// Return the move
 		return new Coup(EnumCoup.DEPLACER, piece, new DeplPiece(new Case(x, y), new Case(n_x, n_y), b));
 	}
 

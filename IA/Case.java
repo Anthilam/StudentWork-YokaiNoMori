@@ -1,14 +1,24 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * Case.java - a square in the Yokai No-Mori game
+ *
+ */
+
 import java.io.Serializable;
 
 public class Case implements Serializable {
-  private EnumCol c;
-  private EnumLig l;
+  private EnumCol c;  // Column
+  private EnumLig l;  // Line
 
+  // Constructor
   public Case(EnumCol col, EnumLig lig){
     this.c = col;
     this.l = lig;
   }
 
+  // Constructor 2
   public Case(long x, long y) {
     switch ((int)x) {
       case 1: c = EnumCol.A; break;
@@ -30,6 +40,7 @@ public class Case implements Serializable {
     }
   }
 
+  // Getters (base format)
   public EnumCol getCol() {
     return this.c;
   }
@@ -38,16 +49,16 @@ public class Case implements Serializable {
     return this.l;
   }
 
-  // Get column in int format
+  // Getters (int format)
   public int getX() {
     return this.c.ordinal() + 1;
   }
 
-  // Get line in int format
   public int getY() {
     return this.l.ordinal() + 1;
   }
 
+  // Setters
   public void setCol(EnumCol col) {
     this.c = col;
   }
@@ -56,6 +67,7 @@ public class Case implements Serializable {
     this.l = ligne;
   }
 
+  // toString
   public String toString(){
     return "\tCase > c: " + this.c + "; l: " + this.l;
   }

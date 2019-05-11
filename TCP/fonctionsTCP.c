@@ -1,3 +1,11 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * fonctionsTCP.c - TCP functions used for network communications
+ *
+ */
+
 #include "fonctionsTCP.h"
 
 int socketClient(char* ipMachServ, unsigned short nPort){
@@ -12,7 +20,7 @@ int socketClient(char* ipMachServ, unsigned short nPort){
     exit(-1);
   }
 
-  // Initialiaze socket
+  // Initialize socket
   addSockServ.sin_family = AF_INET;
   err = inet_aton(ipMachServ, &addSockServ.sin_addr);
   if (err == 0) {
@@ -80,6 +88,6 @@ int socketServeur(unsigned short nPort){
     close(sockValue);
     exit(-4);
   }
-  
+
   return sockValue;
 }

@@ -1,3 +1,11 @@
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * tests.pl - Prolog tests for ia.pl
+ *
+ */
+
 :-use_module(library(plunit)).
 
 :-include(ia).

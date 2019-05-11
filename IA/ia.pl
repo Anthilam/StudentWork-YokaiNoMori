@@ -1,11 +1,10 @@
-%----------------------------------------------------------------
-%	ia.pl
-%
-%	BOISSON Romain, GUY Timothee
-%
-%	Projet Yokai No-Mori
-%
-%----------------------------------------------------------------
+/* BOISSON Romain - GUY Timothée
+ *
+ * Yokai No-Mori project - UFR-ST 2019
+ *
+ * ia.pl - Artificial Intelligence predicates
+ *
+ */
 
 % Flag for long list
 :-set_prolog_flag(toplevel_print_options,
@@ -13,13 +12,6 @@
 
 :-use_module(library(lists)).
 :-use_module(library(between)).
-
-% Jeu d'échec en Prolog : http://boxbase.org/entries/2018/nov/19/modeling-chess-in-prolog/
-
-% Pieces :
-% kodama, samourai
-% oni, superoni
-% kirin, koropokkuru
 
 %----------------------------------------------------------------
 % Initial board generation
@@ -576,7 +568,7 @@ process_score(Board, OppoMoveList, [Head|Tail], [NewHead|NewTail]):-
   is_capturing(Board, Side, Type, N_X, N_Y, Capture, NewScore, NewScore2),
   % Process opponent moves
   oppo_moves(OppoMoveList, Board, Side, Type, N_X, N_Y, Capture, NewScore2, NewScore3),
-  % Get the new strike
+  % Get the new move
   NewHead = [Board, CaptN, CaptS, Side, NewBoard, NewCaptN, NewCaptS, Type, X, Y, N_X, N_Y, Capture, NewScore3],
   % Print calculated score
   % write(pscore), write([Side, Type, X, Y, N_X, N_Y, Capture, NewScore3]), nl,
