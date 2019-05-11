@@ -19,9 +19,10 @@ void checkSendError(int err, int sock ){
 }
 
 void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res){
+  // sending a game initializator request
   int err = send(sock, &req, sizeof(TPartieReq), 0);
   checkSendError(err, sock);
-
+  // getting the answer
   err = recv(sock, res, sizeof(TPartieRep), 0);
   checkRecvrError(err, sock);
 
@@ -31,9 +32,10 @@ void sendPartieGetRep(int sock, TPartieReq req, TPartieRep *res){
 void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
   printStrikeServer(reqCoup);
 
+  // sending a strike to the server
   int err = send(sock, &reqCoup, sizeof(TCoupReq), 0);
   checkSendError(err, sock);
-
+  // getting the answer
   err = recv(sock, repCoup, sizeof(TCoupRep), 0);
   checkRecvrError(err, sock);
 
@@ -44,11 +46,13 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv){
   TCoupRep res;
   TCoupReq coup;
 
+  // getting opponent strike's validation
   int err = recv(sock, &res, sizeof(TCoupRep), 0);
   checkRecvrError(err, sock);
 
   printf("* readEnnemyAction\n\tCode : %d\n\tValid : %d\n\tProp : %d\n", res.err, res.validCoup, res.propCoup);
 
+  // checking if the game continue, if yes we can read the opponent's strike
   if (res.propCoup == CONT) {
     err = recv(sock, &coup, sizeof(TCoupReq), 0);
     checkRecvrError(err, sock);
@@ -56,6 +60,7 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv){
 
   printStrikeServer(coup);
 
+  // preparing the AI shape strike with notifying the game ended or not
   if (res.propCoup != CONT) {
     convertServerToAI(coupAdv, &coup, true);
   }
@@ -70,21 +75,23 @@ int receiveIntFromJava(int sock){
   int readed = 0;
   int r = 0;
 
+  // reading the int size
   while (readed < 4) {
+
     r = read(sock, buff + readed, sizeof(buff) - readed);
     if (r < 1) {
       break;
     }
     readed += r;
   }
-
+  // restructuration of the int
   return ntohl(buff[3] << 24 | buff[2] << 16 | buff[1] << 8 | buff[0]);
 }
 
 int receiveBoolFromJava(int sock){
   int r = 0;
   bool res;
-
+  // reading one bit  ( a java's bool )
   r = read(sock, &res, sizeof(bool));
   if (r < 1) {
     exit(-1);
@@ -94,11 +101,13 @@ int receiveBoolFromJava(int sock){
 }
 
 void getCoupFromAI(int sock, TCoupIa *res) {
+  // reading a TCoupIa structure from the java server
   res->finPartie = receiveIntFromJava(sock);
   res->typeCoup = receiveIntFromJava(sock);
   res->piece = receiveIntFromJava(sock);
 
   if (res->typeCoup == DEPLACER) {
+
     res->params.deplPiece.caseDep.c = receiveIntFromJava(sock);
     res->params.deplPiece.caseDep.l = receiveIntFromJava(sock);
     res->params.deplPiece.caseArr.c = receiveIntFromJava(sock);
@@ -107,6 +116,7 @@ void getCoupFromAI(int sock, TCoupIa *res) {
 
   }
   else {
+
     res->params.deposerPiece.c = receiveIntFromJava(sock);
     res->params.deposerPiece.l = receiveIntFromJava(sock);
   }
@@ -115,13 +125,16 @@ void getCoupFromAI(int sock, TCoupIa *res) {
 }
 
 void sendCoupToAI(int sock, TCoupIa coupIa) {
+  // sending a TCoupIa to the AI server
   if (coupIa.typeCoup == DEPLACER) {
+
     coupIa.params.deplPiece.caseDep.c = htonl(coupIa.params.deplPiece.caseDep.c);
     coupIa.params.deplPiece.caseDep.l = htonl(coupIa.params.deplPiece.caseDep.l);
     coupIa.params.deplPiece.caseArr.c = htonl(coupIa.params.deplPiece.caseArr.c);
     coupIa.params.deplPiece.caseArr.l = htonl(coupIa.params.deplPiece.caseArr.l);
   }
   else if (coupIa.typeCoup == DEPOSER) {
+
     coupIa.params.deposerPiece.c = htonl(coupIa.params.deposerPiece.c);
     coupIa.params.deposerPiece.l = htonl(coupIa.params.deposerPiece.l);
   }
@@ -134,8 +147,8 @@ void sendCoupToAI(int sock, TCoupIa coupIa) {
 }
 
 void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
-	// Construction du coup depuis le coup de l'IA
 	TPiece tP;
+
 	if (sens == true) {
 		tP.sensTetePiece = SUD;
 	}
@@ -145,7 +158,7 @@ void convertAItoServer(TCoupIa *ai, TCoupReq *req, bool sens, int nbPartie) {
 
 	tP.typePiece = ai->piece;
 
-	// Construction de la requete d'un coup
+	// Construction of a strike's request
 	req->idRequest = COUP;
 	req->numPartie = nbPartie;
 	req->typeCoup = ai->typeCoup;
