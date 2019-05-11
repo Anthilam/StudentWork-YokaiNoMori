@@ -100,6 +100,9 @@ int sendAnswers(int sockP1,int sockP2,TPartieReq player1,TPartieReq player2,TPar
 
 void endGame(int sock1,int sock2,TPartie game){
   // Printing score and winner
+  printf("Score du joueur %s  : %d\n",game.player1Name,game.scorePlayer1);
+  printf("Score du joueur %s  : %d\n",game.player2Name,game.scorePlayer2);
+
   if(game.scorePlayer1 > game.scorePlayer2){
     printf("*** Le joueur ' %s ' gagne ***\n",game.player1Name);
   }
