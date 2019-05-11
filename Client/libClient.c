@@ -42,7 +42,7 @@ void sendCoupGetRep(int sock, TCoupReq reqCoup, TCoupRep *repCoup){
   printf("* sendCoupGetRep\n\tCode : %d\n\tValid : %d\n\tProp : %d\n", repCoup->err, repCoup->validCoup, repCoup->propCoup);
 }
 
-void readEnnemyAction(int sock, TCoupIa *coupAdv){
+void readEnnemyAction(int sock, TCoupIa *coupAdv, bool *win){
   TCoupRep res;
   TCoupReq coup;
 
@@ -63,6 +63,10 @@ void readEnnemyAction(int sock, TCoupIa *coupAdv){
   // preparing the AI shape strike with notifying the game ended or not
   if (res.propCoup != CONT) {
     convertServerToAI(coupAdv, &coup, true);
+    // if the opponent lost the game
+    if(res.propCoup == PERDU){
+      *win = true;
+    }
   }
   else {
     convertServerToAI(coupAdv, &coup, false);

@@ -17,7 +17,9 @@ int main(int argc, char **argv) {
   char *name = argv[3];         // Player's name
   char* ipIa = argv[5];
 
-  bool connected;               // Connection's to the server state
+  bool connected;               // Connection's state to the server
+  bool winFirstGame = false;    // Store the first game's result
+  bool winSecondGame = false;   // Store the second game's result
 
   printf("* Starting client..\n");
   printf("* Trying to connect to the AI\n");
@@ -102,7 +104,10 @@ int main(int argc, char **argv) {
 
         coupIa.finPartie = true;
         sendCoupToAI(sockIa, coupIa);
-
+        // storing the first game result
+        if(repCoup.propCoup == GAGNE){
+          winFirstGame = true;
+        }
         printf("* AI has been notified\n");
       }
       // If the game isn't ended read opponent strike
@@ -110,7 +115,7 @@ int main(int argc, char **argv) {
 
         printf("* Getting ennemy action\n");
         // Reading opponent's strike
-        readEnnemyAction(sock, &recvIa);
+        readEnnemyAction(sock, &recvIa, &winFirstGame);
 
         // If the opponent's strike is ending the game, notifying the AI
         if (recvIa.finPartie) {
@@ -134,7 +139,7 @@ int main(int argc, char **argv) {
 
       // Reading the opponent's strike
       printf("* Getting ennemy action\n");
-      readEnnemyAction(sock, &recvIa);
+      readEnnemyAction(sock, &recvIa,&winFirstGame);
 
       // If the opponent's is ending the game, notifiying the AI
       if (recvIa.finPartie) {
@@ -172,6 +177,10 @@ int main(int argc, char **argv) {
           coupIa.finPartie = true;
           sendCoupToAI(sockIa, coupIa);
 
+          if(repCoup.propCoup == GAGNE){
+            winFirstGame = true;
+          }
+
           printf("* AI has been notified\n");
         }
       }
@@ -206,14 +215,16 @@ int main(int argc, char **argv) {
 
         coupIa.finPartie = true;
         sendCoupToAI(sockIa, coupIa);
-
+        if(repCoup.propCoup == GAGNE){
+          winSecondGame = true;
+        }
         printf("* AI has been notified\n");
       }
       // If the game isn't ended read opponent strike
       else {
         // Reading opponent's strike
         printf("* Getting ennemy action\n");
-        readEnnemyAction(sock, &recvIa);
+        readEnnemyAction(sock, &recvIa,&winSecondGame);
 
         // If the opponent's strike is ending the game, notifying the AI
         if (recvIa.finPartie) {
@@ -236,7 +247,7 @@ int main(int argc, char **argv) {
     else {
       // Reading opponent's strike
       printf("* Getting ennemy action\n");
-      readEnnemyAction(sock, &recvIa);
+      readEnnemyAction(sock, &recvIa,&winSecondGame);
 
       // If the opponent's strike is ending the game, notifying the AI
       if (recvIa.finPartie) {
@@ -271,7 +282,9 @@ int main(int argc, char **argv) {
 
           coupIa.finPartie = true;
           sendCoupToAI(sockIa, coupIa);
-
+          if(repCoup.propCoup == GAGNE){
+            winSecondGame = true;
+          }
           printf("* AI has been notified\n");
         }
       }
@@ -279,6 +292,19 @@ int main(int argc, char **argv) {
   }
 
   printf("\n** FIN DES PARTIES **\n");
+
+  if(winFirstGame){
+    printf("* Mon Ia a gagné la première partie !\n");
+  }else{
+    printf("* Mon adversaire a gagné la première partie ou on a fait match nul\n");
+  }
+
+  if(winSecondGame){
+    printf("* Mon Ia a gagné la seconde partie !\n");
+  }else{
+    printf("* Mon adversaire a gagné la seconde partie ou on a fait match nul\n");
+
+  }
   // shutdown and closing the socket to the AI
   shutdown(sockIa,SHUT_RDWR);
   close(sockIa);

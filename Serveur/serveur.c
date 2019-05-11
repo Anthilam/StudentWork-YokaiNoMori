@@ -1,7 +1,7 @@
 #include "libServeur.h"
 #include "validation.h"
 
-#define TIMEOUT_SEC 6
+#define TIME_MAX 6
 
 int main(int argc, char** argv) {
   int sockConx, port, sizeAddr; // variable used for setting up the server
@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 
   // setting up the timeout
   struct timeval tv;
-  tv.tv_sec = TIMEOUT_SEC;
+  tv.tv_sec = TIME_MAX;
   tv.tv_usec = 0;
 
   setsockopt(connectionP1, SOL_SOCKET,SO_RCVTIMEO, (const char*)&tv, sizeof(struct timeval));

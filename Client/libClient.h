@@ -55,8 +55,9 @@ void sendCoupGetRep(int sock,TCoupReq reqCoup,TCoupRep *repCoup);
     params:
       int sock : socket connected to the server
       TCoupRep repCoup : opponent's strike
+      bool *win : result of the game if it is ended
  */
-void readEnnemyAction(int sock,TCoupIa *coupAdv);
+void readEnnemyAction(int sock,TCoupIa *coupAdv,bool *win);
 
 /*  Function to read a int from a java server
 
