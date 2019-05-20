@@ -5,9 +5,9 @@ The Yokai No-Mori project goal was to create an AI in Prolog that can play the Y
 This project is composed of :
 * a game-server : written in C, that links the two players and validate each move
 * a client, made of :
-  1. A C program that communicates with the game-server
-  2. A Java program that uses the *Jasper* library provided by *Sicstus Prolog* to use our Prolog predicates defined in `ia.pl`
-  3. Prolog predicates written in the `ia.pl` file
+  1. A C program that communicates with the game-server and the Java AI;
+  2. A Java program, the AI, that uses the *Jasper* library provided by *Sicstus Prolog* to use our Prolog predicates defined in `ia.pl`;
+  3. Prolog predicates written in the `ia.pl` file.
 
 ## Build
 
